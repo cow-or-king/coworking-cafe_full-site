@@ -7,8 +7,8 @@ import styles from "../../styles/layout.module.css";
 export default function DasboardHomePage() {
   const pathname = usePathname();
   return (
-    <div className=" flex items-center justify-center h-[90dvh]">
-      <div className="flex gap-5 flex-col items-center">
+    <div className="flex h-[90dvh] items-center justify-center">
+      <div className="flex flex-col items-center gap-5">
         home page dashboard
         <Link
           className={`${styles.link} ${pathname === "/" ? styles.active : ""}`}
