@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { StoreProvider } from "./StoreProvider";
 
-import "./styles/globals.css";
+import "@/styles/globals.css";
 
 interface Props {
   readonly children: ReactNode;

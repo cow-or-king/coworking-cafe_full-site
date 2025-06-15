@@ -1,9 +1,9 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 
-import "../styles/globals.css";
-import styles from "../styles/layout.module.css";
-import { Nav } from "./components/Nav";
+import "@/styles/globals.css";
+import styles from "@/styles/layout.module.css";
+import { Nav } from "../(site)/components/Nav";
 
 interface Props {
   readonly children: ReactNode;
