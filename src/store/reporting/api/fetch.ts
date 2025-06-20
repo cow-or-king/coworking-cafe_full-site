@@ -1,11 +1,11 @@
 import { createTypedAsyncThunk } from "../../types";
 
 export const fetchData = createTypedAsyncThunk(
-  "turnover/fetchData",
-  async function (_: void) {
+  "reporting/fetchData",
+  async function (range: "yesterday" | "week" | "month" | "year") {
     // If already loaded, do nothing.
 
-    const res = await fetch("/api/dashboard/turnover");
+    const res = await fetch(`/api/dashboard/reporting?range=${range}`);
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }

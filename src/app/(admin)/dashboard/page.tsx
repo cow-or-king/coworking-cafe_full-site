@@ -1,35 +1,38 @@
+"use client";
+
+import { DashSectionCards } from "@/components/admin/dashboard/dash-SectionCard";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { Chart } from "../../../components/admin/dashboard/chart";
 
 export default function DashboardPage() {
+  const [checked, setChecked] = useState(false);
+
   return (
-    <>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="bg-muted/50 max-h-[200px] flex-1 rounded-xl md:min-h-min">
-          <Chart />
+    <div>
+      <div className="flex justify-end px-8 pt-2">
+        <div className="flex items-center gap-2">
+          <span>HT</span>
+          <Switch
+            className={cn(
+              "data-[state=checked]:bg-(--chart-4) data-[state=unchecked]:bg-(--chart-5)",
+            )}
+            onClick={() => setChecked(!checked)}
+          />
+          <span>TTC</span>
         </div>
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="bg-muted/50 aspect-video rounded-xl">
-            <Chart />
-          </div>
-          <div className="bg-muted/50 aspect-video rounded-xl">
-            <Chart />
-          </div>
-          <div className="bg-muted/50 aspect-video rounded-xl">
-            <Chart />
+      </div>
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+            <DashSectionCards checked={checked} />
+            <div className="px-4 lg:px-6">
+              <Chart />
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
-
-const chartConfig = {
-  TTC: {
-    label: "TTC",
-    color: "#2563eb",
-  },
-  HT: {
-    label: "HT",
-    color: "#60a5fa",
-  },
-} satisfies ChartConfig;

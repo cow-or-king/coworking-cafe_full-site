@@ -22,9 +22,15 @@ async function dbConnect() {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => {
-      return mongoose;
-    });
+    cached.promise = mongoose
+      .connect(MONGODB_URI)
+      .then((mongoose) => {
+        return mongoose;
+      })
+      .catch((reason) => {
+        console.error("Failed to connect to the database: %O", reason);
+        throw reason;
+      });
   }
   cached.conn = await cached.promise;
   return cached.conn;

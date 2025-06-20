@@ -17,6 +17,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavSecondary } from "./nav-secondary";
+import { Switch } from "./ui/switch";
 
 const data = {
   user: {

@@ -21,15 +21,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
-import React, { useEffect } from "react";
-
-import { chartConfig } from "@/lib/admin/config/chartConfig";
 import { TurnoverApi } from "@/store/turnover";
 import { useTypedDispatch, useTypedSelector } from "@/store/types";
+import React, { useEffect } from "react";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+
+import type { ChartConfig } from "@/components/ui/chart";
+
+const chartConfig = {
+  TTC: {
+    label: "TTC",
+    color: "var(--chart-4)",
+  },
+  HT: {
+    label: "HT",
+    color: "var(--chart-5 )",
+  },
+} satisfies ChartConfig;
 
 export function Chart() {
   const dispatch = useTypedDispatch();
@@ -42,6 +51,7 @@ export function Chart() {
 
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("90d");
+  const [range, setRange] = React.useState("30 derniers jours");
 
   React.useEffect(() => {
     if (isMobile) {
@@ -71,9 +81,11 @@ export function Chart() {
         <CardTitle>Chiffre d&apos;affaire</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Total pour les 3 derniers mois
+            {range === "Année"
+              ? "Tendance sur l'année"
+              : `Tendance sur les ${range}`}
           </span>
-          <span className="@[540px]/card:hidden">3 derniers mois</span>
+          <span className="@[540px]/card:hidden">{range}</span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
@@ -83,10 +95,38 @@ export function Chart() {
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
-            <ToggleGroupItem value="365d">année</ToggleGroupItem>
-            <ToggleGroupItem value="90d">3 derniers mois</ToggleGroupItem>
-            <ToggleGroupItem value="30d">30 derniers jours</ToggleGroupItem>
-            <ToggleGroupItem value="7d">7 derniers jours</ToggleGroupItem>
+            <ToggleGroupItem
+              value="365d"
+              onClick={() => {
+                setRange("Année");
+              }}
+            >
+              Année
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="90d"
+              onClick={() => {
+                setRange("3 derniers mois");
+              }}
+            >
+              3 derniers mois
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="30d"
+              onClick={() => {
+                setRange("30 derniers jours");
+              }}
+            >
+              30 derniers jours
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="7d"
+              onClick={() => {
+                setRange("7 derniers jours");
+              }}
+            >
+              7 derniers jours
+            </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
@@ -173,13 +213,13 @@ export function Chart() {
               dataKey="TTC"
               type="natural"
               fill="url(#fillTTC)"
-              stroke="#60a5fa"
+              stroke={chartConfig.TTC.color}
             />
             <Area
               dataKey="HT"
               type="natural"
               fill="url(#fillHT)"
-              stroke="#2563eb"
+              stroke={chartConfig.HT.color}
             />
           </AreaChart>
         </ChartContainer>
