@@ -6,7 +6,7 @@ import { TurnoverApi } from "@/store/turnover";
 import { useTypedDispatch, useTypedSelector } from "@/store/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
-import { columns } from "./columns";
+import { columns } from "../../../../../components/admin/dashboard/accounting/cash-control/columns";
 
 const monthsList = [
   "Janvier",

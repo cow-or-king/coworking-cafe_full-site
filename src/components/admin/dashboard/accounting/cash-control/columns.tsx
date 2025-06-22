@@ -22,20 +22,11 @@ export type Payment = {
   "ca-ht": number | { 20: number; 10: number; "5,5": number };
   "ca-tva": number | { 20: number; 10: number; "5,5": number }; // Assuming tva can be a number or an object with different rates
   depenses: number;
-  "cb-classique": number;
-  "cb-sans-contact": number;
+  cbClassique: number;
+  cbSansContact: number;
   especes: number;
   total: number;
 };
-
-const DateFormatter = new Intl.DateTimeFormat("fr", {
-  dateStyle: "short",
-});
-
-const AmountFormatter = new Intl.NumberFormat("fr", {
-  style: "currency",
-  currency: "eur",
-});
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -44,7 +35,11 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const date = row.original.date;
       if (!date) return "";
-      return DateFormatter.format(new Date(date));
+      const d = new Date(date);
+      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
     },
   },
   {
@@ -53,7 +48,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const ttc = row.original.TTC;
       if (ttc === null || ttc === undefined || isNaN(ttc)) return "";
-      return AmountFormatter.format(ttc);
+      return `${ttc.toFixed(2)} €`;
     },
   },
   {
@@ -62,7 +57,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const ht = row.original.HT;
       if (ht === null || ht === undefined || isNaN(ht)) return "";
-      return AmountFormatter.format(ht);
+      return `${ht.toFixed(2)} €`;
     },
   },
   {
@@ -71,7 +66,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const tva = row.original.TVA;
       if (tva === null || tva === undefined || isNaN(tva)) return "";
-      return AmountFormatter.format(tva);
+      return `${tva.toFixed(2)} €`;
     },
   },
   {
@@ -114,17 +109,14 @@ export const columns: ColumnDef<Payment>[] = [
                       textAlign: "right",
                     }}
                   >
-                    {typeof value === "number"
-                      ? AmountFormatter.format(value)
-                      : value}{" "}
-                    €
+                    {typeof value === "number" ? value.toFixed(2) : value} €
                   </span>
                 </div>
               ))}
           </div>
         );
       }
-      return ht === null || ht === undefined ? "" : AmountFormatter.format(ht);
+      return ht === null || ht === undefined ? "" : `${ht.toFixed(2)} €`;
     },
   },
   {
@@ -167,18 +159,14 @@ export const columns: ColumnDef<Payment>[] = [
                       textAlign: "right",
                     }}
                   >
-                    {typeof value === "number"
-                      ? AmountFormatter.format(value)
-                      : value}
+                    {typeof value === "number" ? value.toFixed(2) : value} €
                   </span>
                 </div>
               ))}
           </div>
         );
       }
-      return tva === null || tva === undefined
-        ? ""
-        : AmountFormatter.format(tva);
+      return tva === null || tva === undefined ? "" : `${tva.toFixed(2)} €`;
     },
   },
 
@@ -220,7 +208,7 @@ export const columns: ColumnDef<Payment>[] = [
                       textAlign: "right",
                     }}
                   >
-                    {AmountFormatter.format(d.value)}
+                    {Number(d.value).toFixed(2)} €
                   </span>
                 </div>
               ))}
@@ -232,11 +220,11 @@ export const columns: ColumnDef<Payment>[] = [
   },
 
   {
-    accessorKey: "cb-classique",
+    accessorKey: "cbClassique",
     header: "CB classique",
   },
   {
-    accessorKey: "cb-sans-contact",
+    accessorKey: "cbSansContact",
     header: "CB sans contact",
   },
 
@@ -248,8 +236,7 @@ export const columns: ColumnDef<Payment>[] = [
     id: "actions",
     accessorFn: (row) => row._id,
     cell: (cell: any) => {
-      const { row, openForm } = cell;
-
+      const { row, openForm, onDelete } = cell;
       // Ouvre le formulaire avec la date de la ligne
       const handleOpenFormWithDate = () => {
         if (typeof openForm === "function") {
@@ -257,21 +244,21 @@ export const columns: ColumnDef<Payment>[] = [
         }
       };
       // Pour une nouvelle ligne sans données
-      if (
-        !row.original.especes &&
-        !row.original.depenses &&
-        !row.original["cb-classique"] &&
-        !row.original["cb-sans-contact"]
-      ) {
-        const sameDate =
-          row.original._id && row.original.date === row.original._id;
+      const isEmpty =
+        (!row.original.especes || row.original.especes === 0) &&
+        (!row.original.depenses || row.original.depenses.length === 0) &&
+        (!row.original.cbClassique || row.original.cbClassique === 0) &&
+        (!row.original.cbSansContact || row.original.cbSansContact === 0);
+      const sameDate =
+        row.original._id && row.original.date === row.original._id;
+      if (isEmpty) {
         return (
           <Button
             onClick={handleOpenFormWithDate}
             variant="outline"
             className="border-green-400 text-green-600 hover:bg-green-50"
           >
-            {sameDate ? "Saisir" : "Modifier"}
+            Saisir
           </Button>
         );
       }
@@ -288,11 +275,7 @@ export const columns: ColumnDef<Payment>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
-              onClick={() =>
-                window.dispatchEvent(
-                  new CustomEvent("cash-delete", { detail: row.original }),
-                )
-              }
+              onClick={() => onDelete && onDelete(row.original)}
             >
               Supprimer
             </DropdownMenuItem>
