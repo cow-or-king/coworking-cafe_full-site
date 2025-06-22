@@ -33,13 +33,6 @@ export function FormCashControl({
       className="mb-8 flex flex-wrap items-end gap-4 rounded border bg-gray-50 p-4"
       onSubmit={onSubmit}
     >
-      {/* <input
-        type="date"
-        className="rounded border px-2 py-1"
-        value={form.date}
-        onChange={(e) => setForm((f: any) => ({ ...f, date: e.target.value }))}
-        required
-      /> */}
       <div className="flex flex-col gap-2">
         <span className="font-semibold">Dépenses :</span>
         {form.depenses.map((dep: Depense, idx: number) => (
@@ -130,11 +123,7 @@ export function FormCashControl({
         type="submit"
         className="bg-(--chart-5) text-white hover:bg-(--chart-4)"
       >
-        {editingRow
-          ? editingRow._id && editingRow.date === editingRow._id
-            ? "Saisir"
-            : "Modifier"
-          : "Ajouter"}
+        {editingRow._id === "" ? "Ajouter" : "Modifier"}
       </Button>
       {formStatus && (
         <span className="ml-4 text-sm font-semibold">{formStatus}</span>

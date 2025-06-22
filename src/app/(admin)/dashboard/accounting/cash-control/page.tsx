@@ -167,6 +167,7 @@ export default function CashControl() {
         }
       }
       // Construction du body
+      const dateKey = formatDateYYYYMMDD(dateToSend);
       const bodyData: any = {
         date: dateToSend,
         depenses: form.depenses
@@ -185,6 +186,9 @@ export default function CashControl() {
         url = "/api/dashboard/cash-entry/update";
         method = "PUT";
         bodyData.id = form._id;
+      } else {
+        // Pour POST, il faut fournir _id au format YYYY/MM/DD
+        bodyData._id = dateKey;
       }
       try {
         const res = await fetch(url, {

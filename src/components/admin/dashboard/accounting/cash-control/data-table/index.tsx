@@ -56,9 +56,8 @@ export function DataTable<TData, TValue>({
       dateStr = new Date().toISOString().slice(0, 10);
     }
 
-    // Utiliser l'_id réel de cashentry si présent, sinon la date comme fallback
-    const formId = row._id || row.date || "";
-    console.log("formId", row._id, row.date, formId);
+    // Si la ligne n'a pas d'_id (pas de cashEntry), on force _id à ""
+    const formId = row._id ? row._id : "";
 
     setForm((prev: any) => ({
       ...prev,

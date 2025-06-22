@@ -97,6 +97,7 @@ export function DataTable<TData, TValue>({
             formStatus={formStatus}
             onSubmit={onSubmit}
             editingRow={selectedRow}
+            e={editingRow?._id}
           />
         </DialogContent>
       </Dialog>
