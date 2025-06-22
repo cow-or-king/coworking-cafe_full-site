@@ -1,6 +1,6 @@
 "use client";
 
-import { Home } from "lucide-react";
+import { HandCoins, Home } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 import logo from "../../public/logo.svg";
@@ -16,8 +16,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
-import { Switch } from "./ui/switch";
 
 const data = {
   user: {
@@ -26,26 +26,26 @@ const data = {
     avatar: "/avatar.png",
   },
   navMain: [
-    // {
-    //   title: "Playground",
-    //   url: "#",
-    //   icon: SquareTerminal,
-    //   isActive: true,
-    //   items: [
-    //     {
-    //       title: "History",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Starred",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Settings",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
+    {
+      title: "Finances",
+      url: "/dashboard/accounting",
+      icon: HandCoins,
+      isActive: true,
+      items: [
+        {
+          title: "Controle de caisse",
+          url: "/dashboard/accounting/cash-control",
+        },
+        {
+          title: "caisse",
+          url: "/dashboard/accounting/caisse",
+        },
+        // {
+        //   title: "Settings",
+        //   url: "#",
+        // },
+      ],
+    },
     // {
     //   title: "Models",
     //   url: "#",
@@ -166,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* <NavMain items={data.navMain} /> */}
+        <NavMain items={data.navMain} />
         {/* <NavProjects projects={data.projects} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>

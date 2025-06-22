@@ -1,16 +1,19 @@
-import dbConnect from '../../../lib/mongodb';
-import CashEntry from '../../../models/CashEntry';
+import dbConnect from "../../../../lib/mongodb/mongodb";
+import CashEntry from "../../../../lib/mongodb/models/CashEntry";
 
 export default async function handler(req, res) {
-  console.log('API update appelée, méthode:', req.method, 'body:', req.body);
+  console.log("API update appelée, méthode:", req.method, "body:", req.body);
   await dbConnect();
 
-  if (req.method === 'PUT') {
-    const { id, date, depenses, especes, cbClassique, cbSansContact } = req.body;
-    console.log('ID reçu pour update:', id);
+  if (req.method === "PUT") {
+    const { id, date, depenses, especes, cbClassique, cbSansContact } =
+      req.body;
+    console.log("ID reçu pour update:", id);
 
     if (!id || !date) {
-      return res.status(400).json({ success: false, error: 'ID et date requis' });
+      return res
+        .status(400)
+        .json({ success: false, error: "ID et date requis" });
     }
 
     try {
@@ -27,13 +30,15 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, data: updated });
       } else {
         // Si aucune entrée n'existe avec cet _id, retourner une erreur
-        return res.status(404).json({ success: false, error: 'Entrée introuvable' });
+        return res
+          .status(404)
+          .json({ success: false, error: "Entrée introuvable" });
       }
     } catch (error) {
-      console.error('Error updating cash entry:', error);
+      console.error("Error updating cash entry:", error);
       return res.status(400).json({ success: false, error: error.message });
     }
   }
 
-  return res.status(405).json({ success: false, error: 'Method not allowed' });
+  return res.status(405).json({ success: false, error: "Method not allowed" });
 }
