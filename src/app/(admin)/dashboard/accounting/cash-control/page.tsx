@@ -47,7 +47,17 @@ export default function CashControl() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(
     currentMonth,
   );
-  const [form, setForm] = useState<any>({
+  type FormState = {
+    _id: string;
+    date: string;
+    prestaB2B: { label: string; value: string }[];
+    depenses: { label: string; value: string }[];
+    especes: string;
+    cbClassique: string;
+    cbSansContact: string;
+  };
+
+  const [form, setForm] = useState<FormState>({
     _id: "",
     date: "",
     prestaB2B: [{ label: "", value: "" }],
@@ -57,7 +67,7 @@ export default function CashControl() {
     cbSansContact: "",
   });
   const [formStatus, setFormStatus] = useState<string | null>(null);
-  const [editingRow, setEditingRow] = useState<any | null>(null);
+  const [editingRow, setEditingRow] = useState<CashEntryRow | null>(null);
 
   useEffect(() => {
     dispatch(TurnoverApi.fetchData());
@@ -100,25 +110,61 @@ export default function CashControl() {
   }, [filteredData, dataCash]);
 
   // Handler pour ouvrir le formulaire depuis la colonne action
-  const openForm = useCallback((row: any) => {
+  const openForm = useCallback((row: CashEntryRow) => {
     setEditingRow(row);
-    let dateStr = row.date || new Date().toISOString().slice(0, 10);
+    const dateStr = row.date || new Date().toISOString().slice(0, 10);
     setForm({
       _id: row._id || "",
       date: dateStr,
+      prestaB2B:
+        Array.isArray(row.prestaB2B) && row.prestaB2B.length > 0
+          ? row.prestaB2B.map((p: any) => ({
+              label: p.label ?? "",
+              value:
+                p.value !== undefined && p.value !== null
+                  ? String(p.value)
+                  : "",
+            }))
+          : [{ label: "", value: "" }],
       depenses:
         Array.isArray(row.depenses) && row.depenses.length > 0
-          ? row.depenses
+          ? row.depenses.map((d: any) => ({
+              label: d.label ?? "",
+              value:
+                d.value !== undefined && d.value !== null
+                  ? String(d.value)
+                  : "",
+            }))
           : [{ label: "", value: "" }],
-      especes: row.especes ?? "",
-      cbClassique: row.cbClassique ?? "",
-      cbSansContact: row.cbSansContact ?? "",
+      especes:
+        row.especes !== undefined && row.especes !== null
+          ? String(row.especes)
+          : "",
+      cbClassique:
+        row.cbClassique !== undefined && row.cbClassique !== null
+          ? String(row.cbClassique)
+          : "",
+      cbSansContact:
+        row.cbSansContact !== undefined && row.cbSansContact !== null
+          ? String(row.cbSansContact)
+          : "",
     });
   }, []);
 
+  // Définir un type pour les lignes de cash entry
+  type CashEntryRow = {
+    _id?: string;
+    date?: string;
+    depenses?: { label: string; value: number }[];
+    especes?: number | string;
+    cbClassique?: number | string;
+    cbSansContact?: number | string;
+    [key: string]: unknown;
+  };
+
   // Handler pour suppression (à adapter selon ton API)
   const handleDelete = useCallback(
-    async (row: any) => {
+    async (row: CashEntryRow) => {
       // On utilise l'_id réel de cashentry
       const id = row._id;
 
@@ -133,7 +179,7 @@ export default function CashControl() {
         if (!res.ok) throw new Error("Erreur lors de la suppression");
         dispatch(CashEntryApi.fetchCashEntries());
         setFormStatus("Suppression réussie");
-      } catch (err) {
+      } catch {
         setFormStatus("Erreur lors de la suppression");
       }
     },
@@ -169,18 +215,37 @@ export default function CashControl() {
       }
       // Construction du body
       const dateKey = formatDateYYYYMMDD(dateToSend);
-      const bodyData: any = {
+      type CashEntryBody = {
+        date: string;
+        prestaB2B?: { label: string; value: number }[];
+        depenses: { label: string; value: number }[];
+        especes: number;
+        cbClassique: number;
+        cbSansContact: number;
+        _id?: string;
+        id?: string;
+      };
+
+      const bodyData: CashEntryBody = {
         date: dateToSend,
         prestaB2B: form.prestaB2B
           .filter(
-            (p: any) => p.label && p.value !== "" && !isNaN(Number(p.value)),
+            (p: { label: string; value: string }) =>
+              p.label && p.value !== "" && !isNaN(Number(p.value)),
           )
-          .map((p: any) => ({ label: p.label, value: Number(p.value) })),
+          .map((p: { label: string; value: string }) => ({
+            label: p.label,
+            value: Number(p.value),
+          })),
         depenses: form.depenses
           .filter(
-            (d: any) => d.label && d.value !== "" && !isNaN(Number(d.value)),
+            (d: { label: string; value: string }) =>
+              d.label && d.value !== "" && !isNaN(Number(d.value)),
           )
-          .map((d: any) => ({ label: d.label, value: Number(d.value) })),
+          .map((d: { label: string; value: string }) => ({
+            label: d.label,
+            value: Number(d.value),
+          })),
         especes: form.especes !== "" ? Number(form.especes) : 0,
         cbClassique: form.cbClassique !== "" ? Number(form.cbClassique) : 0,
         cbSansContact:
@@ -222,7 +287,7 @@ export default function CashControl() {
             "Erreur : " + (result.error || "Impossible d'enregistrer"),
           );
         }
-      } catch (err) {
+      } catch {
         setFormStatus("Erreur réseau");
       }
     },

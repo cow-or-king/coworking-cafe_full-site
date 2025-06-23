@@ -21,7 +21,9 @@ export type Payment = {
   TVA: number;
   "ca-ht": number | { 20: number; 10: number; "5,5": number };
   "ca-tva": number | { 20: number; 10: number; "5,5": number }; // Assuming tva can be a number or an object with different rates
-  depenses: number;
+  prestaB2B: Array<{ label: string; value: number }>;
+  depenses: Array<{ label: string; value: number }>;
+  // depenses: number;
   cbClassique: number;
   cbSansContact: number;
   especes: number;
@@ -324,12 +326,12 @@ export const columns: ColumnDef<Payment>[] = [
       };
       // Pour une nouvelle ligne sans données
       const isEmpty =
-        (!row.original.especes || row.original.especes === 0) &&
-        (!row.original.depenses || row.original.depenses.length === 0) &&
-        (!row.original.cbClassique || row.original.cbClassique === 0) &&
-        (!row.original.cbSansContact || row.original.cbSansContact === 0);
-      const sameDate =
-        row.original._id && row.original.date === row.original._id;
+        (!row.original.especes || row.original.especes === " ") &&
+        (!row.original.depenses || row.original.depenses.length === " ") &&
+        (!row.original.cbClassique || row.original.cbClassique === " ") &&
+        (!row.original.cbSansContact || row.original.cbSansContact === " ");
+      // const sameDate =
+      //   row.original._id && row.original.date === row.original._id;
       if (isEmpty) {
         return (
           <div className="text-center">
