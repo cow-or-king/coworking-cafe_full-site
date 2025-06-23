@@ -63,6 +63,10 @@ export function DataTable<TData, TValue>({
       ...prev,
       _id: formId,
       date: dateStr,
+      prestaB2B:
+        Array.isArray(row.prestaB2B) && row.prestaB2B.length > 0
+          ? row.prestaB2B
+          : [{ label: "", value: "" }],
       depenses:
         Array.isArray(row.depenses) && row.depenses.length > 0
           ? row.depenses

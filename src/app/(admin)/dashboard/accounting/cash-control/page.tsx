@@ -50,6 +50,7 @@ export default function CashControl() {
   const [form, setForm] = useState<any>({
     _id: "",
     date: "",
+    prestaB2B: [{ label: "", value: "" }],
     depenses: [{ label: "", value: "" }],
     especes: "",
     cbClassique: "",
@@ -170,6 +171,11 @@ export default function CashControl() {
       const dateKey = formatDateYYYYMMDD(dateToSend);
       const bodyData: any = {
         date: dateToSend,
+        prestaB2B: form.prestaB2B
+          .filter(
+            (p: any) => p.label && p.value !== "" && !isNaN(Number(p.value)),
+          )
+          .map((p: any) => ({ label: p.label, value: Number(p.value) })),
         depenses: form.depenses
           .filter(
             (d: any) => d.label && d.value !== "" && !isNaN(Number(d.value)),
@@ -205,6 +211,7 @@ export default function CashControl() {
           setForm({
             _id: "",
             date: "",
+            prestaB2B: [{ label: "", value: "" }],
             depenses: [{ label: "", value: "" }],
             especes: "",
             cbClassique: "",

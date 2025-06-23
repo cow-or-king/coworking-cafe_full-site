@@ -28,6 +28,11 @@ export type Payment = {
   total: number;
 };
 
+const AmountFormatter = new Intl.NumberFormat("fr", {
+  style: "currency",
+  currency: "eur",
+});
+
 export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "date",
@@ -39,7 +44,7 @@ export const columns: ColumnDef<Payment>[] = [
       const day = String(d.getDate()).padStart(2, "0");
       const month = String(d.getMonth() + 1).padStart(2, "0");
       const year = d.getFullYear();
-      return `${day}-${month}-${year}`;
+      return <div className="text-center">{`${day}-${month}-${year}`}</div>;
     },
   },
   {
@@ -48,7 +53,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const ttc = row.original.TTC;
       if (ttc === null || ttc === undefined || isNaN(ttc)) return "";
-      return `${ttc.toFixed(2)} €`;
+      return <div className="text-center">{AmountFormatter.format(ttc)}</div>;
     },
   },
   {
@@ -57,7 +62,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const ht = row.original.HT;
       if (ht === null || ht === undefined || isNaN(ht)) return "";
-      return `${ht.toFixed(2)} €`;
+      return <div className="text-center">{AmountFormatter.format(ht)}</div>;
     },
   },
   {
@@ -66,7 +71,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const tva = row.original.TVA;
       if (tva === null || tva === undefined || isNaN(tva)) return "";
-      return `${tva.toFixed(2)} €`;
+      return <div className="text-center">{AmountFormatter.format(tva)}</div>;
     },
   },
   {
@@ -76,14 +81,7 @@ export const columns: ColumnDef<Payment>[] = [
       const ht = row.original["ca-ht"];
       if (typeof ht === "object" && ht !== null) {
         return (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              gap: "0.2rem",
-            }}
-          >
+          <div className="flex flex-col items-center">
             {Object.entries(ht)
               .filter(([, value]) => value !== null && value !== undefined)
               .sort(
@@ -109,14 +107,16 @@ export const columns: ColumnDef<Payment>[] = [
                       textAlign: "right",
                     }}
                   >
-                    {typeof value === "number" ? value.toFixed(2) : value} €
+                    {typeof value === "number"
+                      ? AmountFormatter.format(value)
+                      : AmountFormatter.format(value)}
                   </span>
                 </div>
               ))}
           </div>
         );
       }
-      return ht === null || ht === undefined ? "" : `${ht.toFixed(2)} €`;
+      return ht === null || ht === undefined ? "" : AmountFormatter.format(ht);
     },
   },
   {
@@ -126,14 +126,7 @@ export const columns: ColumnDef<Payment>[] = [
       const tva = row.original["ca-tva"];
       if (typeof tva === "object" && tva !== null) {
         return (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              gap: "0.2rem",
-            }}
-          >
+          <div className="flex flex-col items-center">
             {Object.entries(tva)
               .filter(([, value]) => value !== null && value !== undefined)
               .sort(
@@ -159,14 +152,66 @@ export const columns: ColumnDef<Payment>[] = [
                       textAlign: "right",
                     }}
                   >
-                    {typeof value === "number" ? value.toFixed(2) : value} €
+                    {typeof value === "number"
+                      ? AmountFormatter.format(value)
+                      : AmountFormatter.format(value)}
                   </span>
                 </div>
               ))}
           </div>
         );
       }
-      return tva === null || tva === undefined ? "" : `${tva.toFixed(2)} €`;
+      return tva === null || tva === undefined
+        ? ""
+        : AmountFormatter.format(tva);
+    },
+  },
+  {
+    accessorKey: "prestaB2B",
+    header: "Presta B2B",
+    cell: ({ row }) => {
+      const prestaB2B = row.original.prestaB2B;
+      if (Array.isArray(prestaB2B) && prestaB2B.length > 0) {
+        return (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: "0.2rem",
+            }}
+          >
+            {prestaB2B
+              .filter(
+                (d: any) =>
+                  d.label && d.value !== undefined && d.value !== null,
+              )
+              .map((d: any, idx: number) => (
+                <div className="flex min-w-24 gap-1" key={idx}>
+                  <span
+                    style={{
+                      minWidth: 50,
+                      textAlign: "right",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {d.label} :
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: 500,
+                      minWidth: 60,
+                      textAlign: "right",
+                    }}
+                  >
+                    {AmountFormatter.format(d.value)}
+                  </span>
+                </div>
+              ))}
+          </div>
+        );
+      }
+      return prestaB2B === null || prestaB2B === undefined ? "" : prestaB2B;
     },
   },
 
@@ -208,7 +253,7 @@ export const columns: ColumnDef<Payment>[] = [
                       textAlign: "right",
                     }}
                   >
-                    {Number(d.value).toFixed(2)} €
+                    {AmountFormatter.format(d.value)}
                   </span>
                 </div>
               ))}
@@ -222,15 +267,49 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "cbClassique",
     header: "CB classique",
+    cell: ({ row }) => {
+      const cbClassique = row.original.cbClassique;
+      if (
+        cbClassique === null ||
+        cbClassique === undefined ||
+        isNaN(cbClassique)
+      )
+        return "";
+      return (
+        <div className="text-center">{AmountFormatter.format(cbClassique)}</div>
+      );
+    },
   },
   {
     accessorKey: "cbSansContact",
     header: "CB sans contact",
+    cell: ({ row }) => {
+      const cbSansContact = row.original.cbSansContact;
+      if (
+        cbSansContact === null ||
+        cbSansContact === undefined ||
+        isNaN(cbSansContact)
+      )
+        return "";
+      return (
+        <div className="text-center">
+          {AmountFormatter.format(cbSansContact)}
+        </div>
+      );
+    },
   },
 
   {
     accessorKey: "especes",
     header: "Espèces",
+    cell: ({ row }) => {
+      const especes = row.original.especes;
+      if (especes === null || especes === undefined || isNaN(especes))
+        return "";
+      return (
+        <div className="text-center">{AmountFormatter.format(especes)}</div>
+      );
+    },
   },
   {
     id: "actions",
@@ -253,34 +332,38 @@ export const columns: ColumnDef<Payment>[] = [
         row.original._id && row.original.date === row.original._id;
       if (isEmpty) {
         return (
-          <Button
-            onClick={handleOpenFormWithDate}
-            variant="outline"
-            className="border-green-400 text-green-600 hover:bg-green-50"
-          >
-            Saisir
-          </Button>
+          <div className="text-center">
+            <Button
+              onClick={handleOpenFormWithDate}
+              variant="outline"
+              className="border-green-400 text-green-600 hover:bg-green-50"
+            >
+              Saisir
+            </Button>
+          </div>
         );
       }
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleOpenFormWithDate}>
-              Modifier
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={() => onDelete && onDelete(row.original)}
-            >
-              Supprimer
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="text-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleOpenFormWithDate}>
+                Modifier
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => onDelete && onDelete(row.original)}
+              >
+                Supprimer
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       );
     },
   },

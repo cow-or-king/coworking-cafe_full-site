@@ -6,10 +6,16 @@ interface Depense {
   value: string | number;
 }
 
+interface Presta {
+  label: string;
+  value: string | number;
+}
+
 interface FormCashControlProps {
   form: {
     _id: string;
     date: string;
+    prestaB2B: Presta[];
     depenses: Depense[];
     especes: string | number;
     cbClassique: string | number;
@@ -92,6 +98,69 @@ export function FormCashControl({
           + Ajouter une dépense
         </button>
       </div>
+
+      <div className="flex flex-col gap-2">
+        <span className="font-semibold">Presta B2B :</span>
+        {form.prestaB2B.map((pre: Presta, idx: number) => (
+          <div key={idx} className="flex items-center gap-2">
+            <input
+              type="text"
+              className="rounded border px-2 py-1"
+              placeholder="Libellé"
+              value={pre.label}
+              onChange={(e) =>
+                setForm((f: any) => ({
+                  ...f,
+                  prestaB2B: f.prestaB2B.map((p: Presta, i: number) =>
+                    i === idx ? { ...p, label: e.target.value } : p,
+                  ),
+                }))
+              }
+            />
+            <input
+              type="number"
+              className="rounded border px-2 py-1"
+              placeholder="Montant"
+              value={pre.value}
+              onChange={(e) =>
+                setForm((f: any) => ({
+                  ...f,
+                  prestaB2B: f.prestaB2B.map((p: Presta, i: number) =>
+                    i === idx ? { ...p, value: e.target.value } : p,
+                  ),
+                }))
+              }
+            />
+            <button
+              type="button"
+              className="font-bold text-red-500"
+              onClick={() =>
+                setForm((f: any) => ({
+                  ...f,
+                  prestaB2B: f.prestaB2B.filter(
+                    (_: any, i: number) => i !== idx,
+                  ),
+                }))
+              }
+            >
+              X
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          className="mt-1 text-sm text-blue-500 underline"
+          onClick={() =>
+            setForm((f: any) => ({
+              ...f,
+              prestaB2B: [...f.prestaB2B, { label: "", value: "" }],
+            }))
+          }
+        >
+          + Ajouter une facture B2B
+        </button>
+      </div>
+
       <input
         type="number"
         className="rounded border px-2 py-1"

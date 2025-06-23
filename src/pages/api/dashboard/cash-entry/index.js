@@ -6,11 +6,19 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     try {
-      const { _id, date, depenses, especes, cbClassique, cbSansContact } =
-        req.body;
+      const {
+        _id,
+        date,
+        prestaB2B,
+        depenses,
+        especes,
+        cbClassique,
+        cbSansContact,
+      } = req.body;
       const entry = await CashEntry.create({
         _id,
         date,
+        prestaB2B, // attend un tableau [{label, value}]
         depenses, // attend un tableau [{label, value}]
         especes,
         cbClassique,
