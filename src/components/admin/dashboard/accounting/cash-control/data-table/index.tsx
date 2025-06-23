@@ -96,8 +96,53 @@ export function DataTable<TData, TValue>({
     return () => window.removeEventListener("cash-modal-close", close);
   }, []);
 
+  // Calcul des totaux pour le footer
+  const totals = React.useMemo(() => {
+    return data.reduce(
+      (acc, row: any) => {
+        acc.TTC += Number(row.TTC) || 0;
+        acc.HT += Number(row.HT) || 0;
+        acc.TVA += Number(row.TVA) || 0;
+        // Pour prestaB2B et depenses, on somme les montants si tableau, sinon 0
+        if (Array.isArray(row.prestaB2B)) {
+          acc.prestaB2B += row.prestaB2B.reduce(
+            (s: number, p: any) => s + (Number(p.value) || 0),
+            0,
+          );
+        } else {
+          acc.prestaB2B += Number(row.prestaB2B) || 0;
+        }
+        if (Array.isArray(row.depenses)) {
+          acc.depenses += row.depenses.reduce(
+            (s: number, d: any) => s + (Number(d.value) || 0),
+            0,
+          );
+        } else {
+          acc.depenses += Number(row.depenses) || 0;
+        }
+        acc.cbClassique += Number(row.cbClassique) || 0;
+        acc.cbSansContact += Number(row.cbSansContact) || 0;
+        acc.especes += Number(row.especes) || 0;
+        return acc;
+      },
+      {
+        TTC: 0,
+        HT: 0,
+        TVA: 0,
+        prestaB2B: 0,
+        depenses: 0,
+        cbClassique: 0,
+        cbSansContact: 0,
+        especes: 0,
+      },
+    );
+  }, [data]);
+
   return (
-    <div className="rounded-md border">
+    <div
+      className="rounded-md border"
+      style={{ height: "85vh", display: "flex", flexDirection: "column" }}
+    >
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogTitle>
@@ -114,57 +159,218 @@ export function DataTable<TData, TValue>({
           />
         </DialogContent>
       </Dialog>
-      <Table>
-        <TableHeader className="bg-gray-200">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead className="text-center" key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Table style={{ tableLayout: "fixed", width: "100%" }}>
+          <TableHeader
+            className="bg-gray-200"
+            style={{ position: "sticky", top: 0, zIndex: 2 }}
+          >
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                style={{
+                  display: "table",
+                  width: "100%",
+                  tableLayout: "fixed",
+                }}
+              >
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      className="text-center"
+                      key={header.id}
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody
+            style={{
+              display: "block",
+              overflowY: "auto",
+              minHeight: 0,
+              width: "100%",
+            }}
+          >
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  style={{
+                    display: "table",
+                    width: "100%",
+                    tableLayout: "fixed",
+                  }}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {cell.column.id === "actions"
+                        ? flexRender(cell.column.columnDef.cell, {
+                            ...cell.getContext(),
+                            openForm: (rowData: any) => handleOpenForm(rowData),
+                            onDelete: (rowData: any) =>
+                              handleDeleteRow(rowData),
+                          })
+                        : flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow
+              // style={{
+              //   display: "table",
+              //   // width: "100%",
+              //   tableLayout: "fixed",
+              // }}
+              >
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+          {/* Ligne de total alignée */}
+          <tfoot
+            style={{
+              position: "sticky",
+              bottom: 0,
+              zIndex: 2,
+              background: "#e5e7eb",
+            }}
+          >
+            <TableRow
+              className="font-semibold"
+              style={{ display: "table", width: "100%", tableLayout: "fixed" }}
+            >
+              {table.getAllLeafColumns().map((col, idx) => {
+                // Affichage du total selon la colonne
+                switch (col.id) {
+                  case "date":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        Total
+                      </TableCell>
+                    );
+                  case "TTC":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.TTC.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "HT":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.HT.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "TVA":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.TVA.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "prestaB2B":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.prestaB2B.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "depenses":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.depenses.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "cbClassique":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.cbClassique.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "cbSansContact":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.cbSansContact.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "especes":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.especes.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  default:
+                    return (
+                      <TableCell
+                        key={col.id}
+                        className="text-center"
+                      ></TableCell>
+                    );
+                }
               })}
             </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {cell.column.id === "actions"
-                      ? flexRender(cell.column.columnDef.cell, {
-                          ...cell.getContext(),
-                          openForm: (rowData: any) => handleOpenForm(rowData),
-                          onDelete: (rowData: any) => handleDeleteRow(rowData),
-                        })
-                      : flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </tfoot>
+        </Table>
+      </div>
     </div>
   );
 }

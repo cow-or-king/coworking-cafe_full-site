@@ -58,7 +58,6 @@ export default async function handler(req, res) {
             {
               $project: {
                 date: "$_id",
-
                 TTC: {
                   $round: [
                     {

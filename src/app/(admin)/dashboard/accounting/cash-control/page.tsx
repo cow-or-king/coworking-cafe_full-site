@@ -3,6 +3,18 @@ import { DataTable } from "@/components/admin/dashboard/accounting/cash-control/
 import { CashEntryApi } from "@/store/cashentry";
 import { TurnoverApi } from "@/store/turnover";
 
+// Extend CashEntry type to include prestaB2B
+type CashEntry = {
+  _id: string;
+  date: string;
+  depenses?: { label: string; value: number }[];
+  prestaB2B: { label: string; value: number }[]; // Not optional anymore
+  especes?: number | string;
+  cbClassique?: number | string;
+  cbSansContact?: number | string;
+  [key: string]: unknown;
+};
+
 import { useTypedDispatch, useTypedSelector } from "@/store/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -100,11 +112,14 @@ export default function CashControl() {
       const cashEntry = dataCash.find(
         (entry) => formatDateYYYYMMDD(entry._id) === dateKey,
       );
+      // Ensure TVA and prestaB2B are always present
       return {
         ...turnoverItem,
         ...cashEntry,
         _id: cashEntry?._id || "",
         date: dateKey,
+        TVA: (turnoverItem as any).TVA ?? 0,
+        prestaB2B: [],
       };
     });
   }, [filteredData, dataCash]);
@@ -156,6 +171,7 @@ export default function CashControl() {
     _id?: string;
     date?: string;
     depenses?: { label: string; value: number }[];
+    prestaB2B?: { label: string; value: number }[]; // Ajout de la propriété prestaB2B
     especes?: number | string;
     cbClassique?: number | string;
     cbSansContact?: number | string;
@@ -293,6 +309,45 @@ export default function CashControl() {
     },
     [form, dispatch],
   );
+
+  // Calcul des totaux pour chaque colonne numérique
+  const totals = useMemo(() => {
+    return mergedData.reduce(
+      (acc, row) => {
+        acc.TTC += Number(row.TTC) || 0;
+        acc.HT += Number(row.HT) || 0;
+        acc.TVA += Number(row.TVA) || 0;
+        acc.cbClassique += Number(row.cbClassique) || 0;
+        acc.cbSansContact += Number(row.cbSansContact) || 0;
+        acc.especes += Number(row.especes) || 0;
+        // Total prestaB2B et depenses (somme des montants)
+        if (Array.isArray(row.prestaB2B)) {
+          acc.prestaB2B += row.prestaB2B.reduce(
+            (s, p: { label: string; value: number }) =>
+              s + (Number(p.value) || 0),
+            0,
+          );
+        }
+        if (Array.isArray(row.depenses)) {
+          acc.depenses += row.depenses.reduce(
+            (s, d) => s + (Number(d.value) || 0),
+            0,
+          );
+        }
+        return acc;
+      },
+      {
+        TTC: 0,
+        HT: 0,
+        TVA: 0,
+        cbClassique: 0,
+        cbSansContact: 0,
+        especes: 0,
+        prestaB2B: 0,
+        depenses: 0,
+      },
+    );
+  }, [mergedData]);
 
   return (
     <div className="container mx-auto p-4">

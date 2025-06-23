@@ -95,7 +95,7 @@ export const columns: ColumnDef<Payment>[] = [
                 <div className="flex min-w-24 gap-1" key={key}>
                   <span
                     style={{
-                      minWidth: 50,
+                      minWidth: 40,
                       textAlign: "right",
                       fontWeight: 700,
                     }}
@@ -105,7 +105,7 @@ export const columns: ColumnDef<Payment>[] = [
                   <span
                     style={{
                       fontWeight: 500,
-                      minWidth: 70,
+                      minWidth: 65,
                       textAlign: "right",
                     }}
                   >
@@ -140,7 +140,7 @@ export const columns: ColumnDef<Payment>[] = [
                 <div className="flex min-w-24 gap-1" key={key}>
                   <span
                     style={{
-                      minWidth: 50,
+                      minWidth: 40,
                       textAlign: "right",
                       fontWeight: 700,
                     }}
@@ -150,7 +150,7 @@ export const columns: ColumnDef<Payment>[] = [
                   <span
                     style={{
                       fontWeight: 500,
-                      minWidth: 60,
+                      minWidth: 55,
                       textAlign: "right",
                     }}
                   >
@@ -202,7 +202,7 @@ export const columns: ColumnDef<Payment>[] = [
                   <span
                     style={{
                       fontWeight: 500,
-                      minWidth: 60,
+                      minWidth: 50,
                       textAlign: "right",
                     }}
                   >
