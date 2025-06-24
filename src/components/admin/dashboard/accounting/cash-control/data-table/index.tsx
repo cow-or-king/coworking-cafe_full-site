@@ -132,6 +132,16 @@ export function DataTable<TData, TValue>({
         acc.cbClassique += Number(row.cbClassique) || 0;
         acc.cbSansContact += Number(row.cbSansContact) || 0;
         acc.especes += Number(row.especes) || 0;
+        // Calcul de la différence
+        const ttc = Number(acc.TTC) || 0;
+        const add =
+          (Number(acc.prestaB2B) || 0) +
+          (Number(acc.depenses) || 0) +
+          (Number(acc.cbClassique) || 0) +
+          (Number(acc.cbSansContact) || 0) +
+          (Number(acc.especes) || 0);
+        acc.difference = add - ttc;
+
         return acc;
       },
       {
@@ -143,6 +153,7 @@ export function DataTable<TData, TValue>({
         cbClassique: 0,
         cbSansContact: 0,
         especes: 0,
+        difference: 0,
       },
     );
   }, [data]);
@@ -199,6 +210,7 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
+                      className="text-center"
                       key={header.id}
                       style={{
                         overflow: "hidden",
@@ -228,40 +240,89 @@ export function DataTable<TData, TValue>({
             }}
           >
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  style={{
-                    display: "table",
-                    width: "100%",
-                    tableLayout: "fixed",
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {cell.column.id === "actions"
-                        ? flexRender(cell.column.columnDef.cell, {
-                            ...cell.getContext(),
-                            openForm: (rowData: any) => handleOpenForm(rowData),
-                            onDelete: (rowData: any) =>
-                              handleDeleteRow(rowData),
-                          })
-                        : flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                // Typage explicite pour accès aux propriétés custom
+                const r = row.original as any;
+                // Dépenses
+                let totalDepenses = 0;
+                if (Array.isArray(r.depenses)) {
+                  totalDepenses = r.depenses.reduce(
+                    (acc: number, d: any) => acc + (Number(d.value) || 0),
+                    0,
+                  );
+                } else if (!isNaN(r.depenses)) {
+                  totalDepenses = Number(r.depenses) || 0;
+                }
+                // PrestaB2B
+                let totalPrestaB2B = 0;
+                if (Array.isArray(r.prestaB2B)) {
+                  totalPrestaB2B = r.prestaB2B.reduce(
+                    (acc: number, d: any) => acc + (Number(d.value) || 0),
+                    0,
+                  );
+                } else if (!isNaN(r.prestaB2B)) {
+                  totalPrestaB2B = Number(r.prestaB2B) || 0;
+                }
+                const especes = Number(r.especes) || 0;
+                const cbSansContact = Number(r.cbSansContact) || 0;
+                const cbClassique = Number(r.cbClassique) || 0;
+
+                // Calcul du total saisi
+                // On additionne les dépenses, espèces, CB sans contact et CB classique,
+                // puis on soustrait les prestations B2B pour obtenir le total saisi
+                const totalSaisie =
+                  totalDepenses +
+                  especes +
+                  cbSansContact +
+                  cbClassique -
+                  totalPrestaB2B;
+
+                const ttc = Number(r.TTC) || 0;
+                // Couleur de fond selon égalité
+                const bgColor =
+                  ttc === totalSaisie && ttc !== 0
+                    ? "#d1fae5" // vert clair
+                    : ttc !== 0 && totalSaisie !== 0
+                      ? "#fee2e2" // rouge clair
+                      : undefined;
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    style={{
+                      display: "table",
+                      width: "100%",
+                      tableLayout: "fixed",
+                      background: bgColor,
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {cell.column.id === "actions"
+                          ? flexRender(cell.column.columnDef.cell, {
+                              ...cell.getContext(),
+                              openForm: (rowData: any) =>
+                                handleOpenForm(rowData),
+                              onDelete: (rowData: any) =>
+                                handleDeleteRow(rowData),
+                            })
+                          : flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow
                 style={{
@@ -369,6 +430,28 @@ export function DataTable<TData, TValue>({
                     return (
                       <TableCell key={col.id} className="text-center">
                         {totals.especes.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
+                  case "difference":
+                    return totals.difference < 0 ? (
+                      <TableCell
+                        key={col.id}
+                        className="text-center font-bold text-red-600"
+                      >
+                        {totals.difference.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    ) : (
+                      <TableCell
+                        key={col.id}
+                        className="text-center font-bold text-green-600"
+                      >
+                        {totals.difference.toLocaleString("fr-FR", {
                           style: "currency",
                           currency: "EUR",
                         })}

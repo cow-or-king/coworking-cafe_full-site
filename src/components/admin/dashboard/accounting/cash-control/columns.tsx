@@ -19,11 +19,10 @@ export type Payment = {
   TTC: number;
   HT: number;
   TVA: number;
-  "ca-ht": number | { 20: number; 10: number; "5,5": number };
-  "ca-tva": number | { 20: number; 10: number; "5,5": number }; // Assuming tva can be a number or an object with different rates
+  "ca-ht": number | { 20: number; 10: number; "5,5": number; 0: number }; // Assuming ca-ht can be a number or an object with different rates
+  "ca-tva": number | { 20: number; 10: number; "5,5": number; 0: number }; // Assuming tva can be a number or an object with different rates
   prestaB2B: Array<{ label: string; value: number }>;
   depenses: Array<{ label: string; value: number }>;
-  // depenses: number;
   cbClassique: number;
   cbSansContact: number;
   especes: number;
@@ -58,24 +57,24 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="text-center">{AmountFormatter.format(ttc)}</div>;
     },
   },
-  {
-    accessorKey: "HT",
-    header: "Total HT",
-    cell: ({ row }) => {
-      const ht = row.original.HT;
-      if (ht === null || ht === undefined || isNaN(ht)) return "";
-      return <div className="text-center">{AmountFormatter.format(ht)}</div>;
-    },
-  },
-  {
-    accessorKey: "TVA",
-    header: "Total TVA",
-    cell: ({ row }) => {
-      const tva = row.original.TVA;
-      if (tva === null || tva === undefined || isNaN(tva)) return "";
-      return <div className="text-center">{AmountFormatter.format(tva)}</div>;
-    },
-  },
+  // {
+  //   accessorKey: "HT",
+  //   header: "Total HT",
+  //   cell: ({ row }) => {
+  //     const ht = row.original.HT;
+  //     if (ht === null || ht === undefined || isNaN(ht)) return "";
+  //     return <div className="text-center">{AmountFormatter.format(ht)}</div>;
+  //   },
+  // },
+  // {
+  //   accessorKey: "TVA",
+  //   header: "Total TVA",
+  //   cell: ({ row }) => {
+  //     const tva = row.original.TVA;
+  //     if (tva === null || tva === undefined || isNaN(tva)) return "";
+  //     return <div className="text-center">{AmountFormatter.format(tva)}</div>;
+  //   },
+  // },
   // {
   //   accessorKey: "ca-ht",
   //   header: "HT",
@@ -273,13 +272,10 @@ export const columns: ColumnDef<Payment>[] = [
     header: "CB classique",
     cell: ({ row }) => {
       const cbClassique = row.original.cbClassique;
-      if (
-        cbClassique === null ||
-        cbClassique === undefined ||
-        isNaN(cbClassique)
-      )
-        return "";
-      return (
+
+      return cbClassique === null || cbClassique === undefined ? (
+        ""
+      ) : (
         <div className="text-center">{AmountFormatter.format(cbClassique)}</div>
       );
     },
@@ -316,12 +312,12 @@ export const columns: ColumnDef<Payment>[] = [
     },
   },
   {
-    accessorKey: "total-saisie",
-    header: "Total-Saisie",
+    accessorKey: "difference",
+    header: "Différence",
     cell: ({ row }) => {
       // Récupération des champs
-      const depenses = row.original.depenses;
-      const prestaB2B = row.original.prestaB2B;
+      const depenses = Number(row.original.depenses) || 0;
+      const prestaB2B = Number(row.original.prestaB2B) || 0;
       const especes = Number(row.original.especes) || 0;
       const cbSansContact = Number(row.original.cbSansContact) || 0;
       const cbClassique = Number(row.original.cbClassique) || 0;
@@ -349,8 +345,23 @@ export const columns: ColumnDef<Payment>[] = [
       const totalSaisie =
         totalDepenses + especes + cbSansContact + cbClassique - totalPrestaB2B;
       if (isNaN(totalSaisie)) return "";
-      return (
-        <div className="text-center">{AmountFormatter.format(totalSaisie)}</div>
+      // Calcul de la différence
+      const ttc = row.original.TTC;
+      const difference = totalSaisie - ttc;
+      if (isNaN(difference)) return "";
+      // Affichage de la différence
+      return totalSaisie === 0 ? (
+        ""
+      ) : difference === 0 ? (
+        ""
+      ) : difference < 0 ? (
+        <div className="text-center font-bold text-red-600">
+          {AmountFormatter.format(difference)}
+        </div>
+      ) : (
+        <div className="text-center font-bold text-green-600">
+          {AmountFormatter.format(difference)}
+        </div>
       );
     },
   },
@@ -369,6 +380,7 @@ export const columns: ColumnDef<Payment>[] = [
       // Pour une nouvelle ligne sans données
       const isEmpty =
         (!row.original.especes || row.original.especes === " ") &&
+        (!row.original.depenses || row.original.prestaB2B.length === " ") &&
         (!row.original.depenses || row.original.depenses.length === " ") &&
         (!row.original.cbClassique || row.original.cbClassique === " ") &&
         (!row.original.cbSansContact || row.original.cbSansContact === " ");
