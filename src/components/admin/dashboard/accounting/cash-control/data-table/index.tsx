@@ -140,8 +140,8 @@ export function DataTable<TData, TValue>({
 
   return (
     <div
-      className="rounded-md border"
-      style={{ height: "85vh", display: "flex", flexDirection: "column" }}
+      className="rounded-md border-2"
+      style={{ height: "84dvh", display: "flex", flexDirection: "column" }}
     >
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -160,6 +160,7 @@ export function DataTable<TData, TValue>({
         </DialogContent>
       </Dialog>
       <div
+        className="bg-gray-200"
         style={{
           flex: 1,
           minHeight: 0,
@@ -167,7 +168,10 @@ export function DataTable<TData, TValue>({
           flexDirection: "column",
         }}
       >
-        <Table style={{ tableLayout: "fixed", width: "100%" }}>
+        <Table
+          className="bg-white"
+          style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <TableHeader
             className="bg-gray-200"
             style={{ position: "sticky", top: 0, zIndex: 2 }}
@@ -208,6 +212,7 @@ export function DataTable<TData, TValue>({
             style={{
               display: "block",
               overflowY: "auto",
+              maxHeight: "calc(100% - 50px)", // Ajuste 110px selon la hauteur header/footer
               minHeight: 0,
               width: "100%",
             }}
@@ -249,11 +254,11 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow
-              // style={{
-              //   display: "table",
-              //   // width: "100%",
-              //   tableLayout: "fixed",
-              // }}
+                style={{
+                  display: "table",
+                  width: "100%",
+                  tableLayout: "fixed",
+                }}
               >
                 <TableCell
                   colSpan={columns.length}
@@ -266,11 +271,11 @@ export function DataTable<TData, TValue>({
           </TableBody>
           {/* Ligne de total alignée */}
           <tfoot
+            className="bg-gray-200"
             style={{
               position: "sticky",
               bottom: 0,
               zIndex: 2,
-              background: "#e5e7eb",
             }}
           >
             <TableRow
