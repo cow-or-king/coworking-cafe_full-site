@@ -36,10 +36,10 @@ const data = {
           title: "Controle de caisse",
           url: "/dashboard/accounting/cash-control",
         },
-        {
-          title: "caisse",
-          url: "/dashboard/accounting/caisse",
-        },
+        // {
+        //   title: "caisse",
+        //   url: "/dashboard/accounting/caisse",
+        // },
         // {
         //   title: "Settings",
         //   url: "#",

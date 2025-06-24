@@ -51,7 +51,6 @@ export default function CashControl() {
   const { dataCash, reloading, error } = useTypedSelector(
     (state) => state.cashentry,
   );
-  console.log("CashControl data", dataCash);
 
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number | null>(currentYear);
@@ -112,14 +111,13 @@ export default function CashControl() {
       const cashEntry = dataCash.find(
         (entry) => formatDateYYYYMMDD(entry._id) === dateKey,
       );
-      // Ensure TVA and prestaB2B are always present
+      // On laisse prestaB2B tel que reçu de cashEntry
       return {
         ...turnoverItem,
         ...cashEntry,
         _id: cashEntry?._id || "",
         date: dateKey,
         TVA: (turnoverItem as any).TVA ?? 0,
-        prestaB2B: [],
       };
     });
   }, [filteredData, dataCash]);
@@ -321,16 +319,23 @@ export default function CashControl() {
         acc.cbSansContact += Number(row.cbSansContact) || 0;
         acc.especes += Number(row.especes) || 0;
         // Total prestaB2B et depenses (somme des montants)
-        if (Array.isArray(row.prestaB2B)) {
-          acc.prestaB2B += row.prestaB2B.reduce(
-            (s, p: { label: string; value: number }) =>
+        const prestaB2B =
+          (row as { prestaB2B?: { label: string; value: number }[] })
+            .prestaB2B ?? [];
+        if (Array.isArray(prestaB2B)) {
+          acc.prestaB2B += prestaB2B.reduce(
+            (s: number, p: { label: string; value: number }) =>
               s + (Number(p.value) || 0),
             0,
           );
         }
-        if (Array.isArray(row.depenses)) {
-          acc.depenses += row.depenses.reduce(
-            (s, d) => s + (Number(d.value) || 0),
+        const depenses =
+          (row as { depenses?: { label: string; value: number }[] }).depenses ??
+          [];
+        if (Array.isArray(depenses)) {
+          acc.depenses += depenses.reduce(
+            (s: number, d: { label: string; value: number }) =>
+              s + (Number(d.value) || 0),
             0,
           );
         }

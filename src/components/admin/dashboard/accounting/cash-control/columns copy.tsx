@@ -76,105 +76,103 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="text-center">{AmountFormatter.format(tva)}</div>;
     },
   },
-  // {
-  //   accessorKey: "ca-ht",
-  //   header: "HT",
-  //   cell: ({ row }) => {
-  //     const ht = row.original["ca-ht"];
-  //     if (typeof ht === "object" && ht !== null) {
-  //       return (
-  //         <div className="flex flex-col items-center">
-  //           {Object.entries(ht)
-  //             .filter(([, value]) => value !== null && value !== undefined)
-  //             .sort(
-  //               ([a], [b]) =>
-  //                 parseFloat(a.replace(",", ".")) -
-  //                 parseFloat(b.replace(",", ".")),
-  //             )
-  //             .map(([key, value]) => (
-  //               <div className="flex min-w-24 gap-1" key={key}>
-  //                 <span
-  //                   style={{
-  //                     minWidth: 40,
-  //                     textAlign: "right",
-  //                     fontWeight: 700,
-  //                   }}
-  //                 >
-  //                   {key} % :
-  //                 </span>
-  //                 <span
-  //                   style={{
-  //                     fontWeight: 500,
-  //                     minWidth: 65,
-  //                     textAlign: "right",
-  //                   }}
-  //                 >
-  //                   {typeof value === "number"
-  //                     ? AmountFormatter.format(value)
-  //                     : AmountFormatter.format(value)}
-  //                 </span>
-  //               </div>
-  //             ))}
-  //         </div>
-  //       );
-  //     }
-  //     return ht === null || ht === undefined ? "" : AmountFormatter.format(ht);
-  //   },
-  // },
-  // {
-  //   accessorKey: "ca-tva", // Assuming tva is an object with keys for different rates
-  //   header: "TVA",
-  //   cell: ({ row }) => {
-  //     const tva = row.original["ca-tva"];
-  //     if (typeof tva === "object" && tva !== null) {
-  //       return (
-  //         <div className="flex flex-col items-center">
-  //           {Object.entries(tva)
-  //             .filter(([, value]) => value !== null && value !== undefined)
-  //             .sort(
-  //               ([a], [b]) =>
-  //                 parseFloat(a.replace(",", ".")) -
-  //                 parseFloat(b.replace(",", ".")),
-  //             )
-  //             .map(([key, value]) => (
-  //               <div className="flex min-w-24 gap-1" key={key}>
-  //                 <span
-  //                   style={{
-  //                     minWidth: 40,
-  //                     textAlign: "right",
-  //                     fontWeight: 700,
-  //                   }}
-  //                 >
-  //                   {key} % :
-  //                 </span>
-  //                 <span
-  //                   style={{
-  //                     fontWeight: 500,
-  //                     minWidth: 55,
-  //                     textAlign: "right",
-  //                   }}
-  //                 >
-  //                   {typeof value === "number"
-  //                     ? AmountFormatter.format(value)
-  //                     : AmountFormatter.format(value)}
-  //                 </span>
-  //               </div>
-  //             ))}
-  //         </div>
-  //       );
-  //     }
-  //     return tva === null || tva === undefined
-  //       ? ""
-  //       : AmountFormatter.format(tva);
-  //   },
-  // },
+  {
+    accessorKey: "ca-ht",
+    header: "HT",
+    cell: ({ row }) => {
+      const ht = row.original["ca-ht"];
+      if (typeof ht === "object" && ht !== null) {
+        return (
+          <div className="flex flex-col items-center">
+            {Object.entries(ht)
+              .filter(([, value]) => value !== null && value !== undefined)
+              .sort(
+                ([a], [b]) =>
+                  parseFloat(a.replace(",", ".")) -
+                  parseFloat(b.replace(",", ".")),
+              )
+              .map(([key, value]) => (
+                <div className="flex min-w-24 gap-1" key={key}>
+                  <span
+                    style={{
+                      minWidth: 40,
+                      textAlign: "right",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {key} % :
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: 500,
+                      minWidth: 65,
+                      textAlign: "right",
+                    }}
+                  >
+                    {typeof value === "number"
+                      ? AmountFormatter.format(value)
+                      : AmountFormatter.format(value)}
+                  </span>
+                </div>
+              ))}
+          </div>
+        );
+      }
+      return ht === null || ht === undefined ? "" : AmountFormatter.format(ht);
+    },
+  },
+  {
+    accessorKey: "ca-tva", // Assuming tva is an object with keys for different rates
+    header: "TVA",
+    cell: ({ row }) => {
+      const tva = row.original["ca-tva"];
+      if (typeof tva === "object" && tva !== null) {
+        return (
+          <div className="flex flex-col items-center">
+            {Object.entries(tva)
+              .filter(([, value]) => value !== null && value !== undefined)
+              .sort(
+                ([a], [b]) =>
+                  parseFloat(a.replace(",", ".")) -
+                  parseFloat(b.replace(",", ".")),
+              )
+              .map(([key, value]) => (
+                <div className="flex min-w-24 gap-1" key={key}>
+                  <span
+                    style={{
+                      minWidth: 40,
+                      textAlign: "right",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {key} % :
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: 500,
+                      minWidth: 55,
+                      textAlign: "right",
+                    }}
+                  >
+                    {typeof value === "number"
+                      ? AmountFormatter.format(value)
+                      : AmountFormatter.format(value)}
+                  </span>
+                </div>
+              ))}
+          </div>
+        );
+      }
+      return tva === null || tva === undefined
+        ? ""
+        : AmountFormatter.format(tva);
+    },
+  },
   {
     accessorKey: "prestaB2B",
     header: "Presta B2B",
     cell: ({ row }) => {
       const prestaB2B = row.original.prestaB2B;
-      // DEBUG: log la valeur reçue
-      console.log("prestaB2B cell:", prestaB2B, row.original);
       if (Array.isArray(prestaB2B) && prestaB2B.length > 0) {
         return (
           <div
@@ -204,7 +202,7 @@ export const columns: ColumnDef<Payment>[] = [
                   <span
                     style={{
                       fontWeight: 500,
-                      minWidth: 60,
+                      minWidth: 50,
                       textAlign: "right",
                     }}
                   >

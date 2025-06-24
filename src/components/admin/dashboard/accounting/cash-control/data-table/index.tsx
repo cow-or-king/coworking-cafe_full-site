@@ -46,7 +46,6 @@ export function DataTable<TData, TValue>({
 
   const [open, setOpen] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<any | null>(null);
-  console.log("data-table 49", selectedRow);
 
   const handleOpenForm = (row: any) => {
     setSelectedRow(row);
@@ -95,6 +94,16 @@ export function DataTable<TData, TValue>({
     window.addEventListener("cash-modal-close", close);
     return () => window.removeEventListener("cash-modal-close", close);
   }, []);
+
+  // Utilitaire pour formater une date en DD-MM-YYYY
+  function formatDateDDMMYYYY(dateStr: string) {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${day}-${month}-${year}`;
+  }
 
   // Calcul des totaux pour le footer
   const totals = React.useMemo(() => {
@@ -147,7 +156,9 @@ export function DataTable<TData, TValue>({
         <DialogContent>
           <DialogTitle>
             {selectedRow?._id ? "Modifier" : "Ajouter"} les données
-            {selectedRow?.date ? ` du ${selectedRow.date}` : ""}
+            {selectedRow?.date
+              ? ` du ${formatDateDDMMYYYY(selectedRow.date)}  `
+              : ""}
           </DialogTitle>
           {/* Passe ici les props nécessaires à FormCashControl */}
           <FormCashControl
@@ -188,7 +199,6 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
-                      className="text-center"
                       key={header.id}
                       style={{
                         overflow: "hidden",
@@ -257,14 +267,15 @@ export function DataTable<TData, TValue>({
                 style={{
                   display: "table",
                   width: "100%",
+                  height: "100%",
                   tableLayout: "fixed",
                 }}
               >
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-[90dvh] text-center"
                 >
-                  No results.
+                  Chargement des données...
                 </TableCell>
               </TableRow>
             )}

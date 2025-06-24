@@ -2,7 +2,7 @@ import CashEntry from "../../../../lib/mongodb/models/CashEntry";
 import dbConnect from "../../../../lib/mongodb/mongodb";
 
 export default async function handler(req, res) {
-  console.log("API update appelée, méthode:", req.method, "body:", req.body);
+  // console.log("API update appelée, méthode:", req.method, "body:", req.body);
   await dbConnect();
 
   if (req.method === "PUT") {
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       cbClassique,
       cbSansContact,
     } = req.body;
-    console.log("ID reçu pour update:", id);
+    // console.log("ID reçu pour update:", id);
 
     if (!id || !date) {
       return res
