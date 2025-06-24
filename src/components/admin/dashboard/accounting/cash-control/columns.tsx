@@ -273,7 +273,9 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const cbClassique = row.original.cbClassique;
 
-      return cbClassique === null || cbClassique === undefined ? (
+      return cbClassique === null ||
+        cbClassique === undefined ||
+        cbClassique === 0 ? (
         ""
       ) : (
         <div className="text-center">{AmountFormatter.format(cbClassique)}</div>
@@ -288,7 +290,8 @@ export const columns: ColumnDef<Payment>[] = [
       if (
         cbSansContact === null ||
         cbSansContact === undefined ||
-        isNaN(cbSansContact)
+        isNaN(cbSansContact) ||
+        cbSansContact === 0
       )
         return "";
       return (
@@ -304,7 +307,12 @@ export const columns: ColumnDef<Payment>[] = [
     header: "Espèces",
     cell: ({ row }) => {
       const especes = row.original.especes;
-      if (especes === null || especes === undefined || isNaN(especes))
+      if (
+        especes === null ||
+        especes === undefined ||
+        isNaN(especes) ||
+        especes === 0
+      )
         return "";
       return (
         <div className="text-center">{AmountFormatter.format(especes)}</div>
@@ -379,11 +387,11 @@ export const columns: ColumnDef<Payment>[] = [
       };
       // Pour une nouvelle ligne sans données
       const isEmpty =
-        (!row.original.especes || row.original.especes === " ") &&
-        (!row.original.depenses || row.original.prestaB2B.length === " ") &&
-        (!row.original.depenses || row.original.depenses.length === " ") &&
-        (!row.original.cbClassique || row.original.cbClassique === " ") &&
-        (!row.original.cbSansContact || row.original.cbSansContact === " ");
+        (!row.original.especes || row.original.especes === 0) &&
+        (!row.original.depenses || row.original.prestaB2B.length === 0) &&
+        (!row.original.depenses || row.original.depenses.length === 0) &&
+        (!row.original.cbClassique || row.original.cbClassique === 0) &&
+        (!row.original.cbSansContact || row.original.cbSansContact === 0);
       // const sameDate =
       //   row.original._id && row.original.date === row.original._id;
       if (isEmpty) {

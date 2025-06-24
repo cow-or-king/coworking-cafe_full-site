@@ -84,9 +84,9 @@ export function DataTable<TData, TValue>({
       alert("Impossible de supprimer : identifiant manquant");
       return;
     }
-    if (window.confirm("Supprimer cette ligne ?")) {
-      if (onDelete) onDelete({ ...row, _id: deleteId });
-    }
+    // if (window.confirm("Supprimer cette ligne ?")) {
+    if (onDelete) onDelete({ ...row, _id: deleteId });
+    // }
   };
 
   React.useEffect(() => {
