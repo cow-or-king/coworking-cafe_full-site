@@ -1,6 +1,6 @@
 //pages/api/turnover/index.js
-import Turnover from "../../../../lib/mongodb/models/Turnover";
-import dbConnect from "../../../../lib/mongodb/mongodb";
+import dbConnect from "@/lib/mongodb/dbConnect";
+import Turnover from "@/lib/mongodb/models/Turnover";
 
 /**
  * @param {import('next').NextApiRequest} req - The request object.

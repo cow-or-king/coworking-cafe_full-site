@@ -1,6 +1,6 @@
 "use client";
 
-import { HandCoins, Home } from "lucide-react";
+import { HandCoins, Home, Users } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 import logo from "../../public/logo.svg";
@@ -28,22 +28,30 @@ const data = {
   navMain: [
     {
       title: "Finances",
-      url: "/dashboard/accounting",
+      url: "/",
       icon: HandCoins,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: "Controle de caisse",
-          url: "/dashboard/accounting/cash-control",
+          url: "/accounting/cash-control",
         },
-        // {
-        //   title: "caisse",
-        //   url: "/dashboard/accounting/caisse",
-        // },
-        // {
-        //   title: "Settings",
-        //   url: "#",
-        // },
+      ],
+    },
+    {
+      title: "Personnel",
+      url: "/",
+      icon: Users,
+      isActive: false,
+      items: [
+        {
+          title: "Liste du personnel",
+          url: "/list",
+        },
+        {
+          title: "Pointage du personnel",
+          url: "/score",
+        },
       ],
     },
     // {
@@ -145,23 +153,25 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex h-6 gap-4">
-                  <Image
-                    src={logo}
-                    width={28}
-                    height={28}
-                    alt="Picture of the brand"
-                  />
-                  <span>Cow or King Café</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
+            <div className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground overflow-hidden rounded-md py-2">
+              <SidebarMenuButton size="lg" asChild>
+                <a href="/">
+                  <div className="flex h-6 items-center gap-4">
+                    <Image
+                      src={logo}
+                      width={32}
+                      height={32}
+                      alt="Picture of the brand"
+                    />
+                    <span>Cow or King Café</span>
+                  </div>
+                </a>
+              </SidebarMenuButton>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

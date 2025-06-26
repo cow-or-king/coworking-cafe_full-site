@@ -1,6 +1,6 @@
 //pages/api/turnover/index.js
-import Turnover from "../../../../lib/mongodb/models/Turnover";
-import dbConnect from "../../../../lib/mongodb/mongodb";
+import Turnover from "@/lib/mongodb/models/Turnover";
+import dbConnect from "@/lib/mongodb/dbConnect";
 
 export default async function handler(req, res) {
   await dbConnect();

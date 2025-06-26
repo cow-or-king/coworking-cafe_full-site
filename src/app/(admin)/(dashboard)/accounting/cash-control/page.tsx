@@ -1,5 +1,5 @@
 "use client";
-import { DataTable } from "@/components/admin/dashboard/accounting/cash-control/data-table";
+import { DataTable } from "@/components/dashboard/accounting/cash-control/data-table";
 import { CashEntryApi } from "@/store/cashentry";
 import { TurnoverApi } from "@/store/turnover";
 
@@ -15,10 +15,10 @@ type CashEntry = {
   [key: string]: unknown;
 };
 
+import { columns } from "@/components/dashboard/accounting/cash-control/columns";
 import { useTypedDispatch, useTypedSelector } from "@/store/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
-import { columns } from "../../../../../components/admin/dashboard/accounting/cash-control/columns";
 
 const monthsList = [
   "Janvier",

@@ -1,10 +1,10 @@
 "use client";
 
-import { DashSectionCards } from "@/components/admin/dashboard/dash-SectionCard";
+import { Chart } from "@/components/dashboard/chart";
+import { DashSectionCards } from "@/components/dashboard/dash-SectionCard";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Chart } from "../../../components/admin/dashboard/chart";
 
 export default function DashboardPage() {
   const [checked, setChecked] = useState(false);

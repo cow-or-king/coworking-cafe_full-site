@@ -5,7 +5,7 @@ export const fetchData = createTypedAsyncThunk(
   async function (range: "yesterday" | "week" | "month" | "year") {
     // If already loaded, do nothing.
 
-    const res = await fetch(`/api/dashboard/reporting?range=${range}`);
+    const res = await fetch(`/api/reporting?range=${range}`);
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }

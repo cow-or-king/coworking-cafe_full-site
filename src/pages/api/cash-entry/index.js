@@ -1,5 +1,5 @@
-import CashEntry from "../../../../lib/mongodb/models/CashEntry";
-import dbConnect from "../../../../lib/mongodb/mongodb";
+import CashEntry from "@/lib/mongodb/models/CashEntry";
+import dbConnect from "@/lib/mongodb/dbConnect";
 
 export default async function handler(req, res) {
   await dbConnect();

@@ -5,7 +5,7 @@ export const fetchData = createTypedAsyncThunk(
   async function (_: void) {
     // If already loaded, do nothing.
 
-    const res = await fetch("/api/dashboard/turnover");
+    const res = await fetch("/api/turnover");
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }
