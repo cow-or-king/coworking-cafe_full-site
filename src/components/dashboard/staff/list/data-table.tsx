@@ -19,10 +19,12 @@ import {
 interface DataTableProps<TData extends { active: boolean }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  checked: boolean; // Ajout de la propriété checked
 }
 
 export function DataTable<TData extends { active: boolean }, TValue>({
   columns,
+  checked,
   data = [], // Ajout d'une valeur par défaut pour éviter les erreurs
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -54,25 +56,23 @@ export function DataTable<TData extends { active: boolean }, TValue>({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) =>
-              row.original.active ? (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ) : (
-                // Si l'employé n'est pas actif, on ne l'affiche pas
-                ""
-              ),
+            table.getRowModel().rows.map(
+              (row) =>
+                row.original.active === checked && (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ),
             )
           ) : (
             <TableRow>

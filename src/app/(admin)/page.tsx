@@ -2,6 +2,7 @@
 
 import { Chart } from "@/components/dashboard/chart";
 import { DashSectionCards } from "@/components/dashboard/dash-SectionCard";
+import SwitchWithText from "@/components/dashboard/switchWithText";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -12,16 +13,12 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="flex justify-end px-8 pt-2">
-        <div className="flex items-center gap-2">
-          <span>HT</span>
-          <Switch
-            className={cn(
-              "data-[state=checked]:bg-(--chart-4) data-[state=unchecked]:bg-(--chart-5)",
-            )}
-            onClick={() => setChecked(!checked)}
-          />
-          <span>TTC</span>
-        </div>
+        <SwitchWithText
+          checked={checked}
+          setChecked={setChecked}
+          firstText="HT"
+          secondText="TTC"
+        />
       </div>
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">

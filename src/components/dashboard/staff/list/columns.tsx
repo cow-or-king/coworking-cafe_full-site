@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import {
   AlertDialog,
@@ -25,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -61,8 +61,25 @@ export const columns: ColumnDef<Staff>[] = [
 
   {
     id: "actions",
-    cell: () => {
+    cell: ({ row }) => {
       const router = useRouter();
+      const [formData, setFormData] = useState(row.original);
+
+      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+      };
+
+      const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Envoyer les données mises à jour à l'API
+        fetch(`/api/staff/put`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }).then((res) => res.json());
+      };
 
       return (
         <DropdownMenu>
@@ -72,9 +89,79 @@ export const columns: ColumnDef<Staff>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => {}}>
-              Fiche de salaire
-            </DropdownMenuItem>
+            <DropdownMenu>
+              <DropdownMenuItem>
+                <AlertDialog>
+                  <AlertDialogTrigger>Modifier</AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Mo</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <form onSubmit={handleSubmit}>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium">Nom</label>
+                        <input
+                          name="firstName"
+                          type="text"
+                          className="w-full rounded border p-2"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium">
+                          Prénom
+                        </label>
+                        <input
+                          name="lastName"
+                          type="text"
+                          className="w-full rounded border p-2"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium">
+                          Email
+                        </label>
+                        <input
+                          name="email"
+                          type="email"
+                          className="w-full rounded border p-2"
+                          value={formData.email}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium">
+                          Téléphone
+                        </label>
+                        <input
+                          name="tel"
+                          type="text"
+                          className="w-full rounded border p-2"
+                          value={formData.tel}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => router.back()}>
+                          Annuler
+                        </AlertDialogCancel>
+                        <button
+                          type="submit"
+                          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                          onClick={() => router.back()}
+                        >
+                          Enregistrer
+                        </button>
+                      </AlertDialogFooter>
+                    </form>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuItem>
+            </DropdownMenu>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem>Avenant</DropdownMenuItem>
             <DropdownMenuItem>Avenant Temporaire</DropdownMenuItem>
@@ -85,7 +172,7 @@ export const columns: ColumnDef<Staff>[] = [
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        Êtes-vous absolument sûr ?
+                        Etes-vous sûr de vouloir mettre fin au contrat ?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         Cette action ne peut pas être annulée. Cela supprimera
@@ -94,19 +181,11 @@ export const columns: ColumnDef<Staff>[] = [
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="cursor-pointer rounded-md px-4 py-2 text-red-500 transition-colors duration-200 hover:bg-red-600 hover:text-white">
-                        <div
-                          onClick={() => router.prefetch("/dashboard/staff")}
-                        >
-                          Annuler
-                        </div>
+                      <AlertDialogCancel onClick={() => router.back()}>
+                        Annuler
                       </AlertDialogCancel>
-                      <AlertDialogAction
-                        className={cn(
-                          "bg-(--chart-5) text-white hover:bg-(--chart-4)",
-                        )}
-                      >
-                        <Link href="/dashboard/staff/new">Continuer</Link>
+                      <AlertDialogAction>
+                        <Link href="/dashboard/staff/">Continuer</Link>
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

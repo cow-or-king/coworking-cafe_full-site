@@ -69,7 +69,16 @@ export default function CreateStaff() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(createStaff(formData));
+    dispatch(
+      createStaff({
+        ...formData,
+        hourlyRate: Number(formData.hourlyRate),
+        startDate: formData.startDate
+          ? new Date(formData.startDate)
+          : new Date(),
+        endDate: formData.endDate ? new Date(formData.endDate) : new Date(),
+      }),
+    );
   };
 
   return (

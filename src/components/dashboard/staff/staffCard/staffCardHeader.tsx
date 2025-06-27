@@ -22,12 +22,12 @@ export default function StaffCardHeader({
 
         {start ? (
           <div className="flex flex-col items-center gap-2">
-            <TimerOff size={60} absoluteStrokeWidth />
+            <TimerOff size={60} />
             STOP
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
-            <Timer size={60} absoluteStrokeWidth />
+            <Timer size={60} />
             START
           </div>
         )}
