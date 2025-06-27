@@ -50,7 +50,7 @@ export function Chart() {
   const chartData = useTypedSelector((state) => state.turnover.data || []);
 
   const isMobile = useIsMobile();
-  const [timeRange, setTimeRange] = React.useState("90d");
+  const [timeRange, setTimeRange] = React.useState("30d");
   const [range, setRange] = React.useState("30 derniers jours");
 
   React.useEffect(() => {

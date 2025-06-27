@@ -3,8 +3,6 @@
 import { Chart } from "@/components/dashboard/chart";
 import { DashSectionCards } from "@/components/dashboard/dash-SectionCard";
 import SwitchWithText from "@/components/dashboard/switchWithText";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 export default function DashboardPage() {
