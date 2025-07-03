@@ -70,6 +70,7 @@ export function DataTable<TData, TValue>({
         Array.isArray(row.depenses) && row.depenses.length > 0
           ? row.depenses
           : [{ label: "", value: "" }],
+      virement: row.virement ?? "",
       especes: row.especes ?? "",
       cbClassique: row.cbClassique ?? "",
       cbSansContact: row.cbSansContact ?? "",
@@ -119,7 +120,7 @@ export function DataTable<TData, TValue>({
             0,
           );
         } else {
-          acc.prestaB2B += Number(row.prestaB2B) || 0;
+          acc.prestaB2B += row.prestaB2B || 0;
         }
         if (Array.isArray(row.depenses)) {
           acc.depenses += row.depenses.reduce(
@@ -127,20 +128,23 @@ export function DataTable<TData, TValue>({
             0,
           );
         } else {
-          acc.depenses += Number(row.depenses) || 0;
+          acc.depenses += row.depenses || 0;
         }
+        acc.virement += Number(row.virement) || 0;
         acc.cbClassique += Number(row.cbClassique) || 0;
         acc.cbSansContact += Number(row.cbSansContact) || 0;
         acc.especes += Number(row.especes) || 0;
         // Calcul de la différence
-        const ttc = Number(acc.TTC) || 0;
+        const ttc = Number(acc.TTC) * 100 || 0;
         const add =
-          (Number(acc.prestaB2B) || 0) +
-          (Number(acc.depenses) || 0) +
-          (Number(acc.cbClassique) || 0) +
-          (Number(acc.cbSansContact) || 0) +
-          (Number(acc.especes) || 0);
-        acc.difference = add - ttc;
+          (Number(acc.depenses) * 100 || 0) +
+          (Number(acc.virement) * 100 || 0) +
+          (Number(acc.cbClassique) * 100 || 0) +
+          (Number(acc.cbSansContact) * 100 || 0) +
+          (Number(acc.especes) * 100 || 0) -
+          (Number(acc.prestaB2B) * 100 || 0);
+        const difference = Math.round(add) - Math.round(ttc);
+        acc.difference = difference / 100 || 0; // On stocke la différence en centimes pour éviter les erreurs d'arrondi
 
         return acc;
       },
@@ -152,6 +156,7 @@ export function DataTable<TData, TValue>({
         depenses: 0,
         cbClassique: 0,
         cbSansContact: 0,
+        virement: 0,
         especes: 0,
         difference: 0,
       },
@@ -247,42 +252,45 @@ export function DataTable<TData, TValue>({
                 let totalDepenses = 0;
                 if (Array.isArray(r.depenses)) {
                   totalDepenses = r.depenses.reduce(
-                    (acc: number, d: any) => acc + (Number(d.value) || 0),
+                    (acc: number, d: any) => acc + (Number(d.value) * 100 || 0),
                     0,
                   );
                 } else if (!isNaN(r.depenses)) {
-                  totalDepenses = Number(r.depenses) || 0;
+                  totalDepenses = Number(r.depenses) * 100 || 0;
                 }
                 // PrestaB2B
                 let totalPrestaB2B = 0;
                 if (Array.isArray(r.prestaB2B)) {
                   totalPrestaB2B = r.prestaB2B.reduce(
-                    (acc: number, d: any) => acc + (Number(d.value) || 0),
+                    (acc: number, d: any) => acc + (Number(d.value) * 100 || 0),
                     0,
                   );
                 } else if (!isNaN(r.prestaB2B)) {
-                  totalPrestaB2B = Number(r.prestaB2B) || 0;
+                  totalPrestaB2B = Number(r.prestaB2B) * 100 || 0;
                 }
-                const especes = Number(r.especes) || 0;
-                const cbSansContact = Number(r.cbSansContact) || 0;
-                const cbClassique = Number(r.cbClassique) || 0;
+                const virement = Number(r.virement) * 100 || 0;
+                const especes = Number(r.especes) * 100 || 0;
+                const cbSansContact = Number(r.cbSansContact) * 100 || 0;
+                const cbClassique = Number(r.cbClassique) * 100 || 0;
 
                 // Calcul du total saisi
                 // On additionne les dépenses, espèces, CB sans contact et CB classique,
                 // puis on soustrait les prestations B2B pour obtenir le total saisi
                 const totalSaisie =
-                  totalDepenses +
-                  especes +
-                  cbSansContact +
-                  cbClassique -
-                  totalPrestaB2B;
+                  Math.round(totalDepenses) +
+                  Math.round(virement) +
+                  Math.round(especes) +
+                  Math.round(cbSansContact) +
+                  Math.round(cbClassique) -
+                  Math.round(totalPrestaB2B);
 
-                const ttc = Number(r.TTC) || 0;
+                const ttc = Number(r.TTC) * 100 || 0;
                 // Couleur de fond selon égalité
                 const bgColor =
-                  ttc === totalSaisie && ttc !== 0
+                  Math.round(ttc) === Math.round(totalSaisie) &&
+                  Math.round(ttc) !== 0
                     ? "#d1fae5" // vert clair
-                    : ttc !== 0 && totalSaisie !== 0
+                    : Math.round(ttc) !== 0 && Math.round(totalSaisie) !== 0
                       ? "#fee2e2" // rouge clair
                       : undefined;
 
@@ -408,6 +416,15 @@ export function DataTable<TData, TValue>({
                         })}
                       </TableCell>
                     );
+                  case "virement":
+                    return (
+                      <TableCell key={col.id} className="text-center">
+                        {totals.virement.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    );
                   case "cbClassique":
                     return (
                       <TableCell key={col.id} className="text-center">
@@ -436,7 +453,17 @@ export function DataTable<TData, TValue>({
                       </TableCell>
                     );
                   case "difference":
-                    return totals.difference < 0 ? (
+                    return totals.difference === 0 ? (
+                      <TableCell
+                        key={col.id}
+                        className="text-center font-bold text-gray-800"
+                      >
+                        {totals.difference.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: "EUR",
+                        })}
+                      </TableCell>
+                    ) : totals.difference < 0 ? (
                       <TableCell
                         key={col.id}
                         className="text-center font-bold text-red-600"

@@ -1,5 +1,5 @@
-import CashEntry from "@/lib/mongodb/models/CashEntry";
 import dbConnect from "@/lib/mongodb/dbConnect";
+import CashEntry from "@/lib/mongodb/models/CashEntry";
 
 export default async function handler(req, res) {
   // console.log("API update appelée, méthode:", req.method, "body:", req.body);
@@ -11,6 +11,7 @@ export default async function handler(req, res) {
       date,
       prestaB2B,
       depenses,
+      virement,
       especes,
       cbClassique,
       cbSansContact,
@@ -31,7 +32,15 @@ export default async function handler(req, res) {
         // Mise à jour de l'entrée existante
         const updated = await CashEntry.findByIdAndUpdate(
           id,
-          { date, prestaB2B, depenses, especes, cbClassique, cbSansContact },
+          {
+            date,
+            prestaB2B,
+            depenses,
+            especes,
+            virement,
+            cbClassique,
+            cbSansContact,
+          },
           { new: true, runValidators: true },
         );
         return res.status(200).json({ success: true, data: updated });

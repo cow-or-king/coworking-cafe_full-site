@@ -17,6 +17,7 @@ interface FormCashControlProps {
     date: string;
     prestaB2B: Presta[];
     depenses: Depense[];
+    virement: string | number;
     especes: string | number;
     cbClassique: string | number;
     cbSansContact: string | number;
@@ -160,16 +161,16 @@ export function FormCashControl({
           + Ajouter une facture B2B
         </button>
       </div>
-
       <input
         type="number"
         className="rounded border px-2 py-1"
-        placeholder="Espèces"
-        value={form.especes}
+        placeholder="Virement"
+        value={form.virement}
         onChange={(e) =>
-          setForm((f: any) => ({ ...f, especes: e.target.value }))
+          setForm((f: any) => ({ ...f, virement: e.target.value }))
         }
       />
+
       <input
         type="number"
         className="rounded border px-2 py-1"
@@ -186,6 +187,15 @@ export function FormCashControl({
         value={form.cbSansContact}
         onChange={(e) =>
           setForm((f: any) => ({ ...f, cbSansContact: e.target.value }))
+        }
+      />
+      <input
+        type="number"
+        className="rounded border px-2 py-1"
+        placeholder="Espèces"
+        value={form.especes}
+        onChange={(e) =>
+          setForm((f: any) => ({ ...f, especes: e.target.value }))
         }
       />
       <Button

@@ -29,6 +29,7 @@ const CashEntrySchema = new mongoose.Schema({
     default: undefined,
     required: false,
   },
+  virement: { type: Number, required: false, default: 0 },
   especes: { type: Number, required: false, default: 0 },
   cbClassique: { type: Number, required: false, default: 0 },
   cbSansContact: { type: Number, required: false, default: 0 },

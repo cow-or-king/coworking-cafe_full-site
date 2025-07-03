@@ -23,6 +23,7 @@ export type Payment = {
   "ca-tva": number | { 20: number; 10: number; "5,5": number; 0: number }; // Assuming tva can be a number or an object with different rates
   prestaB2B: Array<{ label: string; value: number }>;
   depenses: Array<{ label: string; value: number }>;
+  virement: number;
   cbClassique: number;
   cbSansContact: number;
   especes: number;
@@ -173,7 +174,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const prestaB2B = row.original.prestaB2B;
       // DEBUG: log la valeur reçue
-      console.log("prestaB2B cell:", prestaB2B, row.original);
+      // console.log("prestaB2B cell:", prestaB2B, row.original);
       if (Array.isArray(prestaB2B) && prestaB2B.length > 0) {
         return (
           <div
@@ -268,6 +269,19 @@ export const columns: ColumnDef<Payment>[] = [
   },
 
   {
+    accessorKey: "virement",
+    header: "Virement",
+    cell: ({ row }) => {
+      const virement = row.original.virement;
+
+      return virement === null || virement === undefined || virement === 0 ? (
+        ""
+      ) : (
+        <div className="text-center">{AmountFormatter.format(virement)}</div>
+      );
+    },
+  },
+  {
     accessorKey: "cbClassique",
     header: "CB classique",
     cell: ({ row }) => {
@@ -324,38 +338,48 @@ export const columns: ColumnDef<Payment>[] = [
     header: "Différence",
     cell: ({ row }) => {
       // Récupération des champs
-      const depenses = Number(row.original.depenses) || 0;
-      const prestaB2B = Number(row.original.prestaB2B) || 0;
-      const especes = Number(row.original.especes) || 0;
-      const cbSansContact = Number(row.original.cbSansContact) || 0;
-      const cbClassique = Number(row.original.cbClassique) || 0;
+      const ttc = Number(row.original.TTC) * 100 || 0; // Assurez-vous que TTC est un nombre
+      const depenses = row.original.depenses || 0;
+      const prestaB2B = row.original.prestaB2B || 0;
+      const especes = Number(row.original.especes) * 100 || 0;
+      const virement = Number(row.original.virement) * 100 || 0;
+      const cbSansContact = Number(row.original.cbSansContact) * 100 || 0;
+      const cbClassique = Number(row.original.cbClassique) * 100 || 0;
       // Somme des dépenses (tableau ou nombre)
       let totalDepenses = 0;
       if (Array.isArray(depenses)) {
         totalDepenses = depenses.reduce(
-          (acc, d) => acc + (Number(d.value) || 0),
+          (acc, d) => acc + (Number(d.value) * 100 || 0),
           0,
         );
+        // console.log(depenses);
       } else if (!isNaN(depenses)) {
-        totalDepenses = Number(depenses) || 0;
+        totalDepenses = Number(depenses) * 100 || 0;
       }
+
       // Somme des prestaB2B (tableau ou nombre)
       let totalPrestaB2B = 0;
       if (Array.isArray(prestaB2B)) {
         totalPrestaB2B = prestaB2B.reduce(
-          (acc, d) => acc + (Number(d.value) || 0),
+          (acc, d) => acc + (Number(d.value) * 100 || 0),
           0,
         );
       } else if (!isNaN(prestaB2B)) {
-        totalPrestaB2B = Number(prestaB2B) || 0;
+        totalPrestaB2B = Number(prestaB2B) * 100 || 0;
       }
+
       // Calcul total-saisie
       const totalSaisie =
-        totalDepenses + especes + cbSansContact + cbClassique - totalPrestaB2B;
+        Math.round(totalDepenses) +
+        Math.round(especes) +
+        Math.round(cbSansContact) +
+        Math.round(cbClassique) +
+        Math.round(virement) -
+        Math.round(totalPrestaB2B);
       if (isNaN(totalSaisie)) return "";
       // Calcul de la différence
-      const ttc = row.original.TTC;
-      const difference = totalSaisie - ttc;
+
+      const difference = totalSaisie - Math.round(ttc);
       if (isNaN(difference)) return "";
       // Affichage de la différence
       return totalSaisie === 0 ? (
@@ -364,11 +388,11 @@ export const columns: ColumnDef<Payment>[] = [
         ""
       ) : difference < 0 ? (
         <div className="text-center font-bold text-red-600">
-          {AmountFormatter.format(difference)}
+          {AmountFormatter.format(difference / 100)}
         </div>
       ) : (
         <div className="text-center font-bold text-green-600">
-          {AmountFormatter.format(difference)}
+          {AmountFormatter.format(difference / 100)}
         </div>
       );
     },

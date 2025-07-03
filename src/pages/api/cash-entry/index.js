@@ -12,6 +12,7 @@ export default async function handler(req, res) {
         prestaB2B,
         depenses,
         especes,
+        virement,
         cbClassique,
         cbSansContact,
       } = req.body;
@@ -21,6 +22,7 @@ export default async function handler(req, res) {
         prestaB2B, // attend un tableau [{label, value}]
         depenses, // attend un tableau [{label, value}]
         especes,
+        virement,
         cbClassique,
         cbSansContact,
       });

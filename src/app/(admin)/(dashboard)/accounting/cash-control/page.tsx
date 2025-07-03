@@ -3,6 +3,11 @@ import { DataTable } from "@/components/dashboard/accounting/cash-control/data-t
 import { CashEntryApi } from "@/store/cashentry";
 import { TurnoverApi } from "@/store/turnover";
 
+import { usePDF } from "@react-pdf/renderer";
+import { pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
 // Extend CashEntry type to include prestaB2B
 type CashEntry = {
   _id: string;
@@ -10,12 +15,15 @@ type CashEntry = {
   depenses?: { label: string; value: number }[];
   prestaB2B: { label: string; value: number }[]; // Not optional anymore
   especes?: number | string;
+  virement?: number | string;
   cbClassique?: number | string;
   cbSansContact?: number | string;
   [key: string]: unknown;
 };
 
 import { columns } from "@/components/dashboard/accounting/cash-control/columns";
+import { Button } from "@/components/ui/button";
+import PDFCashControl from "@/lib/pdf/pdf-CashControl";
 import { useTypedDispatch, useTypedSelector } from "@/store/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -45,9 +53,13 @@ function formatDateYYYYMMDD(dateStr: string) {
   return `${year}/${month}/${day}`;
 }
 
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
 export default function CashControl() {
   const dispatch = useTypedDispatch();
   const { data, loading } = useTypedSelector((state) => state.turnover);
+  // console.log("CashControl data:", data);
+
   const { dataCash, reloading, error } = useTypedSelector(
     (state) => state.cashentry,
   );
@@ -63,6 +75,7 @@ export default function CashControl() {
     date: string;
     prestaB2B: { label: string; value: string }[];
     depenses: { label: string; value: string }[];
+    virement: string;
     especes: string;
     cbClassique: string;
     cbSansContact: string;
@@ -73,6 +86,7 @@ export default function CashControl() {
     date: "",
     prestaB2B: [{ label: "", value: "" }],
     depenses: [{ label: "", value: "" }],
+    virement: "",
     especes: "",
     cbClassique: "",
     cbSansContact: "",
@@ -83,9 +97,11 @@ export default function CashControl() {
   useEffect(() => {
     dispatch(TurnoverApi.fetchData());
   }, [dispatch]);
+
   useEffect(() => {
     dispatch(CashEntryApi.fetchCashEntries());
   }, [dispatch]);
+  // console.log("data", data);
 
   const years = useMemo(() => {
     if (!data) return [];
@@ -149,6 +165,10 @@ export default function CashControl() {
                   : "",
             }))
           : [{ label: "", value: "" }],
+      virement:
+        row.virement !== undefined && row.virement !== null
+          ? String(row.virement)
+          : "",
       especes:
         row.especes !== undefined && row.especes !== null
           ? String(row.especes)
@@ -170,6 +190,7 @@ export default function CashControl() {
     date?: string;
     depenses?: { label: string; value: number }[];
     prestaB2B?: { label: string; value: number }[]; // Ajout de la propriété prestaB2B
+    virement?: number | string;
     especes?: number | string;
     cbClassique?: number | string;
     cbSansContact?: number | string;
@@ -187,7 +208,7 @@ export default function CashControl() {
         return;
       }
       try {
-        const res = await fetch(`/api/dashboard/cash-entry/delete?id=${id}`, {
+        const res = await fetch(`/api/cash-entry/delete?id=${id}`, {
           method: "DELETE",
         });
         if (!res.ok) throw new Error("Erreur lors de la suppression");
@@ -234,6 +255,7 @@ export default function CashControl() {
         prestaB2B?: { label: string; value: number }[];
         depenses: { label: string; value: number }[];
         especes: number;
+        virement: number;
         cbClassique: number;
         cbSansContact: number;
         _id?: string;
@@ -260,15 +282,16 @@ export default function CashControl() {
             label: d.label,
             value: Number(d.value),
           })),
+        virement: form.virement !== "" ? Number(form.virement) : 0,
         especes: form.especes !== "" ? Number(form.especes) : 0,
         cbClassique: form.cbClassique !== "" ? Number(form.cbClassique) : 0,
         cbSansContact:
           form.cbSansContact !== "" ? Number(form.cbSansContact) : 0,
       };
-      let url = "/api/dashboard/cash-entry";
+      let url = "/api/cash-entry";
       let method: "POST" | "PUT" = "POST";
       if (form._id) {
-        url = "/api/dashboard/cash-entry/update";
+        url = "/api/cash-entry/update";
         method = "PUT";
         bodyData.id = form._id;
       } else {
@@ -292,6 +315,7 @@ export default function CashControl() {
             date: "",
             prestaB2B: [{ label: "", value: "" }],
             depenses: [{ label: "", value: "" }],
+            virement: "",
             especes: "",
             cbClassique: "",
             cbSansContact: "",
@@ -315,6 +339,7 @@ export default function CashControl() {
         acc.TTC += Number(row.TTC) || 0;
         acc.HT += Number(row.HT) || 0;
         acc.TVA += Number(row.TVA) || 0;
+        acc.virement += Number(row.virement) || 0;
         acc.cbClassique += Number(row.cbClassique) || 0;
         acc.cbSansContact += Number(row.cbSansContact) || 0;
         acc.especes += Number(row.especes) || 0;
@@ -345,48 +370,64 @@ export default function CashControl() {
         TTC: 0,
         HT: 0,
         TVA: 0,
+        depenses: 0,
+        prestaB2B: 0,
+        virement: 0,
         cbClassique: 0,
         cbSansContact: 0,
         especes: 0,
-        prestaB2B: 0,
-        depenses: 0,
       },
     );
   }, [mergedData]);
 
+  const [document] = usePDF({
+    document: <PDFCashControl />,
+  });
+
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="font-semibold">Année :</span>
-        <select
-          className="mr-4 rounded border px-3 py-1"
-          value={selectedYear ?? ""}
-          onChange={(e) =>
-            setSelectedYear(e.target.value ? Number(e.target.value) : null)
-          }
-        >
-          {years.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
-        <span className="font-semibold">Mois :</span>
-        <select
-          className="rounded border px-3 py-1"
-          value={selectedMonth ?? ""}
-          onChange={(e) =>
-            setSelectedMonth(
-              e.target.value !== "" ? Number(e.target.value) : null,
-            )
-          }
-        >
-          {monthsList.map((month, idx) => (
-            <option key={month} value={idx}>
-              {month}
-            </option>
-          ))}
-        </select>
+      <div className="mb-4 flex items-center justify-between px-2">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="font-semibold">Année :</span>
+          <select
+            className="mr-4 rounded border px-3 py-1"
+            value={selectedYear ?? ""}
+            onChange={(e) =>
+              setSelectedYear(e.target.value ? Number(e.target.value) : null)
+            }
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+          <span className="font-semibold">Mois :</span>
+          <select
+            className="rounded border px-3 py-1"
+            value={selectedMonth ?? ""}
+            onChange={(e) =>
+              setSelectedMonth(
+                e.target.value !== "" ? Number(e.target.value) : null,
+              )
+            }
+          >
+            {monthsList.map((month, idx) => (
+              <option key={month} value={idx}>
+                {month}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Button>
+          <a
+            href={document.url ?? undefined}
+            download={`Journal de bord ${monthsList[selectedMonth ?? 0]} ${selectedYear}.pdf`}
+          >
+            Download PDF
+          </a>
+        </Button>
       </div>
       <DataTable
         columns={columns}

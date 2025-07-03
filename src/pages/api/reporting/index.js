@@ -9,6 +9,7 @@ import Turnover from "@/lib/mongodb/models/Turnover";
 export default async function handler(req, res) {
   await dbConnect();
   const { method, query } = req;
+  const today = new Date();
 
   switch (method) {
     case "GET":
@@ -22,14 +23,84 @@ export default async function handler(req, res) {
             range = "week";
             startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
             break;
+          case "previousWeek":
+            range = "previousWeek";
+            startDate.setDate(startDate.getDate() - startDate.getDay() - 6); // Set to last week's Monday
+            endDate.setDate(endDate.getDate() - endDate.getDay() + 1);
+            break;
+          case "customPreviousWeek":
+            range = "customPreviousWeek";
+            startDate.setDate(startDate.getDate() - startDate.getDay() - 6); // Lundi précédent
+            // Définir le même jour de la semaine précédente
+            endDate.setDate(endDate.getDate() - 7); // Même jour de la semaine précédente
+            break;
           case "month":
             range = "month";
             startDate.setDate(1);
             break;
+          case "previousMonth":
+            range = "previousMonth";
+            startDate.setMonth(startDate.getMonth() - 1);
+            endDate.setMonth(endDate.getMonth() - 1);
+            startDate.setDate(1);
+            endDate.setDate(1);
+            endDate.setMonth(endDate.getMonth() + 1);
+            endDate.setDate(1); // Set to the last day of the previous month.
+            break;
+          case "customPreviousMonth":
+            range = "customPreviousMonth";
+            // Définir le début du mois précédent
+            startDate.setMonth(startDate.getMonth() - 1);
+            startDate.setDate(1);
+            // Définir le même jour que celui d'aujourd'hui sur le mois précédent
+            endDate.setMonth(endDate.getMonth() - 1);
+            endDate.setDate(
+              Math.min(
+                today.getDate(),
+                new Date(
+                  endDate.getFullYear(),
+                  endDate.getMonth() + 1,
+                  0,
+                ).getDate(),
+              ),
+            ); // Définir le même jour ou le dernier jour du mois si le jour dépasse
+            break;
+
           case "year":
             range = "year";
             startDate.setMonth(0, 1);
             break;
+          case "previousYear":
+            range = "previousYear";
+            startDate.setFullYear(startDate.getFullYear() - 1);
+            endDate.setFullYear(endDate.getFullYear() - 1);
+            startDate.setMonth(0, 1);
+            endDate.setMonth(11, 31); // Set to the last day of the previous year.
+            break;
+          case "customPreviousYear":
+            range = "customPreviousYear";
+            // Définir le début de l'année précédente
+            startDate.setFullYear(startDate.getFullYear() - 1);
+            startDate.setMonth(0, 1); // Premier jour de l'année précédente
+            // Définir le même jour que celui d'aujourd'hui sur l'année précédente
+            endDate.setFullYear(endDate.getFullYear() - 1);
+            endDate.setMonth(today.getMonth(), today.getDate()); // Même jour que celui d'aujourd'hui
+            break;
+
+          case "previousDay":
+            range = "previousDay";
+            // Set to yesterday
+            startDate.setDate(startDate.getDate() - 8);
+            endDate.setDate(endDate.getDate() - 7);
+            break;
+
+          case "customPreviousDay":
+            range = "customPreviousDay";
+            // Définir le même jour que "yesterday" mais sur la semaine précédente
+            startDate.setDate(startDate.getDate() - 8);
+            endDate.setDate(endDate.getDate() - 7);
+            break;
+
           default:
             range = "yesterday";
             startDate.setDate(startDate.getDate() - 1);
