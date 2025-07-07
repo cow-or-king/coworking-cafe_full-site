@@ -69,6 +69,7 @@ export function DashCard({
         checked={checked}
         compareTTC={chartData3?.TTC ?? 0}
         compareHT={chartData3?.HT ?? 0}
+        value={chartData3?.HT ?? 0} // This is the value for the header.
       />
       <DashCardFooter
         text_trendin={
@@ -93,7 +94,6 @@ export function DashCard({
             ? `Comparé ${secRange === "previousDay" ? "à la même journée de la semaine précèdente" : secRange === "previousWeek" ? "à la semaine précédente" : secRange === "previousMonth" ? "au mois précédent" : "à l'année précédente"}  ${AmountFormatter.format(chartData2?.TTC ?? 0)} `
             : `Comparé ${secRange === "previousDay" ? "à la même journée de la semaine précèdente" : secRange === "previousWeek" ? "à la semaine précédente" : secRange === "previousMonth" ? "au mois précédent" : "à l'année précédente"} ${AmountFormatter.format(chartData2?.HT ?? 0)} ` // This is the description for the footer.
         }
-        value={chartData3?.HT ?? 0}
       />
     </Card>
   );

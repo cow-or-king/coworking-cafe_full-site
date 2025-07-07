@@ -15,7 +15,10 @@ export function DashSectionCards({ checked }: { checked: boolean }) {
         secRange="previousDay"
         checked={checked}
         compare="customPreviousDay"
-        // Placeholder value, can be replaced with actual data
+        valueChartData={{
+          HT: 0,
+          TTC: 0,
+        }} // Placeholder value, can be replaced with actual data
       />
       <DashCard
         description_header={"Semaine en cours"}
@@ -27,7 +30,10 @@ export function DashSectionCards({ checked }: { checked: boolean }) {
         secRange="previousWeek"
         checked={checked}
         compare="customPreviousWeek"
-        // Placeholder value, can be replaced with actual data
+        valueChartData={{
+          HT: 0,
+          TTC: 0,
+        }} // Placeholder value, can be replaced with actual data
       />
       <DashCard
         description_header={"Mois en cours"}
@@ -39,7 +45,10 @@ export function DashSectionCards({ checked }: { checked: boolean }) {
         secRange="previousMonth"
         checked={checked}
         compare="customPreviousMonth"
-        // Placeholder value, can be replaced with actual data
+        valueChartData={{
+          HT: 0,
+          TTC: 0,
+        }} // Placeholder value, can be replaced with actual data
       />
       <DashCard
         description_header={"Année en cours"}
@@ -51,7 +60,10 @@ export function DashSectionCards({ checked }: { checked: boolean }) {
         secRange="previousYear"
         checked={checked}
         compare="customPreviousYear"
-        // Placeholder value, can be replaced with actual data
+        valueChartData={{
+          HT: 0,
+          TTC: 0,
+        }} // Placeholder value, can be replaced with actual data
       />
     </div>
   );

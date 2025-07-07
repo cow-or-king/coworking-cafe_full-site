@@ -36,10 +36,10 @@ const data = {
           title: "Controle de caisse",
           url: "/accounting/cash-control",
         },
-        {
-          title: "PDF Controle de caisse",
-          url: "/accounting/cash-control/pdf",
-        },
+        // {
+        //   title: "PDF Controle de caisse",
+        //   url: "/accounting/cash-control/pdf",
+        // },
       ],
     },
     {

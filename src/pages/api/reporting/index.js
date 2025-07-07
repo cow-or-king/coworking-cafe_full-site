@@ -21,18 +21,40 @@ export default async function handler(req, res) {
         switch (query.range) {
           case "week":
             range = "week";
-            startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+
+            if (startDate.getDay() === 0) {
+              // If today is Sunday, set startDate to the previous Monday.
+              startDate.setDate(startDate.getDate() - 6);
+            } else {
+              // Set startDate to the previous Monday.
+              startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+            }
+
             break;
           case "previousWeek":
             range = "previousWeek";
-            startDate.setDate(startDate.getDate() - startDate.getDay() - 6); // Set to last week's Monday
-            endDate.setDate(endDate.getDate() - endDate.getDay() + 1);
+
+            // Set startDate to the last week's Monday.
+            if (startDate.getDay() === 0) {
+              // If today is Sunday, set startDate to the previous Monday.
+              startDate.setDate(startDate.getDate() - 13);
+              endDate.setDate(endDate.getDate() - endDate.getDay() - 6);
+            } else {
+              startDate.setDate(startDate.getDate() - startDate.getDay() - 6); // Set to last week's Monday
+              endDate.setDate(endDate.getDate() - endDate.getDay() + 1);
+            }
             break;
           case "customPreviousWeek":
             range = "customPreviousWeek";
-            startDate.setDate(startDate.getDate() - startDate.getDay() - 6); // Lundi précédent
-            // Définir le même jour de la semaine précédente
-            endDate.setDate(endDate.getDate() - 7); // Même jour de la semaine précédente
+            if (startDate.getDay() === 0) {
+              // If today is Sunday, set startDate to the previous Monday.
+              startDate.setDate(startDate.getDate() - 13);
+              endDate.setDate(endDate.getDate() - endDate.getDay() - 7);
+            } else {
+              startDate.setDate(startDate.getDate() - startDate.getDay() - 6); // Lundi précédent
+              // Définir le même jour de la semaine précédente
+              endDate.setDate(endDate.getDate() - 7);
+            }
             break;
           case "month":
             range = "month";

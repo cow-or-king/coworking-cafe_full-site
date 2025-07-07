@@ -14,6 +14,7 @@ type DashCardHeaderProps = {
   checked: boolean;
   compareTTC: number; // Optional for future enhancements, can be used to compare TTC values.
   compareHT: number; // Optional for future enhancements, can be used to compare HT values
+  value: number;
 };
 
 export function DashCardHeader({
@@ -21,6 +22,7 @@ export function DashCardHeader({
   value_TTC,
   value_HT,
   checked,
+  value,
   compareTTC,
   compareHT, // These are the values for comparison, can be used for future enhancements.
 
@@ -83,23 +85,28 @@ export function DashCardHeader({
         )}
       </CardTitle>
       <CardAction>
-        <Badge variant="outline">
-          {percentageChangeHT && percentageChangeTTC > 0 ? (
-            <TrendingUp className="size-4" />
-          ) : (
-            <TrendingDown className="size-4" />
-          )}
+        <div className="flex flex-col items-center gap-1">
+          <Badge variant="outline">
+            {percentageChangeHT && percentageChangeTTC > 0 ? (
+              <TrendingUp className="size-4" />
+            ) : (
+              <TrendingDown className="size-4" />
+            )}
 
-          {checked ? (
-            <>
+            {checked ? (
+              <>
+                <span className={textColor}>
+                  {percentageChangeTTC.toFixed(2)}%
+                </span>
+              </>
+            ) : (
               <span className={textColor}>
-                {percentageChangeTTC.toFixed(2)}%
+                {percentageChangeHT.toFixed(2)}%
               </span>
-            </>
-          ) : (
-            <span className={textColor}>{percentageChangeHT.toFixed(2)}%</span>
-          )}
-        </Badge>
+            )}
+          </Badge>
+          <div className="text-sm font-bold text-gray-400">{value} €</div>
+        </div>
       </CardAction>
     </CardHeader>
   );

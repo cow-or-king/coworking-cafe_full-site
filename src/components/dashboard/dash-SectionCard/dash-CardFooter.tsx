@@ -6,7 +6,6 @@ type DashCardFooterProps = {
   description_footer: React.ReactNode;
   percentageChangeHT: number; // Optional, can be used for future enhancements.
   percentageChangeTTC: number; // Optional, can be used for future enhancements.
-  value?: number; // Optional, can be used for future enhancements.
   valueChartData: {
     HT: number;
     TTC: number;
@@ -19,6 +18,7 @@ export function DashCardFooter({
   percentageChangeHT,
   percentageChangeTTC,
   valueChartData,
+
   checked, // Optional, can be used for future enhancements.
 }: DashCardFooterProps) {
   const AmountFormatter = new Intl.NumberFormat("fr", {
@@ -46,7 +46,6 @@ export function DashCardFooter({
           ? `${AmountFormatter.format(value_TTC / 100)} TTC`
           : `${AmountFormatter.format(value_HT / 100)} HT`}
       </div>
-      {/* <div className="">{value}</div> */}
     </CardFooter>
   );
 }
