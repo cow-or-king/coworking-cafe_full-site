@@ -4,13 +4,13 @@ import { Timer, TimerOff } from "lucide-react";
 type StaffCardHeaderProps = {
   firstname: string;
   lastname: string;
-  start: boolean;
+  timer: boolean | null;
 };
 
 export default function StaffCardHeader({
   firstname,
   lastname,
-  start,
+  timer,
 }: StaffCardHeaderProps) {
   return (
     <CardHeader>
@@ -20,13 +20,13 @@ export default function StaffCardHeader({
           <div>{lastname}</div>
         </CardTitle>
 
-        {start ? (
-          <div className="flex flex-col items-center gap-2">
+        {timer ? (
+          <div className="flex cursor-pointer flex-col items-center gap-2">
             <TimerOff size={60} />
             STOP
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex cursor-pointer flex-col items-center gap-2">
             <Timer size={60} />
             START
           </div>

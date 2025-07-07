@@ -27,49 +27,77 @@ export default function StaffCard({
     end: end || "",
   });
   const [loading, setLoading] = React.useState(false);
+  const [timer, setTimer] = React.useState<boolean | null>(false);
+  const [startTime, setStartTime] = React.useState<string | null>(null);
+  const [endTime, setEndTime] = React.useState<string | null>(null);
+
+  const formatTime = (isoString: string | null) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    return date.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const newShift = addStaffShift({
-        id: "",
+  const handleCardClick = () => {
+    if (!timer) {
+      // Démarrer le pointage
+      const now = new Date().toISOString();
+      const formattedNow = formatTime(now);
+      setStartTime(now);
+      setTimer(true);
+      toast.success("Pointage démarré à " + formattedNow);
+    } else {
+      // Arrêter le pointage
+      const now = new Date().toISOString();
+      const formattedNow = formatTime(now);
+      setEndTime(now);
+      setTimer(false);
+      toast.success("Pointage arrêté à " + formattedNow);
+
+      // Enregistrer les données de pointage
+      const newShift = {
+        date: form.date,
+        start: formatTime(startTime),
+        end: formattedNow,
+        id: "", // Ajouter un ID si nécessaire
         firstname,
         lastname,
-        ...form,
-      });
+      };
       dispatch(addShiftAction(newShift));
-      toast.success("Horaires enregistrés !");
-      setOpen(false);
-    } catch (err) {
-      toast.error("Erreur lors de l'enregistrement");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <Card className="@container/card cursor-pointer">
-      <StaffCardHeader firstname={firstname} lastname={lastname} start={true} />
-      <StaffCardFooter start={start} end={end} />
+    <Card className="@container/card cursor-pointer" onClick={handleCardClick}>
+      <StaffCardHeader
+        firstname={firstname}
+        lastname={lastname}
+        timer={timer}
+      />
+
+      <StaffCardFooter
+        startTime={formatTime(startTime)}
+        endTime={formatTime(endTime)}
+      />
     </Card>
   );
 }
-function addStaffShift(arg0: {
+
+function addShiftAction(newShift: {
   date: string;
-  start: string;
-  end: string;
+  start: string | null;
+  end: string | null;
   id: string;
   firstname: string;
   lastname: string;
-}) {
-  throw new Error("Function not implemented.");
-}
-
-function addShiftAction(newShift: void): any {
-  throw new Error("Function not implemented.");
+}): any {
+  // Implémenter l'action pour enregistrer le shift dans Redux ou via une API
+  console.log("Shift enregistré :", newShift);
+  return { type: "ADD_SHIFT", payload: newShift };
 }

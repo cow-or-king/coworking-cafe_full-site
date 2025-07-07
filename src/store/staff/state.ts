@@ -13,9 +13,11 @@ export const InitialStaffState: StaffState = {
 };
 
 export interface Staff {
-  startTime: string;
   id: string;
+  active: boolean;
   firstName: string;
   lastName: string;
   email: string;
+  startTime: string;
+  endTime: string;
 }
