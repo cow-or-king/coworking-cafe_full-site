@@ -57,12 +57,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 export default function CashControl() {
   const dispatch = useTypedDispatch();
-  const { data, loading } = useTypedSelector((state) => state.turnover);
-  // console.log("CashControl data:", data);
-
-  const { dataCash, reloading, error } = useTypedSelector(
-    (state) => state.cashentry,
-  );
+  const { data } = useTypedSelector((state) => state.turnover);
+  const { dataCash } = useTypedSelector((state) => state.cashentry);
 
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number | null>(currentYear);
@@ -70,6 +66,7 @@ export default function CashControl() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(
     currentMonth,
   );
+
   type FormState = {
     _id: string;
     date: string;
@@ -380,9 +377,25 @@ export default function CashControl() {
     );
   }, [mergedData]);
 
-  const [document] = usePDF({
-    document: <PDFCashControl />,
-  });
+  // Load the PDF document.
+  const [document, updateDocument] = usePDF();
+
+  // Update the document whenever the relevant data changes.
+  useEffect(() => {
+    if (
+      mergedData.length > 0 &&
+      selectedMonth !== null &&
+      selectedYear !== null
+    ) {
+      updateDocument(
+        <PDFCashControl
+          data={mergedData}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+        />,
+      );
+    }
+  }, [mergedData, selectedMonth, selectedYear, updateDocument]);
 
   return (
     <div className="container mx-auto p-4">

@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       try {
         // Prepare the date range.
         let range;
-        const startDate = new Date();
+        const startDate = new Date(); // Start from January 1, 2020
         const endDate = new Date();
         switch (query.range) {
           case "week":

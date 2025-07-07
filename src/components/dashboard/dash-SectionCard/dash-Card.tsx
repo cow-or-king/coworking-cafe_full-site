@@ -19,6 +19,10 @@ interface DashCardProps {
     | "customPreviousMonth"
     | "customPreviousYear"; // Default comparison range.
   checked: boolean;
+  valueChartData: {
+    HT: number;
+    TTC: number;
+  }; // Optional, can be used for future enhancements.
 }
 
 export function DashCard({
@@ -72,7 +76,7 @@ export function DashCard({
             ? `${secRange === "previousDay" ? "Tendance de la journée" : secRange === "previousWeek" ? "Tendance de la semaine" : secRange === "previousMonth" ? "Tendance du mois" : "Tendance de l'année"} `
             : `${secRange === "previousDay" ? "Tendance de la journée" : secRange === "previousWeek" ? "Tendance de la semaine" : secRange === "previousMonth" ? "Tendance du mois" : "Tendance de l'année"} `
         }
-        valueChartData={chartData2}
+        valueChartData={chartData2 ?? { HT: 0, TTC: 0 }}
         checked={checked}
         percentageChangeHT={
           chartData3?.HT

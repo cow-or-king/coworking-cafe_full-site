@@ -49,15 +49,15 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="text-center">{`${day}-${month}-${year}`}</div>;
     },
   },
-  {
-    accessorKey: "TTC",
-    header: "Total TTC",
-    cell: ({ row }) => {
-      const ttc = row.original.TTC;
-      if (ttc === null || ttc === undefined || isNaN(ttc)) return "";
-      return <div className="text-center">{AmountFormatter.format(ttc)}</div>;
-    },
-  },
+  // {
+  //   accessorKey: "TTC",
+  //   header: "Total TTC",
+  //   cell: ({ row }) => {
+  //     const ttc = row.original.TTC;
+  //     if (ttc === null || ttc === undefined || isNaN(ttc)) return "";
+  //     return <div className="text-center">{AmountFormatter.format(ttc)}</div>;
+  //   },
+  // },
   // {
   //   accessorKey: "HT",
   //   header: "Total HT",
@@ -345,6 +345,7 @@ export const columns: ColumnDef<Payment>[] = [
       const virement = Number(row.original.virement) * 100 || 0;
       const cbSansContact = Number(row.original.cbSansContact) * 100 || 0;
       const cbClassique = Number(row.original.cbClassique) * 100 || 0;
+
       // Somme des dépenses (tableau ou nombre)
       let totalDepenses = 0;
       if (Array.isArray(depenses)) {
@@ -370,28 +371,27 @@ export const columns: ColumnDef<Payment>[] = [
 
       // Calcul total-saisie
       const totalSaisie =
-        Math.round(totalDepenses) +
-        Math.round(especes) +
-        Math.round(cbSansContact) +
-        Math.round(cbClassique) +
-        Math.round(virement) -
-        Math.round(totalPrestaB2B);
+        totalDepenses +
+        especes +
+        cbSansContact +
+        cbClassique +
+        virement -
+        totalPrestaB2B;
       if (isNaN(totalSaisie)) return "";
       // Calcul de la différence
 
-      const difference = totalSaisie - Math.round(ttc);
+      const difference = totalSaisie - ttc;
       if (isNaN(difference)) return "";
+
       // Affichage de la différence
-      return totalSaisie === 0 ? (
-        ""
-      ) : difference === 0 ? (
-        ""
-      ) : difference < 0 ? (
-        <div className="text-center font-bold text-red-600">
-          {AmountFormatter.format(difference / 100)}
-        </div>
-      ) : (
-        <div className="text-center font-bold text-green-600">
+      if (Math.abs(difference) <= 1e-6 || Math.abs(totalSaisie) <= 1e-6) {
+        return "";
+      }
+
+      return (
+        <div
+          className={`text-center font-bold ${difference < 0 ? "text-red-600" : "text-green-600"}`}
+        >
           {AmountFormatter.format(difference / 100)}
         </div>
       );

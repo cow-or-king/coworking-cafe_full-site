@@ -41,7 +41,7 @@ export function DashCardHeader({
 
   // let textColor = "text-red-500";
   const textColor =
-    percentageChangeHT || percentageChangeTTC > 0
+    percentageChangeHT && percentageChangeTTC > 0
       ? "text-green-500"
       : "text-red-500";
 

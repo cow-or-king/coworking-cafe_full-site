@@ -204,6 +204,7 @@ export function DataTable<TData, TValue>({
             style={{ position: "sticky", top: 0, zIndex: 2 }}
           >
             {table.getHeaderGroups().map((headerGroup) => (
+              // console.log("HeaderGroup:", headerGroup),
               <TableRow
                 key={headerGroup.id}
                 style={{
