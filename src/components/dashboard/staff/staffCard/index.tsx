@@ -31,6 +31,7 @@ export default function StaffCard({
   const [startTime, setStartTime] = React.useState<string | null>(null);
   const [endTime, setEndTime] = React.useState<string | null>(null);
   const [isBlocked, setIsBlocked] = React.useState(false);
+  const [passwordPrompt, setPasswordPrompt] = React.useState(false);
 
   const formatTime = (isoString: string | null) => {
     if (!isoString) return "";
@@ -139,18 +140,124 @@ export default function StaffCard({
     }
   };
 
-  return (
-    <Card className="@container/card cursor-pointer" onClick={handleCardClick}>
-      <StaffCardHeader
-        firstname={firstname}
-        lastname={lastname}
-        timer={timer}
-      />
+  const handlePasswordSubmit = (password: string) => {
+    if (password === "monMotDePasse") {
+      setPasswordPrompt(false);
+      handleCardClick();
+    } else {
+      toast.error("Mot de passe incorrect.");
+    }
+  };
 
-      <StaffCardFooter
-        startTime={formatTime(startTime)}
-        endTime={formatTime(endTime)}
-      />
-    </Card>
+  const handleCardClickWithPassword = () => {
+    if (isBlocked) return; // Bloquer le clic si isBlocked est vrai
+
+    setPasswordPrompt(true); // Afficher la demande de mot de passe
+  };
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPasswordPrompt(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  return (
+    <>
+      {passwordPrompt && (
+        <div
+          className="password-modal-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 999,
+          }}
+          onClick={() => setPasswordPrompt(false)}
+        >
+          <div
+            className="password-modal"
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "white",
+              padding: "50px",
+              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              borderRadius: "8px",
+              zIndex: 1000,
+            }}
+            onClick={(e) => e.stopPropagation()} // Empêcher la propagation du clic
+          >
+            <input
+              type="password"
+              placeholder="Entrez le mot de passe"
+              style={{
+                display: "block",
+                marginBottom: "10px",
+                padding: "10px",
+                width: "100%",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handlePasswordSubmit(e.currentTarget.value);
+                } else if (e.key === "Escape") {
+                  setPasswordPrompt(false); // Fermer le modal sur Échap
+                }
+              }}
+            />
+            <button
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "10px",
+                backgroundColor: "#007BFF",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                const input = document.querySelector(
+                  ".password-modal input",
+                ) as HTMLInputElement;
+                handlePasswordSubmit(input.value);
+              }}
+            >
+              Valider
+            </button>
+          </div>
+        </div>
+      )}
+
+      <Card
+        className="@container/card cursor-pointer"
+        onClick={handleCardClickWithPassword}
+      >
+        <StaffCardHeader
+          firstname={firstname}
+          lastname={lastname}
+          timer={timer}
+        />
+
+        <StaffCardFooter
+          startTime={formatTime(startTime)}
+          endTime={formatTime(endTime)}
+        />
+      </Card>
+    </>
   );
 }
