@@ -9,8 +9,12 @@ export default async function handler(
 ) {
   await dbConnect();
 
+  console.log("Méthode reçue :", req.method);
+
   if (req.method === "POST") {
     try {
+      console.log("Données reçues :", req.body);
+
       const {
         firstName,
         lastName,
@@ -28,6 +32,7 @@ export default async function handler(
         contract,
         active = true, // Champ actif par défaut à true
       } = req.body;
+
       const entry = await Staff.create({
         firstName,
         lastName,
@@ -45,13 +50,17 @@ export default async function handler(
         contract,
         active, // Enregistrement de l'état actif
       });
+
+      console.log("Staff créé avec succès :", entry);
       res.status(201).json({ success: true, data: entry });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
+      console.error("Erreur lors de la création du staff :", errorMessage);
       res.status(400).json({ success: false, error: errorMessage });
     }
   } else {
+    console.error("Méthode non autorisée :", req.method);
     res.status(405).json({ success: false, error: "Method not allowed" });
   }
 }
