@@ -25,6 +25,7 @@ export default function ScorePage() {
                 lastname={staff.lastName}
                 start={""}
                 end={""}
+                staffId={staff._id} // Use the actual ID from the staff object
               />
             ),
         )}

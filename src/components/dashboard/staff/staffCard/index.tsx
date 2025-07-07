@@ -1,6 +1,4 @@
 import { Card } from "@/components/ui/card";
-
-import { useTypedDispatch } from "@/store/types";
 import * as React from "react";
 import toast from "react-hot-toast";
 import StaffCardFooter from "./staffCardFooter";
@@ -11,6 +9,7 @@ type StaffCardProps = {
   lastname: string;
   start: string;
   end: string;
+  staffId: string; // Ajout de l'ID du staff
 };
 
 export default function StaffCard({
@@ -18,15 +17,16 @@ export default function StaffCard({
   lastname,
   start,
   end,
+  staffId,
 }: StaffCardProps) {
-  const dispatch = useTypedDispatch();
-  const [open, setOpen] = React.useState(false);
   const [form, setForm] = React.useState({
     date: new Date().toISOString().slice(0, 10),
+    firstname: firstname || "",
+    lastname: lastname || "",
     start: start || "",
     end: end || "",
   });
-  const [loading, setLoading] = React.useState(false);
+
   const [timer, setTimer] = React.useState<boolean | null>(false);
   const [startTime, setStartTime] = React.useState<string | null>(null);
   const [endTime, setEndTime] = React.useState<string | null>(null);
@@ -40,11 +40,7 @@ export default function StaffCard({
     });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleCardClick = () => {
+  const handleCardClick = async () => {
     if (!timer) {
       // Démarrer le pointage
       const now = new Date().toISOString();
@@ -61,15 +57,32 @@ export default function StaffCard({
       toast.success("Pointage arrêté à " + formattedNow);
 
       // Enregistrer les données de pointage
-      const newShift = {
+      const shiftData = {
+        staffId, // Utilisation de l'ID réel du staff
+        firstName: firstname, // Correction du nom du champ
+        lastName: lastname, // Correction du nom du champ
         date: form.date,
-        start: formatTime(startTime),
-        end: formattedNow,
-        id: "", // Ajouter un ID si nécessaire
-        firstname,
-        lastname,
+        startTime: formatTime(startTime),
+        endTime: formattedNow,
       };
-      dispatch(addShiftAction(newShift));
+
+      try {
+        const response = await fetch("/api/shift", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(shiftData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de l'enregistrement du pointage.");
+        }
+
+        const result = await response.json();
+        console.log("Pointage enregistré :", result);
+      } catch (error) {
+        console.error(error);
+        toast.error("Erreur lors de l'enregistrement du pointage.");
+      }
     }
   };
 
@@ -87,17 +100,4 @@ export default function StaffCard({
       />
     </Card>
   );
-}
-
-function addShiftAction(newShift: {
-  date: string;
-  start: string | null;
-  end: string | null;
-  id: string;
-  firstname: string;
-  lastname: string;
-}): any {
-  // Implémenter l'action pour enregistrer le shift dans Redux ou via une API
-  console.log("Shift enregistré :", newShift);
-  return { type: "ADD_SHIFT", payload: newShift };
 }
