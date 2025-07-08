@@ -1,4 +1,15 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import * as React from "react";
 import toast from "react-hot-toast";
 import StaffCardFooter from "./staffCardFooter";
@@ -10,6 +21,7 @@ type StaffCardProps = {
   start: string;
   end: string;
   staffId: string; // Ajout de l'ID du staff
+  mdp: number; // Mot de passe pour le pointage
 };
 
 export default function StaffCard({
@@ -18,6 +30,8 @@ export default function StaffCard({
   start,
   end,
   staffId,
+  mdp,
+  hidden, // Ajout de la propriété hidden avec une valeur par défaut
 }: StaffCardProps) {
   const [form, setForm] = React.useState({
     date: new Date().toISOString().slice(0, 10),
@@ -25,6 +39,8 @@ export default function StaffCard({
     lastname: lastname || "",
     start: start || "",
     end: end || "",
+    staffId: staffId || "", // Utilisation de l'ID réel du staff
+    hidden: hidden || "", // Utilisation de la propriété hidden
   });
 
   const [timer, setTimer] = React.useState<boolean | null>(false);
@@ -32,6 +48,7 @@ export default function StaffCard({
   const [endTime, setEndTime] = React.useState<string | null>(null);
   const [isBlocked, setIsBlocked] = React.useState(false);
   const [passwordPrompt, setPasswordPrompt] = React.useState(false);
+  const [shiftId, setShiftId] = React.useState<string | null>(null); // État pour stocker l'_id du shift
 
   const formatTime = (isoString: string | null) => {
     if (!isoString) return "";
@@ -65,12 +82,52 @@ export default function StaffCard({
     ) {
       setTimer(true); // Synchroniser l'état du timer uniquement si startTime est défini sans endTime
     }
+
+    // Récupérer shiftId depuis les cookies au chargement de la page
+    if (cookies[`shiftId_${staffId}`]) {
+      setShiftId(cookies[`shiftId_${staffId}`]);
+      // console.log(
+      //   "shiftId récupéré depuis les cookies :",
+      //   cookies[`shiftId_${staffId}`],
+      // );
+    }
   }, [staffId]);
+
+  const checkShiftLimit = async () => {
+    try {
+      const response = await fetch(
+        `/api/shift?staffId=${staffId}&date=${form.date}`,
+      );
+      if (!response.ok) {
+        throw new Error(
+          "Erreur lors de la vérification des pointages existants.",
+        );
+      }
+
+      const result = await response.json();
+      if (result.shifts && result.shifts.length >= 2) {
+        toast.error("Limite de 2 pointages atteinte pour aujourd'hui.");
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la vérification des pointages existants :",
+        error,
+      );
+      toast.error("Erreur lors de la vérification des pointages existants.");
+      return false;
+    }
+  };
 
   const handleCardClick = async () => {
     if (isBlocked) return; // Bloquer le clic si isBlocked est vrai
 
     if (!timer) {
+      const canStart = await checkShiftLimit();
+      if (!canStart) return; // Bloquer le démarrage si la limite est atteinte
+
       // Démarrer le pointage
       const now = new Date().toISOString();
       const formattedNow = formatTime(now);
@@ -78,6 +135,45 @@ export default function StaffCard({
       document.cookie = `startTime_${staffId}=${now}; path=/`; // Stocker dans les cookies spécifiques au staff
       setTimer(true);
       toast.success("Pointage démarré à " + formattedNow);
+
+      // Enregistrer les données de pointage avec une valeur par défaut pour stop
+      const shiftData = {
+        staffId, // Utilisation de l'ID réel du staff
+        firstName: firstname, // Correction du nom du champ
+        lastName: lastname, // Correction du nom du champ
+        date: form.date,
+        startTime: formattedNow,
+        endTime: "00:00", // Valeur par défaut pour stop
+      };
+
+      try {
+        const response = await fetch("/api/shift", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(shiftData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de l'enregistrement du pointage.");
+        }
+
+        const result = await response.json();
+        // console.log("Réponse complète de l'API POST :", result);
+        if (result && result.shift && result.shift._id) {
+          setShiftId(result.shift._id);
+          document.cookie = `shiftId_${staffId}=${result.shift._id}; path=/`; // Stocker shiftId dans les cookies
+          // console.log(
+          //   "_id du shift enregistré et stocké dans les cookies :",
+          //   result.shift._id,
+          // );
+        } else {
+          console.error("Erreur : _id non retourné par l'API POST.");
+          toast.error("Erreur lors de l'enregistrement du pointage.");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la requête à l'API:", error);
+        toast.error("Erreur lors de l'enregistrement du pointage.");
+      }
     } else {
       // Arrêter le pointage
       const now = new Date().toISOString();
@@ -89,39 +185,52 @@ export default function StaffCard({
       setTimer(false);
       toast.success("Pointage arrêté à " + formattedNow);
 
-      // Enregistrer les données de pointage
-      const shiftData = {
-        staffId, // Utilisation de l'ID réel du staff
-        firstName: firstname, // Correction du nom du champ
-        lastName: lastname, // Correction du nom du champ
-        date: form.date,
-        startTime: formatTime(startTime),
+      // Mettre à jour la valeur réelle de stop dans la base de données
+      const updateData = {
+        _id: shiftId, // Utilisation de l'_id stocké pour correspondre à l'API
         endTime: formattedNow,
       };
 
-      console.log(
-        "Envoi de la requête à l'API /api/shift avec les données :",
-        shiftData,
-      );
-
       try {
-        const response = await fetch("/api/shift", {
-          method: "POST",
+        // console.log("Début de la logique pour arrêter le pointage.");
+
+        if (!shiftId) {
+          console.error("Erreur : shiftId est null ou undefined.");
+          toast.error(
+            "Impossible de mettre à jour le pointage. Veuillez réessayer.",
+          );
+          return;
+        }
+
+        if (!formattedNow) {
+          console.error("Erreur : endTime est mal formaté.");
+          toast.error("Erreur dans le format de l'heure de fin.");
+          return;
+        }
+
+        // console.log("Données prêtes pour la requête PUT :", {
+        //   _id: shiftId,
+        //   endTime: formattedNow,
+        // });
+
+        const response = await fetch(`/api/shift`, {
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(shiftData),
+          body: JSON.stringify(updateData),
         });
 
-        console.log("Réponse de l'API :", response);
-
         if (!response.ok) {
-          throw new Error("Erreur lors de l'enregistrement du pointage.");
+          throw new Error("Erreur lors de la mise à jour du pointage.");
         }
 
         const result = await response.json();
-        console.log("Pointage enregistré :", result);
+        // console.log(
+        //   "Pointage mis à jour avec la valeur réelle pour stop:",
+        //   result,
+        // );
       } catch (error) {
-        console.error("Erreur lors de la requête à l'API :", error);
-        toast.error("Limite de pointages atteinte pour aujourd'hui.");
+        console.error("Erreur lors de la requête à l'API:", error);
+        toast.error("Erreur lors de la mise à jour du pointage.");
       }
 
       // Bloquer le clic jusqu'au rafraîchissement
@@ -140,8 +249,8 @@ export default function StaffCard({
     }
   };
 
-  const handlePasswordSubmit = (password: string) => {
-    if (password === "monMotDePasse") {
+  const handlePasswordSubmit = (password: number) => {
+    if (password === mdp) {
       setPasswordPrompt(false);
       handleCardClick();
     } else {
@@ -185,61 +294,70 @@ export default function StaffCard({
           }}
           onClick={() => setPasswordPrompt(false)}
         >
-          <div
-            className="password-modal"
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              backgroundColor: "white",
-              padding: "50px",
-              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-              borderRadius: "8px",
-              zIndex: 1000,
-            }}
-            onClick={(e) => e.stopPropagation()} // Empêcher la propagation du clic
-          >
-            <input
-              type="password"
-              placeholder="Entrez le mot de passe"
+          <AlertDialog open={passwordPrompt} onOpenChange={setPasswordPrompt}>
+            <AlertDialogContent
+              className="password-modal"
               style={{
-                display: "block",
-                marginBottom: "10px",
-                padding: "10px",
-                width: "100%",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
+                position: "fixed",
+                width: "300px",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "white",
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                borderRadius: "8px",
+                zIndex: 1000,
               }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handlePasswordSubmit(e.currentTarget.value);
-                } else if (e.key === "Escape") {
-                  setPasswordPrompt(false); // Fermer le modal sur Échap
-                }
-              }}
-            />
-            <button
-              style={{
-                display: "block",
-                width: "100%",
-                padding: "10px",
-                backgroundColor: "#007BFF",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                const input = document.querySelector(
-                  ".password-modal input",
-                ) as HTMLInputElement;
-                handlePasswordSubmit(input.value);
-              }}
+              onClick={(e) => e.stopPropagation()}
             >
-              Valider
-            </button>
-          </div>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Pointage de {firstname} {lastname}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  <input
+                    type="password"
+                    placeholder="Entrez le mot de passe"
+                    style={{
+                      display: "block",
+                      marginBottom: "10px",
+                      padding: "10px",
+                      width: "100%",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handlePasswordSubmit(Number(e.currentTarget.value));
+                      } else if (e.key === "Escape") {
+                        setPasswordPrompt(false); // Fermer le modal sur Échap
+                      }
+                    }}
+                  />
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="cursor-pointer">
+                  Annuler
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  className={cn(
+                    "cursor-pointer bg-(--chart-5) hover:bg-(--chart-4)",
+                  )}
+                >
+                  <div
+                    onClick={() => {
+                      const input = document.querySelector(
+                        ".password-modal input",
+                      ) as HTMLInputElement;
+                      handlePasswordSubmit(Number(input.value));
+                    }}
+                  >
+                    Continuer
+                  </div>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       )}
 
@@ -253,10 +371,12 @@ export default function StaffCard({
           timer={timer}
         />
 
-        <StaffCardFooter
-          startTime={formatTime(startTime)}
-          endTime={formatTime(endTime)}
-        />
+        <div className={hidden}>
+          <StaffCardFooter
+            startTime={formatTime(startTime)}
+            endTime={formatTime(endTime)}
+          />
+        </div>
       </Card>
     </>
   );

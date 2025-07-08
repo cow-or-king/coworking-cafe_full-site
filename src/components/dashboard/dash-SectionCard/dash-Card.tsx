@@ -27,7 +27,6 @@ interface DashCardProps {
 
 export function DashCard({
   description_header,
-  text_trendin,
   range,
   secRange,
   checked,
@@ -36,14 +35,23 @@ export function DashCard({
   // Load the appropriate data from the store.
   const dispatch = useTypedDispatch();
   useEffect(() => {
-    dispatch(ReportingApi.fetchData(range)).then(console.log);
+    dispatch(ReportingApi.fetchData(range));
   }, [dispatch, range]);
   useEffect(() => {
-    dispatch(ReportingApi.fetchData2(secRange)).then(console.log);
+    dispatch(ReportingApi.fetchData2(secRange));
   }, [dispatch, secRange]);
   useEffect(() => {
-    dispatch(ReportingApi.fetchData3(compare)).then(console.log);
+    dispatch(ReportingApi.fetchData3(compare));
   }, [dispatch, compare]);
+  // useEffect(() => {
+  //   dispatch(ReportingApi.fetchData(range)).then(console.log);
+  // }, [dispatch, range]);
+  // useEffect(() => {
+  //   dispatch(ReportingApi.fetchData2(secRange)).then(console.log);
+  // }, [dispatch, secRange]);
+  // useEffect(() => {
+  //   dispatch(ReportingApi.fetchData3(compare)).then(console.log);
+  // }, [dispatch, compare]);
 
   const chartData = useTypedSelector((state) => state.reporting.data[range]);
   const chartData2 = useTypedSelector(

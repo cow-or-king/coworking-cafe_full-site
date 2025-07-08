@@ -25,6 +25,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 // This type is used to define the shape of our data.
@@ -35,6 +37,8 @@ export type Staff = {
   lastName: string;
   email: string;
   tel: string;
+  mdp: number;
+  active: boolean;
 };
 
 export const columns: ColumnDef<Staff>[] = [
@@ -58,7 +62,11 @@ export const columns: ColumnDef<Staff>[] = [
     header: "Téléphone",
     accessorKey: "tel",
   },
-
+  {
+    id: "mdp",
+    header: "Mot de passe",
+    accessorKey: "mdp",
+  },
   {
     id: "actions",
     cell: ({ row }) => {
@@ -79,6 +87,10 @@ export const columns: ColumnDef<Staff>[] = [
           },
           body: JSON.stringify(formData),
         }).then((res) => res.json());
+      };
+
+      const handleSelect = (id: string, value: string | boolean) => {
+        setFormData({ ...formData, [id]: value });
       };
 
       return (
@@ -143,6 +155,29 @@ export const columns: ColumnDef<Staff>[] = [
                           value={formData.tel}
                           onChange={handleChange}
                         />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium">
+                          Mot de passe
+                        </label>
+                        <input
+                          name="mdp"
+                          type="password"
+                          className="w-full rounded border p-2"
+                          value={formData.mdp}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <Switch
+                          id="active"
+                          checked={formData.active}
+                          onCheckedChange={(v) => handleSelect("active", v)}
+                          className={cn("data-[state=checked]:bg-(--chart-4)")}
+                        />
+                        <span className="ml-2">
+                          {formData.active ? "Actif" : "Inactif"}
+                        </span>
                       </div>
                       <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => router.back()}>

@@ -17,6 +17,7 @@ const StaffSchema = new mongoose.Schema({
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: false },
   contract: { type: String, required: false },
+  mdp: { type: Number, required: true },
   active: { type: Boolean, default: true }, // Champ pour l'état actif/inactif
 });
 

@@ -28,8 +28,11 @@ export default function ListPage() {
   const dispatch = useTypedDispatch();
 
   useEffect(() => {
-    dispatch(StaffApi.fetchData()).then(console.log);
+    dispatch(StaffApi.fetchData());
   }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(StaffApi.fetchData()).then(console.log);
+  // }, [dispatch]);
 
   const data = useTypedSelector((state) => state.staff.data);
   // console.log("Staff data:", data);

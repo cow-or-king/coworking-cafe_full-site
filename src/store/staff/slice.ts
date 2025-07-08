@@ -17,11 +17,7 @@ const staffSlice = createSlice({
         state.loading = false;
         state.data = action.payload;
       })
-      // .addCase(createStaff.pending, (state) => {
-      //   state.loading = true;
-      //   state.error = null;
-      //   state.success = false;
-      // })
+
       .addCase(createStaff.fulfilled, (state) => {
         state.loading = false;
         state.success = true;

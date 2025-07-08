@@ -164,12 +164,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground overflow-hidden rounded-md py-2">
               <SidebarMenuButton size="lg" asChild>
                 <a href="/">
-                  <div className="flex h-6 items-center gap-4">
+                  <div className="flex h-6 items-center gap-4 text-black">
                     <Image
                       src={logo}
                       width={32}
                       height={32}
                       alt="Picture of the brand"
+                      className="invert filter"
                     />
                     <span>Cow or King Café</span>
                   </div>

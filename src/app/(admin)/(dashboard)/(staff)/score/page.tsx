@@ -5,13 +5,16 @@ import { StaffApi } from "@/store/staff";
 import { useTypedDispatch, useTypedSelector } from "@/store/types";
 import { useEffect } from "react";
 
-export default function ScorePage() {
+export default function ScorePage({ hidden }: { hidden: string }) {
   const dispatch = useTypedDispatch();
   useEffect(() => {
-    dispatch(StaffApi.fetchData()).then(console.log);
+    dispatch(StaffApi.fetchData());
   }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(StaffApi.fetchData()).then(console.log);
+  // }, [dispatch]);
   const data = useTypedSelector((state) => state.staff.data) ?? [];
-  console.log(" data:", data);
+  // console.log(" data:", data);
 
   return (
     <div className="py-4">
@@ -20,12 +23,14 @@ export default function ScorePage() {
           (staff) =>
             staff.active && ( // Only render active staff
               <StaffCard
-                key={staff.id}
+                key={`${staff.id} + ${staff.lastName}`}
                 firstname={staff.firstName}
                 lastname={staff.lastName}
                 start={""}
                 end={""}
+                mdp={staff.mdp} // Assuming mdp is a property of the staff object
                 staffId={staff._id} // Use the actual ID from the staff object
+                hidden={hidden}
               />
             ),
         )}

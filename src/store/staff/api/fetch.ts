@@ -19,6 +19,7 @@ export const createStaff = createAsyncThunk(
       startDate: Date;
       endDate?: Date;
       contract: string;
+      mdp: number; // Champ pour le mot de passe ou l'identifiant
       active: boolean; // Ajout du champ actif
     },
     { rejectWithValue },

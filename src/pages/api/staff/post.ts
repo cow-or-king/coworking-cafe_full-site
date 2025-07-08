@@ -9,11 +9,11 @@ export default async function handler(
 ) {
   await dbConnect();
 
-  console.log("Méthode reçue :", req.method);
+  // console.log("Méthode reçue :", req.method);
 
   if (req.method === "POST") {
     try {
-      console.log("Données reçues :", req.body);
+      // console.log("Données reçues :", req.body);
 
       const {
         firstName,
@@ -30,6 +30,7 @@ export default async function handler(
         startDate,
         endDate,
         contract,
+        mdp, // Champ pour le mot de passe ou l'identifiant,
         active = true, // Champ actif par défaut à true
       } = req.body;
 
@@ -48,10 +49,11 @@ export default async function handler(
         startDate,
         endDate,
         contract,
+        mdp,
         active, // Enregistrement de l'état actif
       });
 
-      console.log("Staff créé avec succès :", entry);
+      // console.log("Staff créé avec succès :", entry);
       res.status(201).json({ success: true, data: entry });
     } catch (error) {
       const errorMessage =

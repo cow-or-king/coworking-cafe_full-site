@@ -4,6 +4,7 @@ import { Chart } from "@/components/dashboard/chart";
 import { DashSectionCards } from "@/components/dashboard/dash-SectionCard";
 import SwitchWithText from "@/components/dashboard/switchWithText";
 import { useState } from "react";
+import ScorePage from "./(dashboard)/(staff)/score/page";
 
 export default function DashboardPage() {
   const [checked, setChecked] = useState(false);
@@ -22,9 +23,10 @@ export default function DashboardPage() {
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
             <DashSectionCards checked={checked} />
-            <div className="px-4 lg:px-6">
+            {/* <div className="px-4 lg:px-6">
               <Chart />
-            </div>
+            </div> */}
+            <ScorePage hidden={"hidden"} />
           </div>
         </div>
       </div>

@@ -49,6 +49,7 @@ const initialFormData = {
   startDate: "", // Default to today
   endDate: "", // Default to today
   contract: "",
+  mdp: "", // Champ pour le mot de passe ou l'identifiant
   active: true, // Default to active
 };
 
@@ -73,6 +74,7 @@ export default function CreateStaff() {
       createStaff({
         ...formData,
         hourlyRate: Number(formData.hourlyRate),
+        mdp: Number(formData.mdp),
         startDate: formData.startDate
           ? new Date(formData.startDate)
           : new Date(),
@@ -326,6 +328,16 @@ export default function CreateStaff() {
                   className={cn(
                     "data-[state=checked]:bg-(--chart-4) data-[state=unchecked]:bg-(--chart-5)",
                   )}
+                />
+              </div>
+              <div className="flex w-full flex-1 flex-col items-center justify-center space-y-1.5">
+                <Label htmlFor="mdp">Mot de passe</Label>
+                <Input
+                  id="mdp"
+                  type="password"
+                  value={formData.mdp}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>

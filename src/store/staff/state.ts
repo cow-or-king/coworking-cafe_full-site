@@ -13,6 +13,7 @@ export const InitialStaffState: StaffState = {
 };
 
 export interface Staff {
+  mdp: number;
   _id: string;
   id: string;
   active: boolean;

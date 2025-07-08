@@ -44,8 +44,11 @@ export function Chart() {
   const dispatch = useTypedDispatch();
 
   useEffect(() => {
-    dispatch(TurnoverApi.fetchData()).then(console.log);
+    dispatch(TurnoverApi.fetchData());
   }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(TurnoverApi.fetchData()).then(console.log);
+  // }, [dispatch]);
 
   const chartData = useTypedSelector((state) => state.turnover.data || []);
 
