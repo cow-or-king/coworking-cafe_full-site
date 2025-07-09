@@ -23,7 +23,7 @@ type CashEntry = {
 
 import { columns } from "@/components/dashboard/accounting/cash-control/columns";
 import { Button } from "@/components/ui/button";
-import PDFCashControl from "@/lib/pdf/pdf-CashControl";
+import PdfCashControl from "@/lib/pdf/pdf-CashControl";
 import { useTypedDispatch, useTypedSelector } from "@/store/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -382,20 +382,16 @@ export default function CashControl() {
 
   // Update the document whenever the relevant data changes.
   useEffect(() => {
-    if (
-      mergedData.length > 0 &&
-      selectedMonth !== null &&
-      selectedYear !== null
-    ) {
+    if (mergedData.length > 0) {
       updateDocument(
-        <PDFCashControl
+        <PdfCashControl
           data={mergedData}
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}
         />,
       );
     }
-  }, [mergedData, selectedMonth, selectedYear, updateDocument]);
+  }, [mergedData, updateDocument]);
 
   return (
     <div className="container mx-auto p-4">

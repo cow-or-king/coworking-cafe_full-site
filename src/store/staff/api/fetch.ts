@@ -58,3 +58,7 @@ export const fetchData = createTypedAsyncThunk(
     return data.data;
   },
 );
+
+export function useFetchDataQuery(): { users: any } {
+  throw new Error("Function not implemented.");
+}

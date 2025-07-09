@@ -13,6 +13,7 @@ export const InitialStaffState: StaffState = {
 };
 
 export interface Staff {
+  date: string | number | Date;
   mdp: number;
   _id: string;
   id: string;
@@ -22,4 +23,5 @@ export interface Staff {
   email: string;
   startTime: string;
   endTime: string;
+  tel?: string; // Ajout de la propriété optionnelle 'tel'
 }
