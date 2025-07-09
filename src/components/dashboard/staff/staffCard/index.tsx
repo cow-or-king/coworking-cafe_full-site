@@ -22,6 +22,7 @@ type StaffCardProps = {
   end: string;
   staffId: string; // Ajout de l'ID du staff
   mdp: number; // Mot de passe pour le pointage
+  hidden: string; // Propriété pour gérer la visibilité du footer
 };
 
 export default function StaffCard({
@@ -51,7 +52,7 @@ export default function StaffCard({
   const [shiftId, setShiftId] = React.useState<string | null>(null); // État pour stocker l'_id du shift
 
   const formatTime = (isoString: string | null) => {
-    if (!isoString) return "";
+    if (!isoString || isNaN(Date.parse(isoString))) return ""; // Retourner une chaîne vide si la date est invalide
     const date = new Date(isoString);
     return date.toLocaleTimeString("fr-FR", {
       hour: "2-digit",
@@ -60,38 +61,51 @@ export default function StaffCard({
   };
 
   React.useEffect(() => {
-    // Récupérer les données depuis les cookies spécifiques au staff au chargement de la page
-    const cookies = document.cookie.split("; ").reduce(
-      (acc, cookie) => {
-        const [key, value] = cookie.split("=");
-        acc[key] = value;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
+    const fetchCurrentShift = async () => {
+      try {
+        const response = await fetch(
+          `/api/shift?staffId=${staffId}&date=${form.date}`,
+        );
+        if (!response.ok) {
+          throw new Error(
+            "Erreur lors de la récupération du pointage en cours.",
+          );
+        }
 
-    if (cookies[`startTime_${staffId}`]) {
-      setStartTime(cookies[`startTime_${staffId}`]);
-    }
-    if (cookies[`endTime_${staffId}`]) {
-      setEndTime(cookies[`endTime_${staffId}`]);
-      setTimer(false); // Synchroniser l'état du timer uniquement si endTime est défini
-    } else if (
-      cookies[`startTime_${staffId}`] &&
-      !cookies[`endTime_${staffId}`]
-    ) {
-      setTimer(true); // Synchroniser l'état du timer uniquement si startTime est défini sans endTime
-    }
+        const result = await response.json();
+        console.log("Réponse brute de l'API GET /api/shift :", result);
 
-    // Récupérer shiftId depuis les cookies au chargement de la page
-    if (cookies[`shiftId_${staffId}`]) {
-      setShiftId(cookies[`shiftId_${staffId}`]);
-      // console.log(
-      //   "shiftId récupéré depuis les cookies :",
-      //   cookies[`shiftId_${staffId}`],
-      // );
-    }
-  }, [staffId]);
+        if (result.shifts && result.shifts.length > 0) {
+          const today = new Date(form.date).toISOString().slice(0, 10);
+          const ongoingShift = result.shifts.find(
+            (shift: { endTime: string; date: string }) =>
+              shift.endTime === "00:00" && shift.date === today,
+          );
+          if (ongoingShift) {
+            console.log(
+              "Pointage en cours récupéré pour aujourd'hui :",
+              ongoingShift,
+            );
+            setShiftId(ongoingShift._id);
+            setStartTime(ongoingShift.startTime);
+            setTimer(true);
+          } else {
+            console.log("Aucun pointage en cours trouvé pour aujourd'hui.");
+            setShiftId(null);
+            setStartTime(null);
+            setTimer(false);
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération du pointage en cours :",
+          error,
+        );
+      }
+    };
+
+    fetchCurrentShift();
+  }, [staffId, form.date]);
 
   const checkShiftLimit = async () => {
     try {
@@ -122,28 +136,24 @@ export default function StaffCard({
   };
 
   const handleCardClick = async () => {
-    if (isBlocked) return; // Bloquer le clic si isBlocked est vrai
+    if (isBlocked) return;
 
     if (!timer) {
       const canStart = await checkShiftLimit();
-      if (!canStart) return; // Bloquer le démarrage si la limite est atteinte
+      if (!canStart) return;
 
-      // Démarrer le pointage
       const now = new Date().toISOString();
-      const formattedNow = formatTime(now);
       setStartTime(now);
-      document.cookie = `startTime_${staffId}=${now}; path=/`; // Stocker dans les cookies spécifiques au staff
       setTimer(true);
-      toast.success("Pointage démarré à " + formattedNow);
+      toast.success("Pointage démarré à " + formatTime(now));
 
-      // Enregistrer les données de pointage avec une valeur par défaut pour stop
       const shiftData = {
-        staffId, // Utilisation de l'ID réel du staff
-        firstName: firstname, // Correction du nom du champ
-        lastName: lastname, // Correction du nom du champ
+        staffId,
+        firstName: firstname,
+        lastName: lastname,
         date: form.date,
-        startTime: formattedNow,
-        endTime: "00:00", // Valeur par défaut pour stop
+        startTime: now,
+        endTime: "00:00",
       };
 
       try {
@@ -158,14 +168,8 @@ export default function StaffCard({
         }
 
         const result = await response.json();
-        // console.log("Réponse complète de l'API POST :", result);
         if (result && result.shift && result.shift._id) {
           setShiftId(result.shift._id);
-          document.cookie = `shiftId_${staffId}=${result.shift._id}; path=/`; // Stocker shiftId dans les cookies
-          // console.log(
-          //   "_id du shift enregistré et stocké dans les cookies :",
-          //   result.shift._id,
-          // );
         } else {
           console.error("Erreur : _id non retourné par l'API POST.");
           toast.error("Erreur lors de l'enregistrement du pointage.");
@@ -175,25 +179,17 @@ export default function StaffCard({
         toast.error("Erreur lors de l'enregistrement du pointage.");
       }
     } else {
-      // Arrêter le pointage
       const now = new Date().toISOString();
-      const formattedNow = formatTime(now);
       setEndTime(now);
-      const expirationDate = new Date(Date.now() + 10000).toUTCString();
-      document.cookie = `startTime_${staffId}=${now}; path=/; expires=${expirationDate}`; // Stocker dans les cookies avec expiration
-      document.cookie = `endTime_${staffId}=${now}; path=/; expires=${expirationDate}`; // Stocker dans les cookies avec expiration
       setTimer(false);
-      toast.success("Pointage arrêté à " + formattedNow);
+      toast.success("Pointage arrêté à " + formatTime(now));
 
-      // Mettre à jour la valeur réelle de stop dans la base de données
       const updateData = {
-        _id: shiftId, // Utilisation de l'_id stocké pour correspondre à l'API
-        endTime: formattedNow,
+        _id: shiftId,
+        endTime: now,
       };
 
       try {
-        // console.log("Début de la logique pour arrêter le pointage.");
-
         if (!shiftId) {
           console.error("Erreur : shiftId est null ou undefined.");
           toast.error(
@@ -201,17 +197,6 @@ export default function StaffCard({
           );
           return;
         }
-
-        if (!formattedNow) {
-          console.error("Erreur : endTime est mal formaté.");
-          toast.error("Erreur dans le format de l'heure de fin.");
-          return;
-        }
-
-        // console.log("Données prêtes pour la requête PUT :", {
-        //   _id: shiftId,
-        //   endTime: formattedNow,
-        // });
 
         const response = await fetch(`/api/shift`, {
           method: "PUT",
@@ -224,26 +209,16 @@ export default function StaffCard({
         }
 
         const result = await response.json();
-        // console.log(
-        //   "Pointage mis à jour avec la valeur réelle pour stop:",
-        //   result,
-        // );
+        console.log("Pointage mis à jour :", result);
       } catch (error) {
         console.error("Erreur lors de la requête à l'API:", error);
         toast.error("Erreur lors de la mise à jour du pointage.");
       }
 
-      // Bloquer le clic jusqu'au rafraîchissement
       setIsBlocked(true);
 
-      // Réinitialiser uniquement le timer après 10 secondes
       setTimeout(() => {
-        setTimer(null);
-      }, 5000);
-
-      // Forcer un rafraîchissement de la page après 10 secondes
-      setTimeout(() => {
-        setIsBlocked(false); // Débloquer le clic après le rafraîchissement
+        setIsBlocked(false);
         window.location.reload();
       }, 10000);
     }
@@ -277,6 +252,31 @@ export default function StaffCard({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  React.useEffect(() => {
+    console.log("shiftId mis à jour :", shiftId);
+  }, [shiftId]);
+
+  React.useEffect(() => {
+    console.log("timer mis à jour :", timer);
+  }, [timer]);
+
+  React.useEffect(() => {
+    console.log("startTime mis à jour :", startTime);
+  }, [startTime]);
+
+  React.useEffect(() => {
+    if (passwordPrompt) {
+      setTimeout(() => {
+        const input = document.querySelector(
+          ".password-modal input",
+        ) as HTMLInputElement;
+        if (input) {
+          input.focus();
+        }
+      }, 0); // Utilisation de setTimeout pour garantir que l'élément est monté
+    }
+  }, [passwordPrompt]);
 
   return (
     <>
