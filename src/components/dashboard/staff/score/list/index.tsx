@@ -35,6 +35,7 @@ export default function ScoreList() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(
     currentMonth,
   );
+  const [selectedDay, setSelectedDay] = useState<number | null>(null); // État pour le jour sélectionné
 
   const [filter, setFilter] = useState({ months: "", user: "" });
   const [users, setUsers] = useState<string[]>([]);
@@ -90,6 +91,19 @@ export default function ScoreList() {
     return uniqueMonths;
   }, [shiftDates, selectedYear]);
 
+  const days = useMemo(() => {
+    if (!shiftDates || selectedYear === null || selectedMonth === null)
+      return [];
+    const allDays = shiftDates
+      .filter(
+        (date: Date) =>
+          date.getFullYear() === selectedYear &&
+          date.getMonth() === selectedMonth,
+      )
+      .map((date: Date) => date.getDate());
+    return Array.from(new Set(allDays)).sort((a, b) => a - b);
+  }, [shiftDates, selectedYear, selectedMonth]);
+
   // TODO: Replace this with your actual data fetching logic
   const [data, setData] = useState<any[]>([]);
 
@@ -120,14 +134,16 @@ export default function ScoreList() {
           : true;
         const monthMatch =
           selectedMonth !== null ? d.getMonth() === selectedMonth : true;
-        return yearMatch && monthMatch;
+        const dayMatch =
+          selectedDay !== null ? d.getDate() === selectedDay : true;
+        return yearMatch && monthMatch && dayMatch;
       })
       .map((item) => ({
         ...item,
         startTime: item.startTime || "", // Ajout de startTime
         endTime: item.endTime || "", // Ajout de endTime
       }));
-  }, [data, selectedYear, selectedMonth]);
+  }, [data, selectedYear, selectedMonth, selectedDay]);
 
   const filteredUsers = useMemo(() => {
     if (!data || selectedMonth === null || selectedYear === null) return users;
@@ -152,65 +168,65 @@ export default function ScoreList() {
 
   return (
     <div className="container mx-auto px-4">
-      <div className="flex justify-between">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <span className="font-semibold">Année :</span>
-          <select
-            className="mr-4 rounded border px-3 py-1"
-            value={selectedYear ?? ""}
-            onChange={(e) =>
-              setSelectedYear(e.target.value ? Number(e.target.value) : null)
-            }
-          >
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-          <span className="font-semibold">Mois :</span>
-          <select
-            className="rounded border px-3 py-1"
-            value={selectedMonth ?? ""}
-            onChange={(e) =>
-              setSelectedMonth(
-                e.target.value !== "" ? Number(e.target.value) : null,
-              )
-            }
-          >
-            {months.map((month) => (
-              <option key={month} value={month}>
-                {monthsList[month]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-4 flex items-center gap-2">
-          <label className="font-semibold" htmlFor="user">
-            Utilisateur :
-          </label>
-          <select
-            id="user"
-            value={filter.user}
-            onChange={(e) => setFilter({ ...filter, user: e.target.value })}
-            className="rounded border p-2"
-          >
-            {/* <option value="">Tous les utilisateurs</option> */}
-            {filteredUsers.map(
-              (user) => (
-                console.log("User option:", user),
-                (
-                  <option key={user} value={user}>
-                    {user}
+      <div className="rounded-md border">
+        <div className="p-4">
+          <div className="flex justify-between">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <span className="font-semibold">Année :</span>
+              <select
+                className="mr-4 rounded border px-3 py-1"
+                value={selectedYear ?? ""}
+                onChange={(e) =>
+                  setSelectedYear(
+                    e.target.value ? Number(e.target.value) : null,
+                  )
+                }
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
                   </option>
-                )
-              ),
-            )}
-          </select>
+                ))}
+              </select>
+              <span className="font-semibold">Mois :</span>
+              <select
+                className="mr-4 rounded border px-3 py-1"
+                value={selectedMonth ?? ""}
+                onChange={(e) =>
+                  setSelectedMonth(
+                    e.target.value !== "" ? Number(e.target.value) : null,
+                  )
+                }
+              >
+                {months.map((month) => (
+                  <option key={month} value={month}>
+                    {monthsList[month]}
+                  </option>
+                ))}
+              </select>
+              <span className="font-semibold">Jour :</span>
+              <select
+                className="rounded border px-3 py-1"
+                value={selectedDay ?? ""}
+                onChange={(e) =>
+                  setSelectedDay(
+                    e.target.value !== "" ? Number(e.target.value) : null,
+                  )
+                }
+              >
+                <option value="">Tous les jours</option>
+                {days.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <DataTable columns={columns} data={filteredData} />
         </div>
       </div>
-
-      <DataTable columns={columns} data={filteredData} checked={true} />
     </div>
   );
 }

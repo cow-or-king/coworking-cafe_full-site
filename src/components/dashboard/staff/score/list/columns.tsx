@@ -29,37 +29,27 @@ export const columns: ColumnDef<ShiftData>[] = [
     accessorKey: "date",
   },
   {
-    id: "startTime",
-    header: "Heure de Début",
-    accessorKey: "startTime",
+    id: "startTimeFirst",
+    header: "Heure de Début (1)",
+    accessorKey: "startTimeFirst",
   },
   {
-    id: "endTime",
-    header: "Heure de Fin",
-    accessorKey: "endTime",
+    id: "endTimeFirst",
+    header: "Heure de Fin (1)",
+    accessorKey: "endTimeFirst",
+  },
+  {
+    id: "startTimeSecond",
+    header: "Heure de Début (2)",
+    accessorKey: "startTimeSecond",
+  },
+  {
+    id: "endTimeSecond",
+    header: "Heure de Fin (2)",
+    accessorKey: "endTimeSecond",
   },
   {
     id: "actions",
     header: "Actions",
-    // cell: ({ row }) => {
-    //   const shift = row.original;
-    //   return (
-    //     <div className="flex items-center space-x-2">
-    //       {/* Ajouter des boutons ou des actions ici */}
-    //       <button
-    //         onClick={() => console.log("Modifier", shift.id)}
-    //         className="text-blue-500 hover:underline"
-    //       >
-    //         Modifier
-    //       </button>
-    //       <button
-    //         onClick={() => console.log("Supprimer", shift.id)}
-    //         className="text-red-500 hover:underline"
-    //       >
-    //         Supprimer
-    //       </button>
-    //     </div>
-    //   );
-    // },
   },
 ];
