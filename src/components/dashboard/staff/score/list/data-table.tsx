@@ -64,21 +64,29 @@ export function DataTable<
         row.startTime,
       ).toDateString()}`; // Clé unique par utilisateur et date
       console.log(`Clé générée : ${key}`); // Log pour vérifier les clés
+      const time = new Date(row.startTime);
+      const isAfternoon =
+        time.getUTCHours() > 14 ||
+        (time.getUTCHours() === 14 && time.getUTCMinutes() > 30);
+
       if (!acc[key]) {
         acc[key] = {
           id: row.id, // Utilisation de l'ID pour identifier la ligne
           date: new Date(row.startTime).toLocaleDateString("fr-FR"), // Formater la date en DD/MM/YYYY
           firstName: row.firstName, // Prénom de l'utilisateur
           lastName: row.lastName, // Nom de l'utilisateur
-          startTimeFirst: row.startTime,
-          endTimeFirst: row.endTime,
-          startTimeSecond: "",
-          endTimeSecond: "",
+          startTimeFirst: isAfternoon ? "" : row.startTime,
+          endTimeFirst: isAfternoon ? "" : row.endTime,
+          startTimeSecond: isAfternoon ? row.startTime : "",
+          endTimeSecond: isAfternoon ? row.endTime : "",
         };
       } else {
-        if (!acc[key].startTimeSecond) {
+        if (isAfternoon && !acc[key].startTimeSecond) {
           acc[key].startTimeSecond = row.startTime;
           acc[key].endTimeSecond = row.endTime;
+        } else if (!isAfternoon && !acc[key].startTimeFirst) {
+          acc[key].startTimeFirst = row.startTime;
+          acc[key].endTimeFirst = row.endTime;
         } else {
           console.warn(`Plus de deux entrées pour la clé ${key}`);
         }
@@ -145,10 +153,13 @@ export function DataTable<
           ))}
         </select>
       </div>
-      <Table>
+      <Table className="border-2 border-gray-200">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow
+              className="bg-gray-200 hover:bg-gray-200"
+              key={headerGroup.id}
+            >
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id}>

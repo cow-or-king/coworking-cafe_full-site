@@ -48,8 +48,8 @@ export const columns: ColumnDef<ShiftData>[] = [
     header: "Heure de Fin (2)",
     accessorKey: "endTimeSecond",
   },
-  {
-    id: "actions",
-    header: "Actions",
-  },
+  // {
+  //   id: "actions",
+  //   header: "Actions",
+  // },
 ];
