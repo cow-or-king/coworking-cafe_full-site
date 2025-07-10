@@ -177,34 +177,28 @@ export function DataTable<
         </TableHeader>
         <TableBody>
           {filteredData.length ? (
-            filteredData.map(
-              (row) => (
-                console.log("Row data:", row),
-                (
-                  <TableRow key={row.id} data-state={undefined}>
-                    {columns.map(
-                      (column) => (
-                        console.log("Column data:", column),
-                        (
-                          <TableCell key={column.id}>
-                            {
-                              row[
-                                column.id as
-                                  | "startTimeFirst"
-                                  | "endTimeFirst"
-                                  | "startTimeSecond"
-                                  | "endTimeSecond"
-                                  | "id"
-                              ]
-                            }
-                          </TableCell>
-                        )
-                      ),
-                    )}
-                  </TableRow>
-                )
-              ),
-            )
+            filteredData.map((row) => (
+              <TableRow
+                key={row.id}
+                onClick={() => console.log("clicked")}
+                className="cursor-pointer hover:bg-blue-200"
+              >
+                {columns.map((column) => (
+                  <TableCell key={column.id}>
+                    {
+                      row[
+                        column.id as
+                          | "startTimeFirst"
+                          | "endTimeFirst"
+                          | "startTimeSecond"
+                          | "endTimeSecond"
+                          | "id"
+                      ]
+                    }
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
