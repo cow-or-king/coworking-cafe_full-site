@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react"; // Importer useState pour gérer l'état du filtre
 
+import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -115,6 +117,8 @@ export function DataTable<
   console.log("Données formatées:", formattedData);
 
   const [selectedUser, setSelectedUser] = useState<string | null>(null); // État pour l'utilisateur sélectionné
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<TData | null>(null);
 
   const uniqueUsers = Array.from(
     new Set(data.map((row) => `${row.firstName} ${row.lastName}`)),
@@ -128,6 +132,16 @@ export function DataTable<
 
   const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedUser(event.target.value || null); // Mettre à jour l'utilisateur sélectionné
+  };
+
+  const handleRowClick = (row: TData) => {
+    setSelectedRow(row);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedRow(null);
   };
 
   // console.log("DataTable data:", data);
@@ -180,7 +194,7 @@ export function DataTable<
             filteredData.map((row) => (
               <TableRow
                 key={row.id}
-                onClick={() => console.log("clicked")}
+                onClick={() => handleRowClick(row as unknown as TData)}
                 className="cursor-pointer hover:bg-blue-200"
               >
                 {columns.map((column) => (
@@ -208,6 +222,46 @@ export function DataTable<
           )}
         </TableBody>
       </Table>
+
+      {/* Modal */}
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <Dialog onOpenChange={handleCloseModal}>
+            <div className="relative z-10 w-full max-w-md rounded-md bg-white p-4 shadow-lg">
+              <h2 className="text-lg font-bold">Modifier la ligne</h2>
+              {selectedRow && (
+                <div className="mt-4">
+                  {Object.entries(selectedRow).map(([key, value]) => (
+                    <div key={key} className="mb-2">
+                      <label className="block text-sm font-medium">{key}</label>
+                      <input
+                        type="text"
+                        value={
+                          typeof value === "boolean"
+                            ? value.toString()
+                            : (value as string)
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        onChange={(e) =>
+                          setSelectedRow({
+                            ...selectedRow,
+                            [key]: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+                  <Button onClick={handleCloseModal} className="mt-4">
+                    Enregistrer
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Dialog>
+        </div>
+      )}
     </div>
   );
 }
