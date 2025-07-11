@@ -26,6 +26,10 @@ interface DataTableProps<TData extends { active: boolean }, TValue> {
 
 export function DataTable<
   TData extends {
+    startTimeSecond: string;
+    endTimeSecond: string;
+    endTimeFirst: string;
+    startTimeFirst: string;
     id: string; // Ajout de la propriété id
     startTime: string;
     endTime?: string; // Ajout de la propriété endTime
@@ -227,35 +231,80 @@ export function DataTable<
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="absolute inset-0 bg-black opacity-20"></div>
           <Dialog onOpenChange={handleCloseModal}>
-            <div className="relative z-10 w-full max-w-md rounded-md bg-white p-4 shadow-lg">
-              <h2 className="text-lg font-bold">Modifier la ligne</h2>
+            <div className="relative z-10 w-full max-w-md rounded-md border-[1px] border-gray-400 bg-white p-4 text-center shadow-2xl">
+              <h2 className="text-lg font-bold">
+                Modifier les pointages de {selectedRow?.firstName}{" "}
+                {selectedRow?.lastName}
+              </h2>
               {selectedRow && (
-                <div className="mt-4">
-                  {Object.entries(selectedRow).map(([key, value]) => (
-                    <div key={key} className="mb-2">
-                      <label className="block text-sm font-medium">{key}</label>
+                <div className="mt-4 flex flex-col gap-4">
+                  <div className="flex w-full justify-center space-x-4">
+                    <div className="flex flex-col">
+                      <label className="block text-center text-sm font-medium">
+                        startTimeFirst
+                      </label>
                       <input
                         type="text"
-                        value={
-                          typeof value === "boolean"
-                            ? value.toString()
-                            : (value as string)
-                        }
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        onChange={(e) =>
-                          setSelectedRow({
-                            ...selectedRow,
-                            [key]: e.target.value,
-                          })
-                        }
+                        value={selectedRow?.startTimeFirst || ""}
+                        className="mt-1 block h-8 rounded-md border-[0.5px] border-gray-300 text-center shadow-sm sm:text-sm"
+                        onChange={() => {}}
                       />
                     </div>
-                  ))}
-                  <Button onClick={handleCloseModal} className="mt-4">
-                    Enregistrer
-                  </Button>
+                    <div className="flex flex-col">
+                      <label className="block text-center text-sm font-medium">
+                        endTimeFirst
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedRow?.endTimeFirst || ""}
+                        className="mt-1 block h-8 rounded-md border-[0.5px] border-gray-300 text-center shadow-sm sm:text-sm"
+                        onChange={() => {}}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex w-full justify-center space-x-4">
+                    <div className="flex flex-col">
+                      <label className="block text-center text-sm font-medium">
+                        startTimeSecond
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedRow?.startTimeSecond || ""}
+                        className="mt-1 block h-8 rounded-md border-[0.5px] border-gray-300 text-center shadow-sm sm:text-sm"
+                        onChange={() => {}}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="block text-center text-sm font-medium">
+                        endTimeSecond
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedRow?.endTimeSecond || ""}
+                        className="mt-1 block h-8 rounded-md border-[0.5px] border-gray-300 text-center shadow-sm sm:text-sm"
+                        onChange={() => {}}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex w-full justify-center space-x-4">
+                    <Button
+                      variant="destructive"
+                      onClick={handleCloseModal}
+                      className="mt-4 w-[100px]"
+                    >
+                      Annuler
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={handleCloseModal}
+                      className="mt-4 w-[100px]"
+                    >
+                      Enregistrer
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
