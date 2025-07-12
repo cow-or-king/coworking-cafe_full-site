@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useChartData } from "@/hooks/use-chart-data";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { prepareChartData } from "@/lib/reporting-utils";
-import { useGetTurnoverQuery } from "@/store/reporting/api";
 import React, { useMemo } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
@@ -41,7 +41,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function Chart() {
-  const { data: turnoverData, isLoading, error } = useGetTurnoverQuery();
+  const { data: turnoverData, isLoading, error } = useChartData();
 
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("30d");
