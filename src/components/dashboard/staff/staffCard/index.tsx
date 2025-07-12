@@ -18,41 +18,97 @@ import StaffCardHeader from "./staffCardHeader";
 type StaffCardProps = {
   firstname: string;
   lastname: string;
-  start: string;
-  end: string;
-  staffId: string; // Ajout de l'ID du staff
-  mdp: number; // Mot de passe pour le pointage
-  hidden: string; // Propriété pour gérer la visibilité du footer
+  staffId: string;
+  mdp: number;
+  hidden: string;
 };
+
+interface ShiftData {
+  firstShift: {
+    start: string;
+    end: string;
+  };
+  secondShift: {
+    start: string;
+    end: string;
+  };
+  _id?: string;
+}
 
 export default function StaffCard({
   firstname,
   lastname,
-  start,
-  end,
   staffId,
   mdp,
-  hidden, // Ajout de la propriété hidden avec une valeur par défaut
+  hidden,
 }: StaffCardProps) {
   const [form, setForm] = React.useState({
     date: new Date().toISOString().slice(0, 10),
     firstname: firstname || "",
     lastname: lastname || "",
-    start: start || "",
-    end: end || "",
-    staffId: staffId || "", // Utilisation de l'ID réel du staff
-    hidden: hidden || "", // Utilisation de la propriété hidden
+    staffId: staffId || "",
+    hidden: hidden || "",
   });
 
-  const [timer, setTimer] = React.useState<boolean | null>(false);
-  const [startTime, setStartTime] = React.useState<string | null>(null);
-  const [endTime, setEndTime] = React.useState<string | null>(null);
+  // États pour gérer les shifts
+  const [currentShiftData, setCurrentShiftData] =
+    React.useState<ShiftData | null>(null);
+  const [activeShift, setActiveShift] = React.useState<
+    "first" | "second" | null
+  >(null);
+  const [isFirstShiftActive, setIsFirstShiftActive] = React.useState(false);
+  const [isSecondShiftActive, setIsSecondShiftActive] = React.useState(false);
   const [isBlocked, setIsBlocked] = React.useState(false);
   const [passwordPrompt, setPasswordPrompt] = React.useState(false);
-  const [shiftId, setShiftId] = React.useState<string | null>(null); // État pour stocker l'_id du shift
 
-  const formatTime = (isoString: string | null) => {
-    if (!isoString || isNaN(Date.parse(isoString))) return ""; // Retourner une chaîne vide si la date est invalide
+  // Compteurs en temps réel
+  const [firstShiftElapsed, setFirstShiftElapsed] = React.useState("");
+  const [secondShiftElapsed, setSecondShiftElapsed] = React.useState("");
+
+  // Effet pour vérifier le changement de date à minuit
+  React.useEffect(() => {
+    const checkDateChange = () => {
+      const currentDate = new Date().toISOString().slice(0, 10);
+      if (currentDate !== form.date) {
+        console.log(
+          "Changement de date détecté:",
+          form.date,
+          "->",
+          currentDate,
+        );
+
+        // Réinitialiser les états pour la nouvelle journée
+        setForm((prev) => ({ ...prev, date: currentDate }));
+        setCurrentShiftData({
+          firstShift: { start: "00:00", end: "00:00" },
+          secondShift: { start: "00:00", end: "00:00" },
+        });
+        setActiveShift(null);
+        setIsFirstShiftActive(false);
+        setIsSecondShiftActive(false);
+        setIsBlocked(false);
+        setFirstShiftElapsed("");
+        setSecondShiftElapsed("");
+
+        // Afficher une notification
+        toast.success(
+          "Nouvelle journée ! Les pointages ont été réinitialisés.",
+        );
+      }
+    };
+
+    // Vérifier immédiatement
+    checkDateChange();
+
+    // Vérifier toutes les minutes
+    const interval = setInterval(checkDateChange, 60000);
+
+    return () => clearInterval(interval);
+  }, [form.date]);
+
+  const formatTime = (isoString: string) => {
+    if (!isoString || isoString === "00:00" || isNaN(Date.parse(isoString)))
+      return "";
     const date = new Date(isoString);
     return date.toLocaleTimeString("fr-FR", {
       hour: "2-digit",
@@ -60,6 +116,56 @@ export default function StaffCard({
     });
   };
 
+  const calculateElapsedTime = (startTime: string, endTime?: string) => {
+    if (!startTime || startTime === "00:00") return "";
+
+    const start = new Date(startTime);
+    const end = endTime && endTime !== "00:00" ? new Date(endTime) : new Date();
+    const diff = end.getTime() - start.getTime();
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+  };
+
+  // Effet pour mettre à jour les compteurs en temps réel
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (currentShiftData) {
+        if (
+          isFirstShiftActive &&
+          currentShiftData.firstShift.start !== "00:00"
+        ) {
+          setFirstShiftElapsed(
+            calculateElapsedTime(
+              currentShiftData.firstShift.start,
+              currentShiftData.firstShift.end !== "00:00"
+                ? currentShiftData.firstShift.end
+                : undefined,
+            ),
+          );
+        }
+        if (
+          isSecondShiftActive &&
+          currentShiftData.secondShift.start !== "00:00"
+        ) {
+          setSecondShiftElapsed(
+            calculateElapsedTime(
+              currentShiftData.secondShift.start,
+              currentShiftData.secondShift.end !== "00:00"
+                ? currentShiftData.secondShift.end
+                : undefined,
+            ),
+          );
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentShiftData, isFirstShiftActive, isSecondShiftActive]);
+
+  // Récupération des données de shift au chargement
   React.useEffect(() => {
     const fetchCurrentShift = async () => {
       try {
@@ -67,176 +173,135 @@ export default function StaffCard({
           `/api/shift?staffId=${staffId}&date=${form.date}`,
         );
         if (!response.ok) {
-          throw new Error(
-            "Erreur lors de la récupération du pointage en cours.",
-          );
+          throw new Error("Erreur lors de la récupération du shift.");
         }
 
         const result = await response.json();
-        console.log("Réponse brute de l'API GET /api/shift :", result);
+        console.log("Données shift récupérées :", result);
 
-        if (result.shifts && result.shifts.length > 0) {
-          const today = new Date(form.date).toISOString().slice(0, 10);
-          const ongoingShift = result.shifts.find(
-            (shift: { endTime: string; date: string }) =>
-              shift.endTime === "00:00" && shift.date === today,
-          );
-          if (ongoingShift) {
-            console.log(
-              "Pointage en cours récupéré pour aujourd'hui :",
-              ongoingShift,
-            );
-            setShiftId(ongoingShift._id);
-            setStartTime(ongoingShift.startTime);
-            setTimer(true);
+        if (result.shift) {
+          setCurrentShiftData(result.shift);
+
+          // Déterminer quel shift est actif
+          const { firstShift, secondShift } = result.shift;
+
+          if (firstShift.start !== "00:00" && firstShift.end === "00:00") {
+            setActiveShift("first");
+            setIsFirstShiftActive(true);
+          } else if (
+            secondShift.start !== "00:00" &&
+            secondShift.end === "00:00"
+          ) {
+            setActiveShift("second");
+            setIsSecondShiftActive(true);
           } else {
-            console.log("Aucun pointage en cours trouvé pour aujourd'hui.");
-            setShiftId(null);
-            setStartTime(null);
-            setTimer(false);
+            setActiveShift(null);
           }
+        } else {
+          // Initialiser un nouveau shift si aucun n'existe
+          setCurrentShiftData({
+            firstShift: { start: "00:00", end: "00:00" },
+            secondShift: { start: "00:00", end: "00:00" },
+          });
         }
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération du pointage en cours :",
-          error,
-        );
+        console.error("Erreur lors de la récupération du shift :", error);
+        // Initialiser un nouveau shift en cas d'erreur
+        setCurrentShiftData({
+          firstShift: { start: "00:00", end: "00:00" },
+          secondShift: { start: "00:00", end: "00:00" },
+        });
       }
     };
 
     fetchCurrentShift();
   }, [staffId, form.date]);
 
-  const checkShiftLimit = async () => {
+  const handleStartStop = async () => {
+    if (isBlocked || !currentShiftData) return;
+
+    const now = new Date().toISOString();
+
     try {
-      const response = await fetch(
-        `/api/shift?staffId=${staffId}&date=${form.date}`,
-      );
+      let updatedShiftData = { ...currentShiftData };
+
+      // Logique pour démarrer/arrêter les shifts
+      if (!activeShift) {
+        // Démarrer le premier shift
+        if (currentShiftData.firstShift.start === "00:00") {
+          updatedShiftData.firstShift.start = now;
+          setActiveShift("first");
+          setIsFirstShiftActive(true);
+          toast.success(`Premier shift démarré à ${formatTime(now)}`);
+        } else if (currentShiftData.secondShift.start === "00:00") {
+          updatedShiftData.secondShift.start = now;
+          setActiveShift("second");
+          setIsSecondShiftActive(true);
+          toast.success(`Deuxième shift démarré à ${formatTime(now)}`);
+        } else {
+          toast.error("Limite de 2 shifts atteinte pour aujourd'hui.");
+          return;
+        }
+      } else if (activeShift === "first") {
+        // Arrêter le premier shift
+        updatedShiftData.firstShift.end = now;
+        setActiveShift(null);
+        setIsFirstShiftActive(false);
+        toast.success(`Premier shift arrêté à ${formatTime(now)}`);
+      } else if (activeShift === "second") {
+        // Arrêter le deuxième shift
+        updatedShiftData.secondShift.end = now;
+        setActiveShift(null);
+        setIsSecondShiftActive(false);
+        toast.success(`Deuxième shift arrêté à ${formatTime(now)}`);
+      }
+
+      // Envoyer la requête à l'API
+      const method = currentShiftData._id ? "PUT" : "POST";
+      const body = currentShiftData._id
+        ? { _id: currentShiftData._id, ...updatedShiftData }
+        : {
+            staffId,
+            firstName: firstname,
+            lastName: lastname,
+            date: form.date,
+            ...updatedShiftData,
+          };
+
+      const response = await fetch("/api/shift", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
       if (!response.ok) {
         throw new Error(
-          "Erreur lors de la vérification des pointages existants.",
+          `Erreur lors de l'${method === "POST" ? "enregistrement" : "mise à jour"} du shift.`,
         );
       }
 
       const result = await response.json();
-      if (result.shifts && result.shifts.length >= 2) {
-        toast.error("Limite de 2 pointages atteinte pour aujourd'hui.");
-        return false;
+      if (result.shift) {
+        setCurrentShiftData(result.shift);
       }
-
-      return true;
     } catch (error) {
-      console.error(
-        "Erreur lors de la vérification des pointages existants :",
-        error,
-      );
-      toast.error("Erreur lors de la vérification des pointages existants.");
-      return false;
-    }
-  };
-
-  const handleCardClick = async () => {
-    if (isBlocked) return;
-
-    if (!timer) {
-      const canStart = await checkShiftLimit();
-      if (!canStart) return;
-
-      const now = new Date().toISOString();
-      setStartTime(now);
-      setTimer(true);
-      toast.success("Pointage démarré à " + formatTime(now));
-
-      const shiftData = {
-        staffId,
-        firstName: firstname,
-        lastName: lastname,
-        date: form.date,
-        startTime: now,
-        endTime: "00:00",
-      };
-
-      try {
-        const response = await fetch("/api/shift", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(shiftData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de l'enregistrement du pointage.");
-        }
-
-        const result = await response.json();
-        if (result && result.shift && result.shift._id) {
-          setShiftId(result.shift._id);
-        } else {
-          console.error("Erreur : _id non retourné par l'API POST.");
-          toast.error("Erreur lors de l'enregistrement du pointage.");
-        }
-      } catch (error) {
-        console.error("Erreur lors de la requête à l'API:", error);
-        toast.error("Erreur lors de l'enregistrement du pointage.");
-      }
-    } else {
-      const now = new Date().toISOString();
-      setEndTime(now);
-      setTimer(false);
-      toast.success("Pointage arrêté à " + formatTime(now));
-
-      const updateData = {
-        _id: shiftId,
-        endTime: now,
-      };
-
-      try {
-        if (!shiftId) {
-          console.error("Erreur : shiftId est null ou undefined.");
-          toast.error(
-            "Impossible de mettre à jour le pointage. Veuillez réessayer.",
-          );
-          return;
-        }
-
-        const response = await fetch(`/api/shift`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updateData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de la mise à jour du pointage.");
-        }
-
-        const result = await response.json();
-        console.log("Pointage mis à jour :", result);
-      } catch (error) {
-        console.error("Erreur lors de la requête à l'API:", error);
-        toast.error("Erreur lors de la mise à jour du pointage.");
-      }
-
-      setIsBlocked(true);
-
-      setTimeout(() => {
-        setIsBlocked(false);
-        window.location.reload();
-      }, 10000);
+      console.error("Erreur lors de la requête à l'API:", error);
+      toast.error("Erreur lors de l'opération.");
     }
   };
 
   const handlePasswordSubmit = (password: number) => {
     if (password === mdp) {
       setPasswordPrompt(false);
-      handleCardClick();
+      handleStartStop();
     } else {
       toast.error("Mot de passe incorrect.");
     }
   };
 
   const handleCardClickWithPassword = () => {
-    if (isBlocked) return; // Bloquer le clic si isBlocked est vrai
-
-    setPasswordPrompt(true); // Afficher la demande de mot de passe
+    if (isBlocked) return;
+    setPasswordPrompt(true);
   };
 
   React.useEffect(() => {
@@ -247,23 +312,8 @@ export default function StaffCard({
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  React.useEffect(() => {
-    console.log("shiftId mis à jour :", shiftId);
-  }, [shiftId]);
-
-  React.useEffect(() => {
-    console.log("timer mis à jour :", timer);
-  }, [timer]);
-
-  React.useEffect(() => {
-    console.log("startTime mis à jour :", startTime);
-  }, [startTime]);
 
   React.useEffect(() => {
     if (passwordPrompt) {
@@ -274,9 +324,24 @@ export default function StaffCard({
         if (input) {
           input.focus();
         }
-      }, 0); // Utilisation de setTimeout pour garantir que l'élément est monté
+      }, 0);
     }
   }, [passwordPrompt]);
+
+  // Déterminer le texte du bouton et l'état
+  const getButtonText = () => {
+    if (!currentShiftData) return "Chargement...";
+
+    if (activeShift === "first") return "Arrêter Premier Shift";
+    if (activeShift === "second") return "Arrêter Deuxième Shift";
+
+    if (currentShiftData.firstShift.start === "00:00")
+      return "Démarrer Premier Shift";
+    if (currentShiftData.secondShift.start === "00:00")
+      return "Démarrer Deuxième Shift";
+
+    return "Shifts terminés";
+  };
 
   return (
     <>
@@ -329,7 +394,7 @@ export default function StaffCard({
                       if (e.key === "Enter") {
                         handlePasswordSubmit(Number(e.currentTarget.value));
                       } else if (e.key === "Escape") {
-                        setPasswordPrompt(false); // Fermer le modal sur Échap
+                        setPasswordPrompt(false);
                       }
                     }}
                   />
@@ -368,13 +433,30 @@ export default function StaffCard({
         <StaffCardHeader
           firstname={firstname}
           lastname={lastname}
-          timer={timer}
+          timer={activeShift !== null}
+          buttonText={getButtonText()}
         />
 
         <div className={hidden}>
           <StaffCardFooter
-            startTime={formatTime(startTime)}
-            endTime={formatTime(endTime)}
+            firstShift={{
+              start: currentShiftData
+                ? formatTime(currentShiftData.firstShift.start)
+                : "",
+              end: currentShiftData
+                ? formatTime(currentShiftData.firstShift.end)
+                : "",
+              elapsed: firstShiftElapsed,
+            }}
+            secondShift={{
+              start: currentShiftData
+                ? formatTime(currentShiftData.secondShift.start)
+                : "",
+              end: currentShiftData
+                ? formatTime(currentShiftData.secondShift.end)
+                : "",
+              elapsed: secondShiftElapsed,
+            }}
           />
         </div>
       </Card>

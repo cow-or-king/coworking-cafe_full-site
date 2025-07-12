@@ -26,8 +26,6 @@ export default function ScoreCard({ hidden }: { hidden: string }) {
                 key={`${staff.id} + ${staff.lastName}`}
                 firstname={staff.firstName}
                 lastname={staff.lastName}
-                start={""}
-                end={""}
                 mdp={staff.mdp} // Assuming mdp is a property of the staff object
                 staffId={staff._id} // Use the actual ID from the staff object
                 hidden={hidden}

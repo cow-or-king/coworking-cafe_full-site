@@ -5,12 +5,14 @@ type StaffCardHeaderProps = {
   firstname: string;
   lastname: string;
   timer: boolean | null;
+  buttonText?: string;
 };
 
 export default function StaffCardHeader({
   firstname,
   lastname,
   timer,
+  buttonText,
 }: StaffCardHeaderProps) {
   return (
     <CardHeader>
@@ -23,12 +25,12 @@ export default function StaffCardHeader({
         {timer ? (
           <div className="flex cursor-pointer flex-col items-center gap-2">
             <TimerOff size={60} />
-            STOP
+            <span className="text-center text-xs">{buttonText || "STOP"}</span>
           </div>
         ) : (
           <div className="flex cursor-pointer flex-col items-center gap-2">
             <Timer size={60} />
-            START
+            <span className="text-center text-xs">{buttonText || "START"}</span>
           </div>
         )}
       </div>

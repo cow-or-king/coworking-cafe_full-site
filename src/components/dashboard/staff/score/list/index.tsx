@@ -1,8 +1,13 @@
-import { columns } from "@/components/dashboard/staff/score/list/columns";
-import { DataTable } from "@/components/dashboard/staff/score/list/data-table";
+import {
+  createColumns,
+  ShiftData,
+  UpdateShiftProps,
+} from "@/components/dashboard/staff/score/list/columns";
 import { StaffApi } from "@/store/staff";
 import { useTypedDispatch } from "@/store/types";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-hot-toast";
+import { ShiftDataTable } from "./shift-data-table";
 
 const monthsList = [
   "Janvier",
@@ -37,42 +42,35 @@ export default function ScoreList() {
   );
   const [selectedDay, setSelectedDay] = useState<number | null>(null); // État pour le jour sélectionné
 
-  const [filter, setFilter] = useState({ months: "", user: "" });
-  const [users, setUsers] = useState<string[]>([]);
   const [shiftDates, setShiftDates] = useState<Date[]>([]);
   const dispatch = useTypedDispatch();
 
   useEffect(() => {
     dispatch(StaffApi.fetchData());
 
-    // Récupérer les utilisateurs uniques de la base de données Shift
-    const fetchUsersAndDates = async () => {
+    // Récupérer les shifts de la base de données
+    const fetchShifts = async () => {
       try {
-        const response = await fetch("/api/shift/users");
+        const response = await fetch("/api/shift/list");
         if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des utilisateurs.");
+          throw new Error("Erreur lors de la récupération des shifts.");
         }
-        const result: { users: string[]; dates: string[] } =
-          await response.json();
-        console.log("Réponse brute de l'API GET /api/shift/users :", result);
+        const result = await response.json();
+        console.log("Shifts récupérés :", result);
+        setData(result.shifts || []);
 
-        setUsers(result.users || []);
-
-        // Extraire les dates des entrées Shift
-        const dates = result.dates || [];
-        const parsedDates = dates
-          .map((dateStr: string) => new Date(dateStr))
-          .filter((date: Date) => !isNaN(date.getTime()));
-        setShiftDates(parsedDates);
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des utilisateurs et des dates :",
-          error,
+        const dates = (result.shifts || []).map(
+          (shift: ShiftData) => new Date(shift.date),
         );
+        const validDates = dates.filter((date: Date) => !isNaN(date.getTime()));
+        setShiftDates(validDates);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des shifts :", error);
+        setData([]);
       }
     };
 
-    fetchUsersAndDates();
+    fetchShifts();
   }, [dispatch]);
 
   const years = useMemo(() => {
@@ -104,62 +102,56 @@ export default function ScoreList() {
     return Array.from(new Set(allDays)).sort((a, b) => a - b);
   }, [shiftDates, selectedYear, selectedMonth]);
 
-  // TODO: Replace this with your actual data fetching logic
-  const [data, setData] = useState<any[]>([]);
+  // État pour stocker les données de shifts
+  const [data, setData] = useState<ShiftData[]>([]);
 
-  useEffect(() => {
-    // Example fetch, replace with your actual API endpoint if needed
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/score/list");
-        if (!response.ok)
-          throw new Error("Erreur lors de la récupération des scores.");
-        const result = await response.json();
-        setData(result || []);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des scores :", error);
-        setData([]);
+  // Fonction pour mettre à jour un shift
+  const handleUpdateShift = async (update: UpdateShiftProps) => {
+    try {
+      const response = await fetch("/api/shift/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(update),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la mise à jour du shift");
       }
-    };
-    fetchData();
-  }, []);
 
+      const result = await response.json();
+
+      // Mettre à jour les données localement
+      setData((prevData) =>
+        prevData.map((shift) =>
+          shift._id === update.shiftId ? { ...shift, ...result.shift } : shift,
+        ),
+      );
+
+      toast.success("Shift mis à jour avec succès");
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour:", error);
+      toast.error("Erreur lors de la mise à jour du shift");
+    }
+  };
+
+  // Créer les colonnes avec la fonction de mise à jour
+  const editableColumns = useMemo(() => createColumns(handleUpdateShift), []);
+
+  // Filtrer les données selon année, mois et jour seulement
   const filteredData = useMemo(() => {
     if (!data) return [];
-    return data
-      .filter((item) => {
-        const d = new Date(item.date);
-        const yearMatch = selectedYear
-          ? d.getFullYear() === selectedYear
-          : true;
-        const monthMatch =
-          selectedMonth !== null ? d.getMonth() === selectedMonth : true;
-        const dayMatch =
-          selectedDay !== null ? d.getDate() === selectedDay : true;
-        return yearMatch && monthMatch && dayMatch;
-      })
-      .map((item) => ({
-        ...item,
-        startTime: item.startTime || "", // Ajout de startTime
-        endTime: item.endTime || "", // Ajout de endTime
-      }));
+    return data.filter((item) => {
+      const d = new Date(item.date);
+      const yearMatch = selectedYear ? d.getFullYear() === selectedYear : true;
+      const monthMatch =
+        selectedMonth !== null ? d.getMonth() === selectedMonth : true;
+      const dayMatch =
+        selectedDay !== null ? d.getDate() === selectedDay : true;
+      return yearMatch && monthMatch && dayMatch;
+    });
   }, [data, selectedYear, selectedMonth, selectedDay]);
-
-  const filteredUsers = useMemo(() => {
-    if (!data || selectedMonth === null || selectedYear === null) return users;
-
-    // Filtrer les utilisateurs en fonction des données pour le mois et l'année sélectionnés
-    const usersForSelectedMonth = data
-      .filter((item) => {
-        const d = new Date(item.date);
-        return (
-          d.getFullYear() === selectedYear && d.getMonth() === selectedMonth
-        );
-      })
-      .map((item) => `${item.firstName} ${item.lastName}`); // Concaténer nom et prénom
-
-    return Array.from(new Set(usersForSelectedMonth)); // Supprimer les doublons
-  }, [data, selectedMonth, selectedYear, users]);
 
   useEffect(() => {
     console.log("Données brutes:", data);
@@ -223,8 +215,7 @@ export default function ScoreList() {
               </select>
             </div>
           </div>
-
-          <DataTable columns={columns} data={filteredData} />
+          <ShiftDataTable columns={editableColumns} data={filteredData} />
         </div>
       </div>
     </div>

@@ -5,8 +5,14 @@ export interface IShift extends Document {
   firstName: string; // Prénom du Staff
   lastName: string; // Nom du Staff
   date: string; // Date du pointage
-  startTime: string; // Heure de début
-  endTime: string; // Heure de fin
+  firstShift: {
+    start: string; // Heure de début du premier shift
+    end: string; // Heure de fin du premier shift
+  };
+  secondShift: {
+    start: string; // Heure de début du deuxième shift
+    end: string; // Heure de fin du deuxième shift
+  };
 }
 
 const ShiftSchema: Schema = new Schema({
@@ -27,13 +33,25 @@ const ShiftSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  startTime: {
-    type: String,
-    required: true,
+  firstShift: {
+    start: {
+      type: String,
+      required: true,
+    },
+    end: {
+      type: String,
+      required: true,
+    },
   },
-  endTime: {
-    type: String,
-    required: true,
+  secondShift: {
+    start: {
+      type: String,
+      required: true,
+    },
+    end: {
+      type: String,
+      required: true,
+    },
   },
 });
 
