@@ -22,9 +22,9 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { TurnoverApi } from "@/store/turnover";
-import { useTypedDispatch, useTypedSelector } from "@/store/types";
-import React, { useEffect } from "react";
+import { prepareChartData } from "@/lib/reporting-utils";
+import { useGetTurnoverQuery } from "@/store/reporting/api";
+import React, { useMemo } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import type { ChartConfig } from "@/components/ui/chart";
@@ -41,16 +41,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function Chart() {
-  const dispatch = useTypedDispatch();
-
-  useEffect(() => {
-    dispatch(TurnoverApi.fetchData());
-  }, [dispatch]);
-  // useEffect(() => {
-  //   dispatch(TurnoverApi.fetchData()).then(console.log);
-  // }, [dispatch]);
-
-  const chartData = useTypedSelector((state) => state.turnover.data || []);
+  const { data: turnoverData, isLoading, error } = useGetTurnoverQuery();
 
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("30d");
@@ -62,22 +53,65 @@ export function Chart() {
     }
   }, [isMobile]);
 
-  const filteredData = chartData.filter((data) => {
-    const date = new Date(data.date);
-    const referenceDate = new Date();
-    let daysToSubtract = 365;
-    if (timeRange === "90d") {
-      daysToSubtract = 90;
-    } else if (timeRange === "30d") {
-      daysToSubtract = 31;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 8;
-    }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
+  const filteredData = useMemo(() => {
+    if (!turnoverData || !Array.isArray(turnoverData)) return [];
 
-    return date >= startDate;
-  });
+    const filtered = turnoverData.filter((data) => {
+      const date = new Date(data.date);
+      const referenceDate = new Date();
+      let daysToSubtract = 365;
+      if (timeRange === "90d") {
+        daysToSubtract = 90;
+      } else if (timeRange === "30d") {
+        daysToSubtract = 31;
+      } else if (timeRange === "7d") {
+        daysToSubtract = 8;
+      }
+      const startDate = new Date(referenceDate);
+      startDate.setDate(startDate.getDate() - daysToSubtract);
+
+      return date >= startDate;
+    });
+
+    return prepareChartData(filtered);
+  }, [turnoverData, timeRange]);
+
+  if (isLoading) {
+    return (
+      <Card className="@container/card">
+        <CardHeader>
+          <CardTitle>Chiffre d&apos;affaire</CardTitle>
+          <CardDescription>Chargement des données...</CardDescription>
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <div className="flex h-[250px] w-full items-center justify-center">
+            <div className="text-muted-foreground animate-pulse">
+              Chargement du graphique...
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="@container/card">
+        <CardHeader>
+          <CardTitle>Chiffre d&apos;affaire</CardTitle>
+          <CardDescription>Erreur lors du chargement</CardDescription>
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <div className="flex h-[250px] w-full items-center justify-center">
+            <div className="text-red-500">
+              Impossible de charger les données du graphique
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="@container/card">
       <CardHeader>

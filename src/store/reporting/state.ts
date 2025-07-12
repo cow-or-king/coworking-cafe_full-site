@@ -14,10 +14,20 @@ export interface ChartData {
 export interface ReportingState {
   loading: boolean;
   data: ChartData;
+  selectedRange?: string;
+  preferences?: {
+    showHT: boolean;
+    autoRefresh: boolean;
+  };
 }
 
 export const InitialReportingState: ReportingState = {
-  loading: true,
+  loading: false, // RTK Query gère le loading
+  selectedRange: "yesterday",
+  preferences: {
+    showHT: false,
+    autoRefresh: true,
+  },
   data: {
     yesterday: undefined,
     week: undefined,

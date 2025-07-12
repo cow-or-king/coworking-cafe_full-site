@@ -49,11 +49,11 @@ export default async function handler(req, res) {
             if (startDate.getDay() === 0) {
               // If today is Sunday, set startDate to the previous Monday.
               startDate.setDate(startDate.getDate() - 13);
-              endDate.setDate(endDate.getDate() - endDate.getDay() - 7);
+              endDate.setDate(endDate.getDate() - endDate.getDay() - 8); // -8 pour s'arrêter à hier
             } else {
               startDate.setDate(startDate.getDate() - startDate.getDay() - 6); // Lundi précédent
-              // Définir le même jour de la semaine précédente
-              endDate.setDate(endDate.getDate() - 7);
+              // Définir le même jour de la semaine précédente -1 (hier)
+              endDate.setDate(endDate.getDate() - 8); // -8 au lieu de -7
             }
             break;
           case "month":
@@ -74,11 +74,11 @@ export default async function handler(req, res) {
             // Définir le début du mois précédent
             startDate.setMonth(startDate.getMonth() - 1);
             startDate.setDate(1);
-            // Définir le même jour que celui d'aujourd'hui sur le mois précédent
+            // Définir le même jour que celui d'hier sur le mois précédent
             endDate.setMonth(endDate.getMonth() - 1);
             endDate.setDate(
               Math.min(
-                today.getDate(),
+                today.getDate() - 1, // -1 pour s'arrêter à hier
                 new Date(
                   endDate.getFullYear(),
                   endDate.getMonth() + 1,
@@ -104,9 +104,9 @@ export default async function handler(req, res) {
             // Définir le début de l'année précédente
             startDate.setFullYear(startDate.getFullYear() - 1);
             startDate.setMonth(0, 1); // Premier jour de l'année précédente
-            // Définir le même jour que celui d'aujourd'hui sur l'année précédente
+            // Définir le même jour que celui d'hier sur l'année précédente
             endDate.setFullYear(endDate.getFullYear() - 1);
-            endDate.setMonth(today.getMonth(), today.getDate()); // Même jour que celui d'aujourd'hui
+            endDate.setMonth(today.getMonth(), today.getDate() - 1); // -1 pour s'arrêter à hier
             break;
 
           case "previousDay":

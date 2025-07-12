@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { useReportingData } from "@/hooks/use-reporting";
+import { useDashboardCard } from "@/hooks/use-reporting";
 import type { ReportingRange } from "@/store/reporting/api";
 import { ReactNode } from "react";
 import { DashCardFooter } from "./dash-CardFooter";
@@ -28,19 +28,19 @@ export function DashCard({
   compare,
   text_trendin,
 }: DashCardProps) {
-  // Utiliser notre hook pour récupérer toutes les données (HT et TTC)
-  const {
-    data: mainData,
-    isLoading: mainLoading,
-    error: mainError,
-  } = useReportingData(range, compare);
+  // Utiliser notre nouveau hook pour les données principales
+  const { data: mainData, isLoading: mainLoading } = useDashboardCard(
+    range,
+    compare,
+    checked ? "HT" : "TTC",
+  );
 
   // Utiliser le hook pour les données de comparaison (pour le footer)
-  const {
-    data: compareData,
-    isLoading: compareLoading,
-    error: compareError,
-  } = useReportingData(secRange);
+  const { data: compareData, isLoading: compareLoading } = useDashboardCard(
+    secRange,
+    compare,
+    checked ? "HT" : "TTC",
+  );
 
   if (mainLoading || compareLoading) {
     return (
@@ -70,25 +70,23 @@ export function DashCard({
     <Card className="@container/card">
       <DashCardHeader
         description_header={description_header}
-        value_TTC={mainData.totals.TTC}
-        value_HT={mainData.totals.HT}
+        value_TTC={checked ? 0 : mainData.value}
+        value_HT={checked ? mainData.value : 0}
         checked={checked}
-        compareTTC={mainData.comparison?.changes.TTC.percentage || 0}
-        compareHT={mainData.comparison?.changes.HT.percentage || 0}
-        compareValueTTC={mainData.comparison?.previous.TTC || 0}
-        compareValueHT={mainData.comparison?.previous.HT || 0}
-        value={checked ? mainData.totals.HT : mainData.totals.TTC}
+        compareTTC={checked ? 0 : mainData.trend?.percentage || 0}
+        compareHT={checked ? mainData.trend?.percentage || 0 : 0}
+        value={mainData.value}
       />
       <DashCardFooter
         text_trendin={text_trendin}
         valueChartData={{
-          HT: compareData.totals.HT,
-          TTC: compareData.totals.TTC,
+          HT: checked ? compareData.value : 0,
+          TTC: checked ? 0 : compareData.value,
         }}
         checked={checked}
-        percentageChangeHT={mainData.comparison?.changes.HT.percentage || 0}
-        percentageChangeTTC={mainData.comparison?.changes.TTC.percentage || 0}
-        description_footer={`Comparé à ${secRange === "yesterday" ? "hier" : secRange === "week" ? "la semaine précédente" : secRange === "month" ? "le mois précédent" : "l'année précédente"} - ${checked ? compareData.totals.formattedHT : compareData.totals.formattedTTC}`}
+        percentageChangeHT={checked ? mainData.trend?.percentage || 0 : 0}
+        percentageChangeTTC={checked ? 0 : mainData.trend?.percentage || 0}
+        description_footer={`Comparé à ${secRange === "previousDay" ? "la journée précédente" : secRange === "previousWeek" ? "la semaine précédente" : secRange === "previousMonth" ? "le mois précédent" : "l'année précédente"} - ${compareData.formattedValue}`}
       />
     </Card>
   );

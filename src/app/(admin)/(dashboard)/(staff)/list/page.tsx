@@ -87,7 +87,7 @@ export default function ListPage() {
           />
         </div>
       </div>
-      <DataTable columns={columns} data={data} checked={checked} />
+      <DataTable columns={columns} data={data || []} checked={checked} />
     </div>
   );
 }

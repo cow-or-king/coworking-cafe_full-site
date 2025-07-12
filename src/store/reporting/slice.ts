@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ReportingApi } from ".";
 import { InitialReportingState } from "./state";
 
 export const ReportingStore = createSlice({
@@ -10,14 +9,22 @@ export const ReportingStore = createSlice({
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
+    setDateRange(state, action: PayloadAction<string>) {
+      state.selectedRange = action.payload;
+    },
+    setShowHT(state, action: PayloadAction<boolean>) {
+      if (state.preferences) {
+        state.preferences.showHT = action.payload;
+      }
+    },
+    setAutoRefresh(state, action: PayloadAction<boolean>) {
+      if (state.preferences) {
+        state.preferences.autoRefresh = action.payload;
+      }
+    },
   },
-  extraReducers: (builder) => {
-    builder.addCase(ReportingApi.fetchData.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(ReportingApi.fetchData.fulfilled, (state, action) => {
-      state.loading = false;
-      state.data[action.meta.arg] = action.payload;
-    });
-  },
+  // RTK Query gère maintenant tout l'état de fetch automatiquement
 });
+
+export const { setLoading, setDateRange, setShowHT, setAutoRefresh } =
+  ReportingStore.actions;

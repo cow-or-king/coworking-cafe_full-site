@@ -1,9 +1,7 @@
 import { AddShiftModal } from "@/components/dashboard/staff/score/list/add-shift-modal";
-import {
-  createColumns,
-  ShiftData,
-  UpdateShiftProps,
-} from "@/components/dashboard/staff/score/list/columns";
+import { createColumns } from "@/components/dashboard/staff/score/list/columns";
+import { ShiftData, UpdateShiftProps } from "@/lib/shift-utils";
+import { useGetShiftsQuery, useUpdateShiftMutation } from "@/store/shift/api";
 import { StaffApi } from "@/store/staff";
 import { useTypedDispatch } from "@/store/types";
 import { useEffect, useMemo, useState } from "react";
@@ -41,37 +39,24 @@ export default function ScoreList() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(
     currentMonth,
   );
-  const [selectedDay, setSelectedDay] = useState<number | null>(null); // État pour le jour sélectionné
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
-  const [shiftDates, setShiftDates] = useState<Date[]>([]);
   const dispatch = useTypedDispatch();
+
+  // Utiliser RTK Query pour récupérer les shifts
+  const { data: shiftsData, isLoading, error, refetch } = useGetShiftsQuery();
+  const [updateShift] = useUpdateShiftMutation();
 
   useEffect(() => {
     dispatch(StaffApi.fetchData());
-    fetchShifts();
   }, [dispatch]);
 
-  // Fonction pour récupérer les shifts de la base de données
-  const fetchShifts = async () => {
-    try {
-      const response = await fetch("/api/shift/list");
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération des shifts.");
-      }
-      const result = await response.json();
-      console.log("Shifts récupérés :", result);
-      setData(result.shifts || []);
-
-      const dates = (result.shifts || []).map(
-        (shift: ShiftData) => new Date(shift.date),
-      );
-      const validDates = dates.filter((date: Date) => !isNaN(date.getTime()));
-      setShiftDates(validDates);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des shifts :", error);
-      setData([]);
-    }
-  };
+  // Traiter les données des shifts
+  const data = shiftsData?.shifts || [];
+  const shiftDates = useMemo(() => {
+    const dates = data.map((shift: ShiftData) => new Date(shift.date));
+    return dates.filter((date: Date) => !isNaN(date.getTime()));
+  }, [data]);
 
   const years = useMemo(() => {
     if (!shiftDates) return [];
@@ -102,33 +87,13 @@ export default function ScoreList() {
     return Array.from(new Set(allDays)).sort((a, b) => a - b);
   }, [shiftDates, selectedYear, selectedMonth]);
 
-  // État pour stocker les données de shifts
-  const [data, setData] = useState<ShiftData[]>([]);
+  // État pour stocker les données de shifts - remplacé par RTK Query
+  // const [data, setData] = useState<ShiftData[]>([]);
 
-  // Fonction pour mettre à jour un shift
+  // Fonction pour mettre à jour un shift avec RTK Query
   const handleUpdateShift = async (update: UpdateShiftProps) => {
     try {
-      const response = await fetch("/api/shift/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(update),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la mise à jour du shift");
-      }
-
-      const result = await response.json();
-
-      // Mettre à jour les données localement
-      setData((prevData) =>
-        prevData.map((shift) =>
-          shift._id === update.shiftId ? { ...shift, ...result.shift } : shift,
-        ),
-      );
-
+      await updateShift(update).unwrap();
       toast.success("Shift mis à jour avec succès");
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
@@ -153,10 +118,29 @@ export default function ScoreList() {
     });
   }, [data, selectedYear, selectedMonth, selectedDay]);
 
-  useEffect(() => {
-    console.log("Données brutes:", data);
-    console.log("Données filtrées:", filteredData);
-  }, [data, filteredData]);
+  // Afficher l'état de chargement
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4">
+        <div className="rounded-md border p-4">
+          <div className="text-center">Chargement des pointages...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Afficher les erreurs
+  if (error) {
+    return (
+      <div className="container mx-auto px-4">
+        <div className="rounded-md border p-4">
+          <div className="text-center text-red-600">
+            Erreur lors du chargement des pointages
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4">
@@ -216,7 +200,7 @@ export default function ScoreList() {
             </div>
 
             {/* Bouton d'ajout de pointage */}
-            <AddShiftModal onShiftAdded={fetchShifts} />
+            <AddShiftModal onShiftAdded={refetch} />
           </div>
           <ShiftDataTable columns={editableColumns} data={filteredData} />
         </div>

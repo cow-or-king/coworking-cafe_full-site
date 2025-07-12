@@ -17,117 +17,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  calculateTotalWorkTime,
+  formatDuration,
+  hasIncompleteShift,
+} from "@/lib/shift-utils";
+import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-
-// Fonctions utilitaires pour le calcul des totaux
-const calculateDurationInMinutes = (start: string, end: string): number => {
-  const startTime = new Date(`1970-01-01T${start}`);
-  const endTime = new Date(`1970-01-01T${end}`);
-  return Math.max(0, (endTime.getTime() - startTime.getTime()) / (1000 * 60));
-};
-
-const formatDuration = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
-};
-
-// Importer la fonction getDisplayShifts pour la logique de détection
-// Fonction pour vérifier si une valeur de shift est vide
-const isEmptyShiftValue = (value: string): boolean => {
-  return !value || value === "00:00" || value === "0000-01-01T00:00:00.000Z";
-};
-
-// Fonction pour vérifier si une heure est après 14h30
-const isAfternoonShift = (timeString: string) => {
-  if (!timeString || timeString === "00:00") return false;
-  try {
-    const date = new Date(timeString);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    return hours > 14 || (hours === 14 && minutes >= 30);
-  } catch {
-    return false;
-  }
-};
-
-// Fonction pour formater l'heure
-const formatTime = (isoString: string) => {
-  if (!isoString || isoString === "00:00" || isNaN(Date.parse(isoString)))
-    return "--:--";
-  const date = new Date(isoString);
-  return date.toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-// Copie de getDisplayShifts pour détecter les shifts incomplets
-const getDisplayShifts = (data: any) => {
-  const { firstShift, secondShift } = data;
-
-  let displayFirstStart = "--:--";
-  let displayFirstEnd = "--:--";
-  let displaySecondStart = "--:--";
-  let displaySecondEnd = "--:--";
-
-  // Vérifier si les shifts ont des starts valides (on ne montre que les shifts avec un start)
-  const hasFirstShift = !isEmptyShiftValue(firstShift.start);
-  const hasSecondShift = !isEmptyShiftValue(secondShift.start);
-
-  if (hasFirstShift && hasSecondShift) {
-    const firstIsAfternoon = isAfternoonShift(firstShift.start);
-    const secondIsAfternoon = isAfternoonShift(secondShift.start);
-
-    if (firstIsAfternoon && secondIsAfternoon) {
-      displayFirstStart = formatTime(firstShift.start);
-      displayFirstEnd = formatTime(firstShift.end);
-      displaySecondStart = formatTime(secondShift.start);
-      displaySecondEnd = formatTime(secondShift.end);
-
-      return {
-        firstShiftStart: displayFirstStart,
-        firstShiftEnd: displayFirstEnd,
-        secondShiftStart: displaySecondStart,
-        secondShiftEnd: displaySecondEnd,
-      };
-    }
-  }
-
-  // Traiter firstShift s'il existe et a un start valide
-  if (hasFirstShift) {
-    if (isAfternoonShift(firstShift.start)) {
-      displaySecondStart = formatTime(firstShift.start);
-      displaySecondEnd = formatTime(firstShift.end);
-    } else {
-      displayFirstStart = formatTime(firstShift.start);
-      displayFirstEnd = formatTime(firstShift.end);
-    }
-  }
-
-  // Traiter secondShift s'il existe et a un start valide
-  if (hasSecondShift) {
-    if (isAfternoonShift(secondShift.start)) {
-      displaySecondStart = formatTime(secondShift.start);
-      displaySecondEnd = formatTime(secondShift.end);
-    } else {
-      displayFirstStart = formatTime(secondShift.start);
-      displayFirstEnd = formatTime(secondShift.end);
-    }
-  }
-
-  return {
-    firstShiftStart: displayFirstStart,
-    firstShiftEnd: displayFirstEnd,
-    secondShiftStart: displaySecondStart,
-    secondShiftEnd: displaySecondEnd,
-  };
-};
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -139,25 +39,6 @@ export function ShiftDataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [selectedEmployee, setSelectedEmployee] = useState<string>("all");
-
-  // Analyser les données pour détecter s'il y a des seconds shifts
-  //   const hasAnySecondShift = useMemo(() => {
-  //     return data.some((item: any) => {
-  //       const secondShiftStart = item.secondShift?.start;
-  //       const secondShiftEnd = item.secondShift?.end;
-  //       return (
-  //         (secondShiftStart &&
-  //           secondShiftStart !== "00:00" &&
-  //           secondShiftStart !== "0000-01-01T00:00:00.000Z") ||
-  //         (secondShiftEnd &&
-  //           secondShiftEnd !== "00:00" &&
-  //           secondShiftEnd !== "0000-01-01T00:00:00.000Z")
-  //       );
-  //     });
-  //   }, [data]);
-
-  // Garder toutes les colonnes visibles
-  const filteredColumns = columns;
 
   // Extraire la liste unique des employés des données
   const employees = useMemo(() => {
@@ -190,7 +71,7 @@ export function ShiftDataTable<TData, TValue>({
 
   const table = useReactTable({
     data: filteredData,
-    columns: filteredColumns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -203,26 +84,8 @@ export function ShiftDataTable<TData, TValue>({
   };
 
   // Fonction pour détecter si une ligne a un shift incomplet selon la logique d'affichage
-  const hasIncompleteShift = (rowData: any) => {
-    const shifts = getDisplayShifts(rowData);
-
-    // Vérifier si un shift affiché a un début mais pas de fin
-    const firstShiftIncomplete =
-      shifts.firstShiftStart !== "--:--" && shifts.firstShiftEnd === "--:--";
-    const secondShiftIncomplete =
-      shifts.secondShiftStart !== "--:--" && shifts.secondShiftEnd === "--:--";
-
-    // Debug pour voir si la détection fonctionne
-    if (firstShiftIncomplete || secondShiftIncomplete) {
-      console.log("Shift incomplet détecté:", {
-        employee: `${rowData.firstName} ${rowData.lastName}`,
-        shifts,
-        firstShiftIncomplete,
-        secondShiftIncomplete,
-      });
-    }
-
-    return firstShiftIncomplete || secondShiftIncomplete;
+  const hasIncompleteShiftData = (rowData: any) => {
+    return hasIncompleteShift(rowData);
   };
 
   return (
@@ -283,37 +146,37 @@ export function ShiftDataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className={
-                    hasIncompleteShift(row.original)
-                      ? "bg-red-50 hover:bg-red-100"
-                      : ""
-                  }
-                >
-                  {row.getVisibleCells().map((cell, index) => (
-                    <TableCell
-                      key={cell.id}
-                      className={`text-center ${
-                        hasIncompleteShift(row.original) && index === 0
-                          ? "border-l-8 border-l-red-600"
-                          : ""
-                      }`}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const isIncomplete = hasIncompleteShiftData(row.original);
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className={isIncomplete ? "bg-red-50 hover:bg-red-100" : ""}
+                  >
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell
+                        key={cell.id}
+                        className={`text-center ${
+                          isIncomplete && index === 0
+                            ? "border-l-8 border-l-red-600"
+                            : ""
+                        }`}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={filteredColumns.length}
+                  colSpan={columns.length}
                   className="h-24 text-center"
                 >
                   {selectedEmployee === "all"
@@ -328,94 +191,58 @@ export function ShiftDataTable<TData, TValue>({
                 let totalMinutes = 0;
                 let hasAnyIncompleteShift = false;
 
-                // Calculer le total de tous les temps de travail et vérifier s'il y a des shifts incomplets
+                // Calculer le total de tous les temps de travail et vérifier les statuts
                 table.getRowModel().rows.forEach((row) => {
                   const data = row.original as any;
 
-                  // Vérifier si cette ligne a un shift incomplet
-                  if (hasIncompleteShift(data)) {
+                  // Vérifier les statuts
+                  if (hasIncompleteShiftData(data)) {
                     hasAnyIncompleteShift = true;
                   }
 
-                  // Utiliser la même logique que la colonne Total
-                  const shifts = getDisplayShifts(data);
-
-                  // Premier shift affiché
-                  if (
-                    shifts.firstShiftStart !== "--:--" &&
-                    shifts.firstShiftEnd !== "--:--"
-                  ) {
-                    const startHour = shifts.firstShiftStart.split(":")[0];
-                    const startMin = shifts.firstShiftStart.split(":")[1];
-                    const endHour = shifts.firstShiftEnd.split(":")[0];
-                    const endMin = shifts.firstShiftEnd.split(":")[1];
-
-                    if (startHour && startMin && endHour && endMin) {
-                      totalMinutes += calculateDurationInMinutes(
-                        `${startHour}:${startMin}`,
-                        `${endHour}:${endMin}`,
-                      );
-                    }
-                  }
-
-                  // Deuxième shift affiché
-                  if (
-                    shifts.secondShiftStart !== "--:--" &&
-                    shifts.secondShiftEnd !== "--:--"
-                  ) {
-                    const startHour = shifts.secondShiftStart.split(":")[0];
-                    const startMin = shifts.secondShiftStart.split(":")[1];
-                    const endHour = shifts.secondShiftEnd.split(":")[0];
-                    const endMin = shifts.secondShiftEnd.split(":")[1];
-
-                    if (startHour && startMin && endHour && endMin) {
-                      totalMinutes += calculateDurationInMinutes(
-                        `${startHour}:${startMin}`,
-                        `${endHour}:${endMin}`,
-                      );
-                    }
+                  // Calculer le temps total
+                  const totalTimeStr = calculateTotalWorkTime(data);
+                  if (totalTimeStr !== "--:--") {
+                    const [hours, minutes] = totalTimeStr
+                      .split(":")
+                      .map(Number);
+                    totalMinutes += hours * 60 + minutes;
                   }
                 });
 
+                const rowClass = hasAnyIncompleteShift
+                  ? "border-red-200 bg-red-100 hover:bg-red-200"
+                  : "border-blue-200 bg-blue-100 hover:bg-blue-200";
+
+                const textColor = hasAnyIncompleteShift
+                  ? "text-red-700"
+                  : "text-blue-700";
+
+                const borderClass = hasAnyIncompleteShift
+                  ? "border-l-8 border-l-red-600"
+                  : "";
+
                 return (
-                  <TableRow
-                    className={`border-t-2 font-semibold ${
-                      hasAnyIncompleteShift
-                        ? "border-red-200 bg-red-100 hover:bg-red-200"
-                        : "border-blue-200 bg-blue-100 hover:bg-blue-200"
-                    }`}
-                  >
+                  <TableRow className={`border-t-2 font-semibold ${rowClass}`}>
                     <TableCell
-                      className={`text-center font-bold ${
-                        hasAnyIncompleteShift
-                          ? "border-l-8 border-l-red-600"
-                          : ""
-                      }`}
+                      className={`text-center font-bold ${borderClass}`}
                     >
                       TOTAL pour
                     </TableCell>
-                    <TableCell
-                      className={`text-center font-bold ${
-                        hasAnyIncompleteShift ? "text-red-700" : "text-blue-700"
-                      }`}
-                    >
+                    <TableCell className={`text-center font-bold ${textColor}`}>
                       {selectedEmployee === "all"
                         ? "TOUS"
                         : selectedEmployee.toUpperCase()}
                     </TableCell>
                     {/* Cellules vides pour les autres colonnes sauf les deux premières et la dernière */}
-                    {filteredColumns.slice(2, -1).map((_, index) => (
+                    {columns.slice(2, -1).map((_, index) => (
                       <TableCell
                         key={`empty-${index}`}
                         className="text-center"
                       ></TableCell>
                     ))}
                     {/* Colonne Total */}
-                    <TableCell
-                      className={`text-center font-bold ${
-                        hasAnyIncompleteShift ? "text-red-600" : "text-blue-600"
-                      }`}
-                    >
+                    <TableCell className={`text-center font-bold ${textColor}`}>
                       {formatDuration(totalMinutes)}
                     </TableCell>
                   </TableRow>

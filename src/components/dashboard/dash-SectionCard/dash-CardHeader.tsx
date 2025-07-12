@@ -12,8 +12,10 @@ type DashCardHeaderProps = {
   value_TTC: number;
   value_HT: number;
   checked: boolean;
-  compareTTC: number; // Optional for future enhancements, can be used to compare TTC values.
-  compareHT: number; // Optional for future enhancements, can be used to compare HT values
+  compareTTC: number; // Pourcentage de comparaison TTC (déjà calculé)
+  compareHT: number; // Pourcentage de comparaison HT (déjà calculé)
+  compareValueTTC: number; // Valeur absolue TTC de la période de comparaison
+  compareValueHT: number; // Valeur absolue HT de la période de comparaison
   value: number;
 };
 
@@ -23,27 +25,22 @@ export function DashCardHeader({
   value_HT,
   checked,
   value,
-  compareTTC,
-  compareHT, // These are the values for comparison, can be used for future enhancements.
-
-  // Default value for comparison range
+  compareTTC, // Pourcentage déjà calculé
+  compareHT, // Pourcentage déjà calculé
+  compareValueTTC, // Valeur absolue TTC de comparaison
+  compareValueHT, // Valeur absolue HT de comparaison
 }: DashCardHeaderProps) {
   const AmountFormatter = new Intl.NumberFormat("fr", {
     style: "currency",
     currency: "eur",
   });
 
-  // Calculer le pourcentage de comparaison
-  const percentageChangeTTC = compareTTC
-    ? ((value_TTC - compareTTC) / compareTTC) * 100
-    : 0;
-  const percentageChangeHT = compareHT
-    ? ((value_HT - compareHT) / compareHT) * 100
-    : 0;
+  // Utiliser directement les pourcentages reçus
+  const percentageChangeTTC = compareTTC;
+  const percentageChangeHT = compareHT;
 
-  // let textColor = "text-red-500";
   const textColor =
-    percentageChangeHT && percentageChangeTTC > 0
+    (checked ? percentageChangeTTC : percentageChangeHT) > 0
       ? "text-green-500"
       : "text-red-500";
 
@@ -87,25 +84,24 @@ export function DashCardHeader({
       <CardAction>
         <div className="flex flex-col items-center gap-1">
           <Badge variant="outline">
-            {percentageChangeHT && percentageChangeTTC > 0 ? (
+            {(checked ? percentageChangeTTC : percentageChangeHT) > 0 ? (
               <TrendingUp className="size-4" />
             ) : (
               <TrendingDown className="size-4" />
             )}
 
-            {checked ? (
-              <>
-                <span className={textColor}>
-                  {percentageChangeTTC.toFixed(2)}%
-                </span>
-              </>
-            ) : (
-              <span className={textColor}>
-                {percentageChangeHT.toFixed(2)}%
-              </span>
-            )}
+            <span className={textColor}>
+              {checked
+                ? percentageChangeTTC.toFixed(2)
+                : percentageChangeHT.toFixed(2)}
+              %
+            </span>
           </Badge>
-          <div className="text-sm font-bold text-gray-400">{value} €</div>
+          <div className="text-sm font-bold text-gray-400">
+            {checked
+              ? AmountFormatter.format(compareValueTTC)
+              : AmountFormatter.format(compareValueHT)}
+          </div>
         </div>
       </CardAction>
     </CardHeader>
