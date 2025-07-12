@@ -1,14 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { TurnoverData } from "@/store/reporting/api";
 
 console.log("🚀🚀🚀 FICHIER use-chart-data.ts CHARGÉ !!! 🚀🚀🚀");
-
-interface TurnoverData {
-  date: string;
-  TTC: number;
-  HT: number;
-}
 
 interface ApiResponse {
   success: boolean;
