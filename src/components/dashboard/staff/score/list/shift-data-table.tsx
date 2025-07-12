@@ -141,20 +141,20 @@ export function ShiftDataTable<TData, TValue>({
   const [selectedEmployee, setSelectedEmployee] = useState<string>("all");
 
   // Analyser les données pour détecter s'il y a des seconds shifts
-  const hasAnySecondShift = useMemo(() => {
-    return data.some((item: any) => {
-      const secondShiftStart = item.secondShift?.start;
-      const secondShiftEnd = item.secondShift?.end;
-      return (
-        (secondShiftStart &&
-          secondShiftStart !== "00:00" &&
-          secondShiftStart !== "0000-01-01T00:00:00.000Z") ||
-        (secondShiftEnd &&
-          secondShiftEnd !== "00:00" &&
-          secondShiftEnd !== "0000-01-01T00:00:00.000Z")
-      );
-    });
-  }, [data]);
+  //   const hasAnySecondShift = useMemo(() => {
+  //     return data.some((item: any) => {
+  //       const secondShiftStart = item.secondShift?.start;
+  //       const secondShiftEnd = item.secondShift?.end;
+  //       return (
+  //         (secondShiftStart &&
+  //           secondShiftStart !== "00:00" &&
+  //           secondShiftStart !== "0000-01-01T00:00:00.000Z") ||
+  //         (secondShiftEnd &&
+  //           secondShiftEnd !== "00:00" &&
+  //           secondShiftEnd !== "0000-01-01T00:00:00.000Z")
+  //       );
+  //     });
+  //   }, [data]);
 
   // Garder toutes les colonnes visibles
   const filteredColumns = columns;

@@ -43,6 +43,9 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
 
   // Récupérer la liste des employés depuis le store Redux
   const staffData = useSelector((state: RootState) => state.staff.data);
+  
+  // Filtrer pour ne garder que les employés actifs
+  const activeStaff = staffData?.filter(staff => staff.active !== false) || [];
 
   const resetForm = () => {
     setFormData({
@@ -61,7 +64,7 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
 
     try {
       // Trouver les informations de l'employé sélectionné
-      const selectedStaff = staffData?.find(
+      const selectedStaff = activeStaff?.find(
         (staff) => staff._id === formData.staffId,
       );
       if (!selectedStaff) {
@@ -154,10 +157,10 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un employé" />
+                  <SelectValue placeholder={`Sélectionner un employé (${activeStaff.length} actifs)`} />
                 </SelectTrigger>
                 <SelectContent>
-                  {staffData?.map((staff) => (
+                  {activeStaff?.map((staff) => (
                     <SelectItem key={staff._id} value={staff._id}>
                       {staff.firstName} {staff.lastName}
                     </SelectItem>
