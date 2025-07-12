@@ -24,6 +24,19 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
+// Fonctions utilitaires pour le calcul des totaux
+const calculateDurationInMinutes = (start: string, end: string): number => {
+  const startTime = new Date(`1970-01-01T${start}`);
+  const endTime = new Date(`1970-01-01T${end}`);
+  return Math.max(0, (endTime.getTime() - startTime.getTime()) / (1000 * 60));
+};
+
+const formatDuration = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+};
+
 // Importer la fonction getDisplayShifts pour la logique de détection
 // Fonction pour vérifier si une valeur de shift est vide
 const isEmptyShiftValue = (value: string): boolean => {
@@ -157,12 +170,22 @@ export function ShiftDataTable<TData, TValue>({
     return Array.from(employeeSet).sort();
   }, [data]);
 
-  // Filtrer les données selon l'employé sélectionné
+  // Filtrer et trier les données selon l'employé sélectionné et par date
   const filteredData = useMemo(() => {
-    if (selectedEmployee === "all") return data;
-    return data.filter(
-      (row: any) => `${row.firstName} ${row.lastName}` === selectedEmployee,
-    );
+    let filtered =
+      selectedEmployee === "all"
+        ? data
+        : data.filter(
+            (row: any) =>
+              `${row.firstName} ${row.lastName}` === selectedEmployee,
+          );
+
+    // Trier par date (du 1er au 31)
+    return filtered.sort((a: any, b: any) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateA.getTime() - dateB.getTime();
+    });
   }, [data, selectedEmployee]);
 
   const table = useReactTable({
@@ -299,6 +322,105 @@ export function ShiftDataTable<TData, TValue>({
                 </TableCell>
               </TableRow>
             )}
+            {/* Ligne de total */}
+            {table.getRowModel().rows?.length > 0 &&
+              (() => {
+                let totalMinutes = 0;
+                let hasAnyIncompleteShift = false;
+
+                // Calculer le total de tous les temps de travail et vérifier s'il y a des shifts incomplets
+                table.getRowModel().rows.forEach((row) => {
+                  const data = row.original as any;
+
+                  // Vérifier si cette ligne a un shift incomplet
+                  if (hasIncompleteShift(data)) {
+                    hasAnyIncompleteShift = true;
+                  }
+
+                  // Utiliser la même logique que la colonne Total
+                  const shifts = getDisplayShifts(data);
+
+                  // Premier shift affiché
+                  if (
+                    shifts.firstShiftStart !== "--:--" &&
+                    shifts.firstShiftEnd !== "--:--"
+                  ) {
+                    const startHour = shifts.firstShiftStart.split(":")[0];
+                    const startMin = shifts.firstShiftStart.split(":")[1];
+                    const endHour = shifts.firstShiftEnd.split(":")[0];
+                    const endMin = shifts.firstShiftEnd.split(":")[1];
+
+                    if (startHour && startMin && endHour && endMin) {
+                      totalMinutes += calculateDurationInMinutes(
+                        `${startHour}:${startMin}`,
+                        `${endHour}:${endMin}`,
+                      );
+                    }
+                  }
+
+                  // Deuxième shift affiché
+                  if (
+                    shifts.secondShiftStart !== "--:--" &&
+                    shifts.secondShiftEnd !== "--:--"
+                  ) {
+                    const startHour = shifts.secondShiftStart.split(":")[0];
+                    const startMin = shifts.secondShiftStart.split(":")[1];
+                    const endHour = shifts.secondShiftEnd.split(":")[0];
+                    const endMin = shifts.secondShiftEnd.split(":")[1];
+
+                    if (startHour && startMin && endHour && endMin) {
+                      totalMinutes += calculateDurationInMinutes(
+                        `${startHour}:${startMin}`,
+                        `${endHour}:${endMin}`,
+                      );
+                    }
+                  }
+                });
+
+                return (
+                  <TableRow
+                    className={`border-t-2 font-semibold ${
+                      hasAnyIncompleteShift
+                        ? "border-red-200 bg-red-100 hover:bg-red-200"
+                        : "border-blue-200 bg-blue-100 hover:bg-blue-200"
+                    }`}
+                  >
+                    <TableCell
+                      className={`text-center font-bold ${
+                        hasAnyIncompleteShift
+                          ? "border-l-8 border-l-red-600"
+                          : ""
+                      }`}
+                    >
+                      TOTAL pour
+                    </TableCell>
+                    <TableCell
+                      className={`text-center font-bold ${
+                        hasAnyIncompleteShift ? "text-red-700" : "text-blue-700"
+                      }`}
+                    >
+                      {selectedEmployee === "all"
+                        ? "TOUS"
+                        : selectedEmployee.toUpperCase()}
+                    </TableCell>
+                    {/* Cellules vides pour les autres colonnes sauf les deux premières et la dernière */}
+                    {filteredColumns.slice(2, -1).map((_, index) => (
+                      <TableCell
+                        key={`empty-${index}`}
+                        className="text-center"
+                      ></TableCell>
+                    ))}
+                    {/* Colonne Total */}
+                    <TableCell
+                      className={`text-center font-bold ${
+                        hasAnyIncompleteShift ? "text-red-600" : "text-blue-600"
+                      }`}
+                    >
+                      {formatDuration(totalMinutes)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })()}
           </TableBody>
         </Table>
       </div>

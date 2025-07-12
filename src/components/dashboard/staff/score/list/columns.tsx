@@ -55,6 +55,39 @@ const formatTime = (isoString: string) => {
   });
 };
 
+// Fonction pour calculer la durée en minutes entre deux heures
+const calculateDurationInMinutes = (
+  startTime: string,
+  endTime: string,
+): number => {
+  if (isEmptyShiftValue(startTime) || isEmptyShiftValue(endTime)) {
+    return 0;
+  }
+
+  try {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return 0;
+    }
+
+    return Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60));
+  } catch {
+    return 0;
+  }
+};
+
+// Fonction pour formater la durée en heures et minutes
+const formatDuration = (minutes: number): string => {
+  if (minutes === 0) return "--:--";
+
+  const hours = Math.floor(minutes / 60);
+  const mins = Math.round(minutes % 60);
+
+  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+};
+
 // Fonction pour vérifier si une heure est après 14h30
 const isAfternoonShift = (timeString: string) => {
   if (!timeString || timeString === "00:00") return false;
@@ -139,6 +172,45 @@ const getDisplayShifts = (data: ShiftData) => {
   };
 };
 
+// Fonction pour calculer le temps total travaillé
+const calculateTotalWorkTime = (data: ShiftData): string => {
+  const shifts = getDisplayShifts(data);
+  let totalMinutes = 0;
+
+  // Calculer la durée du premier shift affiché
+  if (shifts.firstShiftStart !== "--:--" && shifts.firstShiftEnd !== "--:--") {
+    // Déterminer quel shift réel est affiché
+    const isFromSecondShift =
+      shifts.firstShiftStart === formatTime(data.secondShift.start);
+    const startTime = isFromSecondShift
+      ? data.secondShift.start
+      : data.firstShift.start;
+    const endTime = isFromSecondShift
+      ? data.secondShift.end
+      : data.firstShift.end;
+    totalMinutes += calculateDurationInMinutes(startTime, endTime);
+  }
+
+  // Calculer la durée du deuxième shift affiché
+  if (
+    shifts.secondShiftStart !== "--:--" &&
+    shifts.secondShiftEnd !== "--:--"
+  ) {
+    // Déterminer quel shift réel est affiché
+    const isFromFirstShift =
+      shifts.secondShiftStart === formatTime(data.firstShift.start);
+    const startTime = isFromFirstShift
+      ? data.firstShift.start
+      : data.secondShift.start;
+    const endTime = isFromFirstShift
+      ? data.firstShift.end
+      : data.secondShift.end;
+    totalMinutes += calculateDurationInMinutes(startTime, endTime);
+  }
+
+  return formatDuration(totalMinutes);
+};
+
 // Fonction pour créer les colonnes avec le callback de mise à jour
 export const createColumns = (
   onUpdateShift: (update: UpdateShiftProps) => Promise<void>,
@@ -164,7 +236,7 @@ export const createColumns = (
   },
   {
     id: "firstShiftStart",
-    header: "Début Shift 1",
+    header: "Shift 1 - Début",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
 
@@ -201,7 +273,7 @@ export const createColumns = (
   },
   {
     id: "firstShiftEnd",
-    header: "Fin Shift 1",
+    header: "Shift 1 - Fin",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
 
@@ -262,7 +334,7 @@ export const createColumns = (
   },
   {
     id: "secondShiftStart",
-    header: "Début Shift 2",
+    header: "Shift 2 - Début",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
 
@@ -297,7 +369,7 @@ export const createColumns = (
   },
   {
     id: "secondShiftEnd",
-    header: "Fin Shift 2",
+    header: "Shift 2 - Fin",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
 
@@ -356,6 +428,14 @@ export const createColumns = (
       );
     },
   },
+  {
+    id: "totalWorkTime",
+    header: "Total",
+    cell: ({ row }) => {
+      const totalTime = calculateTotalWorkTime(row.original);
+      return <span className="font-medium text-blue-600">{totalTime}</span>;
+    },
+  },
 ];
 
 // Export des colonnes par défaut pour la rétrocompatibilité
@@ -381,7 +461,7 @@ export const columns: ColumnDef<ShiftData>[] = [
   },
   {
     id: "firstShiftStart",
-    header: "Début Shift 1",
+    header: "Shift 1 - Début",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
       return shifts.firstShiftStart;
@@ -389,7 +469,7 @@ export const columns: ColumnDef<ShiftData>[] = [
   },
   {
     id: "firstShiftEnd",
-    header: "Fin Shift 1",
+    header: "Shift 1 - Fin",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
       return shifts.firstShiftEnd;
@@ -397,7 +477,7 @@ export const columns: ColumnDef<ShiftData>[] = [
   },
   {
     id: "secondShiftStart",
-    header: "Début Shift 2",
+    header: "Shift 2 - Début",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
       return shifts.secondShiftStart;
@@ -405,10 +485,18 @@ export const columns: ColumnDef<ShiftData>[] = [
   },
   {
     id: "secondShiftEnd",
-    header: "Fin Shift 2",
+    header: "Shift 2 - Fin",
     cell: ({ row }) => {
       const shifts = getDisplayShifts(row.original);
       return shifts.secondShiftEnd;
+    },
+  },
+  {
+    id: "totalWorkTime",
+    header: "Total",
+    cell: ({ row }) => {
+      const totalTime = calculateTotalWorkTime(row.original);
+      return <span className="font-medium text-blue-600">{totalTime}</span>;
     },
   },
   // {

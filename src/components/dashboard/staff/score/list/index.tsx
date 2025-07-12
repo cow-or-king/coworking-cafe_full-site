@@ -1,3 +1,4 @@
+import { AddShiftModal } from "@/components/dashboard/staff/score/list/add-shift-modal";
 import {
   createColumns,
   ShiftData,
@@ -47,31 +48,30 @@ export default function ScoreList() {
 
   useEffect(() => {
     dispatch(StaffApi.fetchData());
-
-    // Récupérer les shifts de la base de données
-    const fetchShifts = async () => {
-      try {
-        const response = await fetch("/api/shift/list");
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des shifts.");
-        }
-        const result = await response.json();
-        console.log("Shifts récupérés :", result);
-        setData(result.shifts || []);
-
-        const dates = (result.shifts || []).map(
-          (shift: ShiftData) => new Date(shift.date),
-        );
-        const validDates = dates.filter((date: Date) => !isNaN(date.getTime()));
-        setShiftDates(validDates);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des shifts :", error);
-        setData([]);
-      }
-    };
-
     fetchShifts();
   }, [dispatch]);
+
+  // Fonction pour récupérer les shifts de la base de données
+  const fetchShifts = async () => {
+    try {
+      const response = await fetch("/api/shift/list");
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des shifts.");
+      }
+      const result = await response.json();
+      console.log("Shifts récupérés :", result);
+      setData(result.shifts || []);
+
+      const dates = (result.shifts || []).map(
+        (shift: ShiftData) => new Date(shift.date),
+      );
+      const validDates = dates.filter((date: Date) => !isNaN(date.getTime()));
+      setShiftDates(validDates);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des shifts :", error);
+      setData([]);
+    }
+  };
 
   const years = useMemo(() => {
     if (!shiftDates) return [];
@@ -162,8 +162,8 @@ export default function ScoreList() {
     <div className="container mx-auto px-4">
       <div className="rounded-md border">
         <div className="p-4">
-          <div className="flex justify-between">
-            <div className="mb-4 flex flex-wrap items-center gap-2">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold">Année :</span>
               <select
                 className="mr-4 rounded border px-3 py-1"
@@ -214,6 +214,9 @@ export default function ScoreList() {
                 ))}
               </select>
             </div>
+
+            {/* Bouton d'ajout de pointage */}
+            <AddShiftModal onShiftAdded={fetchShifts} />
           </div>
           <ShiftDataTable columns={editableColumns} data={filteredData} />
         </div>
