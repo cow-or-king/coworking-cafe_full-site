@@ -17,11 +17,11 @@ export interface Staff {
   mdp: number;
   _id: string;
   id: string;
-  active: boolean;
+  isActive: boolean; // Mis à jour vers le format moderne
   firstName: string;
   lastName: string;
   email: string;
   startTime: string;
   endTime: string;
-  tel?: string; // Ajout de la propriété optionnelle 'tel'
+  phone?: string; // Mis à jour vers le format moderne
 }
