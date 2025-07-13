@@ -166,6 +166,12 @@ export const columns: ColumnDef<Staff>[] = [
                           className="w-full rounded border p-2"
                           value={formData.mdp}
                           onChange={handleChange}
+                          autoComplete="new-password"
+                          autoCorrect="off"
+                          autoCapitalize="off"
+                          spellCheck="false"
+                          data-form-type="other"
+                          data-lpignore="true"
                         />
                       </div>
                       <div className="mb-4">

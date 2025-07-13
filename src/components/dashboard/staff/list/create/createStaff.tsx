@@ -338,6 +338,12 @@ export default function CreateStaff() {
                   value={formData.mdp}
                   onChange={handleChange}
                   required
+                  autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  data-form-type="other"
+                  data-lpignore="true"
                 />
               </div>
             </div>
