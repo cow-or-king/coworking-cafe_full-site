@@ -1,12 +1,14 @@
 "use client";
 import { DataTable } from "@/components/dashboard/accounting/cash-control/data-table";
-import { CashEntryApi } from "@/store/cashentry";
-import { TurnoverApi } from "@/store/turnover";
+import { useCashEntryDataFixed } from "@/hooks/use-cash-entry-data-fixed";
+import { useChartData } from "@/hooks/use-chart-data-fixed";
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { usePDF } from "@react-pdf/renderer";
-import { pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
+// Import dynamique pour éviter les erreurs SSR
+const PdfCashControl = dynamic(() => import("@/lib/pdf/pdf-CashControl"), {
+  ssr: false,
+});
 
 // Extend CashEntry type to include prestaB2B
 type CashEntry = {
@@ -23,9 +25,6 @@ type CashEntry = {
 
 import { columns } from "@/components/dashboard/accounting/cash-control/columns";
 import { Button } from "@/components/ui/button";
-import PdfCashControl from "@/lib/pdf/pdf-CashControl";
-import { useTypedDispatch, useTypedSelector } from "@/store/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 
 const monthsList = [
@@ -53,12 +52,13 @@ function formatDateYYYYMMDD(dateStr: string) {
   return `${year}/${month}/${day}`;
 }
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
 export default function CashControl() {
-  const dispatch = useTypedDispatch();
-  const { data } = useTypedSelector((state) => state.turnover);
-  const { dataCash } = useTypedSelector((state) => state.cashentry);
+  // Utiliser nos caches optimisés au lieu de Redux
+  const { data: turnoverData } = useChartData(); // Données turnover avec date, TTC, HT
+  const { dataCash, refetch: refetchCashEntries } = useCashEntryDataFixed();
+
+  // Les données turnover depuis le cache chart
+  const data = turnoverData || [];
 
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number | null>(currentYear);
@@ -91,24 +91,18 @@ export default function CashControl() {
   const [formStatus, setFormStatus] = useState<string | null>(null);
   const [editingRow, setEditingRow] = useState<CashEntryRow | null>(null);
 
-  useEffect(() => {
-    dispatch(TurnoverApi.fetchData());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(CashEntryApi.fetchCashEntries());
-  }, [dispatch]);
+  // Plus besoin des useEffect Redux - les caches se gèrent automatiquement
   // console.log("data", data);
 
   const years = useMemo(() => {
     if (!data) return [];
-    const allYears = data.map((item) => new Date(item.date).getFullYear());
-    return Array.from(new Set(allYears)).sort((a, b) => b - a);
+    const allYears = data.map((item: any) => new Date(item.date).getFullYear());
+    return Array.from(new Set(allYears)).sort((a: number, b: number) => b - a);
   }, [data]);
 
   const filteredData = useMemo(() => {
     if (!data) return [];
-    return data.filter((item) => {
+    return data.filter((item: any) => {
       const d = new Date(item.date);
       const yearMatch = selectedYear ? d.getFullYear() === selectedYear : true;
       const monthMatch =
@@ -119,10 +113,10 @@ export default function CashControl() {
 
   const mergedData = useMemo(() => {
     if (!filteredData || !dataCash) return [];
-    return filteredData.map((turnoverItem) => {
+    return filteredData.map((turnoverItem: any) => {
       const dateKey = formatDateYYYYMMDD(turnoverItem.date);
       const cashEntry = dataCash.find(
-        (entry) => formatDateYYYYMMDD(entry._id) === dateKey,
+        (entry: any) => formatDateYYYYMMDD(entry._id) === dateKey,
       );
       // On laisse prestaB2B tel que reçu de cashEntry
       return {
@@ -209,13 +203,15 @@ export default function CashControl() {
           method: "DELETE",
         });
         if (!res.ok) throw new Error("Erreur lors de la suppression");
-        dispatch(CashEntryApi.fetchCashEntries());
+
+        // Rafraîchir le cache au lieu d'utiliser Redux
+        await refetchCashEntries();
         setFormStatus("Suppression réussie");
       } catch {
         setFormStatus("Erreur lors de la suppression");
       }
     },
-    [dispatch],
+    [refetchCashEntries],
   );
 
   // Affiche un toast visuel lors d'un succès ou d'une erreur
@@ -304,7 +300,9 @@ export default function CashControl() {
         const result = await res.json();
         if (result.success) {
           setFormStatus(form._id ? "Modification réussie !" : "Ajout réussi !");
-          dispatch(CashEntryApi.fetchCashEntries());
+
+          // Rafraîchir le cache au lieu d'utiliser Redux
+          await refetchCashEntries();
           setEditingRow(null); // Ferme la fenêtre de saisie
           window.dispatchEvent(new CustomEvent("cash-modal-close")); // Force la fermeture de la modale DataTable
           setForm({
@@ -326,13 +324,13 @@ export default function CashControl() {
         setFormStatus("Erreur réseau");
       }
     },
-    [form, dispatch],
+    [form, refetchCashEntries],
   );
 
   // Calcul des totaux pour chaque colonne numérique
   const totals = useMemo(() => {
     return mergedData.reduce(
-      (acc, row) => {
+      (acc: any, row: any) => {
         acc.TTC += Number(row.TTC) || 0;
         acc.HT += Number(row.HT) || 0;
         acc.TVA += Number(row.TVA) || 0;
@@ -377,21 +375,42 @@ export default function CashControl() {
     );
   }, [mergedData]);
 
-  // Load the PDF document.
-  const [document, updateDocument] = usePDF();
+  // État pour la génération PDF (simplifié)
+  const [pdfGenerated, setPdfGenerated] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
-  // Update the document whenever the relevant data changes.
-  useEffect(() => {
-    if (mergedData.length > 0) {
-      updateDocument(
-        <PdfCashControl
+  // Fonction pour générer le PDF côté client seulement
+  const generatePDF = useCallback(async () => {
+    if (typeof window === "undefined") return;
+
+    try {
+      setPdfGenerated(false);
+      const { pdf } = await import("@react-pdf/renderer");
+
+      const PdfComponent = (await import("@/lib/pdf/pdf-CashControl")).default;
+      const blob = await pdf(
+        <PdfComponent
           data={mergedData}
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}
         />,
-      );
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+      setPdfGenerated(true);
+    } catch (error) {
+      console.error("Erreur lors de la génération du PDF:", error);
+      toast.error("Erreur lors de la génération du PDF");
     }
-  }, [mergedData, updateDocument]);
+  }, [mergedData, selectedMonth, selectedYear]);
+
+  // Régénérer le PDF quand les données changent
+  useEffect(() => {
+    if (mergedData.length > 0) {
+      generatePDF();
+    }
+  }, [mergedData, selectedMonth, selectedYear, generatePDF]);
 
   return (
     <div className="container mx-auto p-4">
@@ -405,7 +424,7 @@ export default function CashControl() {
               setSelectedYear(e.target.value ? Number(e.target.value) : null)
             }
           >
-            {years.map((year) => (
+            {years.map((year: number) => (
               <option key={year} value={year}>
                 {year}
               </option>
@@ -429,13 +448,20 @@ export default function CashControl() {
           </select>
         </div>
 
-        <Button>
-          <a
-            href={document.url ?? undefined}
-            download={`Journal de bord ${monthsList[selectedMonth ?? 0]} ${selectedYear}.pdf`}
-          >
-            Download PDF
-          </a>
+        <Button
+          onClick={generatePDF}
+          disabled={!pdfGenerated && pdfUrl === null}
+        >
+          {pdfGenerated && pdfUrl ? (
+            <a
+              href={pdfUrl}
+              download={`Journal de bord ${monthsList[selectedMonth ?? 0]} ${selectedYear}.pdf`}
+            >
+              Télécharger PDF
+            </a>
+          ) : (
+            "Générer PDF"
+          )}
         </Button>
       </div>
       <DataTable

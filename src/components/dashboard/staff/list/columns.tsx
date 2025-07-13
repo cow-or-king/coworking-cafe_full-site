@@ -36,9 +36,9 @@ export type Staff = {
   firstName: string;
   lastName: string;
   email: string;
-  tel: string;
+  phone: string; // Mis à jour vers le format moderne
   mdp: number;
-  active: boolean;
+  isActive: boolean; // Mis à jour vers le format moderne
 };
 
 export const columns: ColumnDef<Staff>[] = [
@@ -58,9 +58,9 @@ export const columns: ColumnDef<Staff>[] = [
     accessorKey: "email",
   },
   {
-    id: "tel",
+    id: "phone",
     header: "Téléphone",
-    accessorKey: "tel",
+    accessorKey: "phone",
   },
   {
     id: "mdp",
@@ -149,10 +149,10 @@ export const columns: ColumnDef<Staff>[] = [
                           Téléphone
                         </label>
                         <input
-                          name="tel"
+                          name="phone"
                           type="text"
                           className="w-full rounded border p-2"
-                          value={formData.tel}
+                          value={formData.phone}
                           onChange={handleChange}
                         />
                       </div>
@@ -170,13 +170,13 @@ export const columns: ColumnDef<Staff>[] = [
                       </div>
                       <div className="mb-4">
                         <Switch
-                          id="active"
-                          checked={formData.active}
-                          onCheckedChange={(v) => handleSelect("active", v)}
+                          id="isActive"
+                          checked={formData.isActive}
+                          onCheckedChange={(v) => handleSelect("isActive", v)}
                           className={cn("data-[state=checked]:bg-(--chart-4)")}
                         />
                         <span className="ml-2">
-                          {formData.active ? "Actif" : "Inactif"}
+                          {formData.isActive ? "Actif" : "Inactif"}
                         </span>
                       </div>
                       <AlertDialogFooter>

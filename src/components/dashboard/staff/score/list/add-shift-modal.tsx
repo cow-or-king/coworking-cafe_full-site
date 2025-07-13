@@ -20,13 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useShiftDataFixed } from "@/hooks/use-shift-data-fixed";
+import { useStaffDataFixed } from "@/hooks/use-staff-data-fixed";
 import { convertTimeToISO } from "@/lib/shift-utils";
 import { useCreateShiftMutation } from "@/store/shift/api";
-import { RootState } from "@/store/types";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { useSelector } from "react-redux";
 
 interface AddShiftModalProps {
   onShiftAdded?: () => void; // Rendre optionnel car nous gérons le cache automatiquement
@@ -43,8 +42,8 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
     secondShiftEnd: "",
   });
 
-  // Récupérer la liste des employés depuis le store Redux
-  const staffData = useSelector((state: RootState) => state.staff.data);
+  // Récupérer la liste des employés depuis le hook moderne
+  const { data: staffData } = useStaffDataFixed();
 
   // Utiliser RTK Query pour créer un shift et le cache pour le rafraîchir
   const [createShift, { isLoading }] = useCreateShiftMutation();
@@ -52,7 +51,7 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
 
   // Filtrer pour ne garder que les employés actifs
   const activeStaff =
-    staffData?.filter((staff) => staff.active !== false) || [];
+    staffData?.filter((staff) => staff.isActive !== false) || [];
 
   const resetForm = () => {
     setFormData({
@@ -71,7 +70,7 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
     try {
       // Trouver les informations de l'employé sélectionné
       const selectedStaff = activeStaff?.find(
-        (staff) => staff._id === formData.staffId,
+        (staff) => staff.id === formData.staffId,
       );
       if (!selectedStaff) {
         toast.error("Employé non trouvé");
@@ -154,7 +153,7 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {activeStaff?.map((staff) => (
-                    <SelectItem key={staff._id} value={staff._id}>
+                    <SelectItem key={staff.id} value={staff.id}>
                       {staff.firstName} {staff.lastName}
                     </SelectItem>
                   )) || []}

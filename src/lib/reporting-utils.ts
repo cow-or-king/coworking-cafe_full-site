@@ -202,17 +202,79 @@ export const prepareChartData = (data: TurnoverData[]) => {
   }
 
   return data
-    .map((item) => ({
-      date: new Date(item.date).toLocaleDateString("fr-FR", {
+    .map((item) => {
+      // Essayer plusieurs formats de date
+      let dateObj: Date;
+
+      console.log(
+        "Traitement de la date:",
+        item.date,
+        "type:",
+        typeof item.date,
+      );
+
+      // Le type TurnoverData définit date comme string
+      if (typeof item.date === "string") {
+        // Si c'est au format YYYY-MM-DD ou YYYY/MM/DD
+        if (item.date.match(/^\d{4}[-/]\d{2}[-/]\d{2}/)) {
+          dateObj = new Date(item.date + "T00:00:00");
+        }
+        // Si c'est un timestamp string
+        else if (item.date.match(/^\d+$/)) {
+          dateObj = new Date(parseInt(item.date));
+        }
+        // Format ISO string complet
+        else if (item.date.includes("T")) {
+          dateObj = new Date(item.date);
+        }
+        // Autres formats de string - essayer une conversion directe d'abord
+        else {
+          dateObj = new Date(item.date);
+          // Si ça ne marche pas, essayer avec T00:00:00
+          if (isNaN(dateObj.getTime())) {
+            dateObj = new Date(item.date + "T00:00:00");
+          }
+        }
+      } else {
+        // Fallback pour des types inattendus
+        dateObj = new Date(item.date);
+      }
+
+      // Vérifier si la date est valide
+      if (isNaN(dateObj.getTime())) {
+        console.error(
+          "Date invalide détectée:",
+          item.date,
+          "type:",
+          typeof item.date,
+          "pour item:",
+          item,
+        );
+        // Utiliser la date d'aujourd'hui comme fallback
+        dateObj = new Date();
+      }
+
+      // Formater la date correctement avec l'année
+      const formattedDate = dateObj.toLocaleDateString("fr-FR", {
         day: "2-digit",
         month: "2-digit",
-      }),
-      HT: item.HT || 0,
-      TTC: item.TTC || 0,
-    }))
+        year: "2-digit",
+      });
+
+      console.log("Date formatée:", formattedDate, "depuis:", item.date);
+
+      return {
+        date: formattedDate,
+        HT: item.HT || 0,
+        TTC: item.TTC || 0,
+        // Garder la date originale pour le tri ET pour le tooltip
+        originalDate: dateObj,
+        rawDate: item.date, // Date brute pour le tooltip
+      };
+    })
     .sort((a, b) => {
-      const dateA = new Date(a.date.split("/").reverse().join("-"));
-      const dateB = new Date(b.date.split("/").reverse().join("-"));
-      return dateA.getTime() - dateB.getTime();
-    });
+      // Utiliser la date originale pour le tri
+      return a.originalDate.getTime() - b.originalDate.getTime();
+    })
+    .map(({ originalDate, ...rest }) => rest); // Supprimer originalDate du résultat final mais garder rawDate
 };

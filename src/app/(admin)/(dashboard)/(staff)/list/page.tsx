@@ -15,27 +15,24 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { Button } from "@/components/ui/button";
+import { useStaffDataFixed } from "@/hooks/use-staff-data-fixed";
 import { cn } from "@/lib/utils";
-import { StaffApi } from "@/store/staff";
-import { useTypedDispatch, useTypedSelector } from "@/store/types";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function ListPage() {
   const router = useRouter();
   const [checked, setChecked] = useState(true);
 
-  const dispatch = useTypedDispatch();
+  // Utiliser le hook Singleton optimisé au lieu de Redux
+  const { data: staffMembers, isLoading, error } = useStaffDataFixed();
 
-  useEffect(() => {
-    dispatch(StaffApi.fetchData());
-  }, [dispatch]);
-  // useEffect(() => {
-  //   dispatch(StaffApi.fetchData()).then(console.log);
-  // }, [dispatch]);
-
-  const data = useTypedSelector((state) => state.staff.data);
-  // console.log("Staff data:", data);
+  console.log("🚀 STAFF LIST: Hook state", {
+    isLoading,
+    hasData: !!staffMembers,
+    count: staffMembers?.length || 0,
+    error,
+  });
 
   return (
     <div className="container mx-auto px-4">
@@ -87,7 +84,11 @@ export default function ListPage() {
           />
         </div>
       </div>
-      <DataTable columns={columns} data={data || []} checked={checked} />
+      <DataTable
+        columns={columns}
+        data={staffMembers || []}
+        checked={checked}
+      />
     </div>
   );
 }

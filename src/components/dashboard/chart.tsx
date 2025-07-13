@@ -57,7 +57,33 @@ export function Chart() {
     if (!turnoverData || !Array.isArray(turnoverData)) return [];
 
     const filtered = turnoverData.filter((data) => {
-      const date = new Date(data.date);
+      // Améliorer la gestion des dates
+      let date: Date;
+
+      // Essayer plusieurs formats de date
+      if (typeof data.date === "string") {
+        if (data.date.match(/^\d{4}[-/]\d{2}[-/]\d{2}/)) {
+          date = new Date(data.date);
+        } else if (data.date.match(/^\d+$/)) {
+          date = new Date(parseInt(data.date));
+        } else {
+          date = new Date(data.date);
+        }
+      } else {
+        date = new Date(data.date);
+      }
+
+      // Vérifier si la date est valide
+      if (isNaN(date.getTime())) {
+        console.warn(
+          "Date invalide dans le filtre:",
+          data.date,
+          "pour data:",
+          data,
+        );
+        return false; // Exclure les données avec des dates invalides
+      }
+
       const referenceDate = new Date();
       let daysToSubtract = 365;
       if (timeRange === "90d") {
@@ -235,8 +261,18 @@ export function Chart() {
               defaultIndex={isMobile ? -1 : 10}
               content={
                 <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("fr-FR", {
+                  labelFormatter={(value, payload) => {
+                    // Essayer d'utiliser rawDate si disponible dans le payload
+                    const dataPoint = payload?.[0]?.payload;
+                    const dateToUse = dataPoint?.rawDate || value;
+
+                    const dateObj = new Date(dateToUse);
+                    if (isNaN(dateObj.getTime())) {
+                      console.warn("Date invalide dans le tooltip:", dateToUse);
+                      return String(value);
+                    }
+
+                    return dateObj.toLocaleDateString("fr-FR", {
                       year: "numeric",
                       month: "short",
                       day: "numeric",

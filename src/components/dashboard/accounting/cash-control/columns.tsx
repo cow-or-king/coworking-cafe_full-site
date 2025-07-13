@@ -49,15 +49,15 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="text-center">{`${day}-${month}-${year}`}</div>;
     },
   },
-  // {
-  //   accessorKey: "TTC",
-  //   header: "Total TTC",
-  //   cell: ({ row }) => {
-  //     const ttc = row.original.TTC;
-  //     if (ttc === null || ttc === undefined || isNaN(ttc)) return "";
-  //     return <div className="text-center">{AmountFormatter.format(ttc)}</div>;
-  //   },
-  // },
+  {
+    accessorKey: "TTC",
+    header: "Total TTC",
+    cell: ({ row }) => {
+      const ttc = row.original.TTC;
+      if (ttc === null || ttc === undefined || isNaN(ttc)) return "";
+      return <div className="text-center">{AmountFormatter.format(ttc)}</div>;
+    },
+  },
   // {
   //   accessorKey: "HT",
   //   header: "Total HT",

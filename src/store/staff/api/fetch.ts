@@ -8,7 +8,7 @@ export const createStaff = createAsyncThunk(
       firstName: string;
       lastName: string;
       email: string;
-      tel: string;
+      phone: string; // Mis à jour vers le format moderne
       numberSecu: string;
       adresse: string;
       zipcode: string;
@@ -20,7 +20,7 @@ export const createStaff = createAsyncThunk(
       endDate?: Date;
       contract: string;
       mdp: number; // Champ pour le mot de passe ou l'identifiant
-      active: boolean; // Ajout du champ actif
+      isActive: boolean; // Mis à jour vers le format moderne
     },
     { rejectWithValue },
   ) => {

@@ -19,7 +19,7 @@ export default async function handler(
         firstName,
         lastName,
         email,
-        tel,
+        phone, // Mis à jour vers le format moderne
         numberSecu,
         adresse,
         zipcode,
@@ -31,14 +31,14 @@ export default async function handler(
         endDate,
         contract,
         mdp, // Champ pour le mot de passe ou l'identifiant,
-        active = true, // Champ actif par défaut à true
+        isActive = true, // Mis à jour vers le format moderne, par défaut à true
       } = req.body;
 
       const entry = await Staff.create({
         firstName,
         lastName,
         email,
-        tel,
+        phone, // Mis à jour vers le format moderne
         numberSecu,
         adresse,
         zipcode,
@@ -50,7 +50,7 @@ export default async function handler(
         endDate,
         contract,
         mdp,
-        active, // Enregistrement de l'état actif
+        isActive, // Mis à jour vers le format moderne
       });
 
       // console.log("Staff créé avec succès :", entry);

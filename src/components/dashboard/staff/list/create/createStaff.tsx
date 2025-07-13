@@ -38,7 +38,7 @@ const initialFormData = {
   firstName: "",
   lastName: "",
   email: "",
-  tel: "",
+  phone: "", // Mis à jour vers le format moderne
   numberSecu: "",
   adresse: "",
   zipcode: "",
@@ -50,7 +50,7 @@ const initialFormData = {
   endDate: "", // Default to today
   contract: "",
   mdp: "", // Champ pour le mot de passe ou l'identifiant
-  active: true, // Default to active
+  isActive: true, // Mis à jour vers le format moderne
 };
 
 export default function CreateStaff() {
@@ -70,17 +70,17 @@ export default function CreateStaff() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(
-      createStaff({
-        ...formData,
-        hourlyRate: Number(formData.hourlyRate),
-        mdp: Number(formData.mdp),
-        startDate: formData.startDate
-          ? new Date(formData.startDate)
-          : new Date(),
-        endDate: formData.endDate ? new Date(formData.endDate) : new Date(),
-      }),
-    );
+
+    // Les données sont maintenant directement compatibles
+    const staffData = {
+      ...formData,
+      hourlyRate: Number(formData.hourlyRate),
+      mdp: Number(formData.mdp),
+      startDate: formData.startDate ? new Date(formData.startDate) : new Date(),
+      endDate: formData.endDate ? new Date(formData.endDate) : new Date(),
+    };
+
+    dispatch(createStaff(staffData));
   };
 
   return (
@@ -162,13 +162,13 @@ export default function CreateStaff() {
                 />
               </div>
               <div className="flex-1 flex-col space-y-1.5">
-                <Label className="pl-3" htmlFor="tel">
+                <Label className="pl-3" htmlFor="phone">
                   Téléphone
                 </Label>
                 <Input
-                  id="tel"
+                  id="phone"
                   placeholder="Téléphone"
-                  value={formData.tel}
+                  value={formData.phone}
                   onChange={handleChange}
                   required
                 />
@@ -320,11 +320,11 @@ export default function CreateStaff() {
                 />
               </div> */}
               <div className="flex w-full flex-1 flex-col items-center justify-center space-y-1.5">
-                <Label htmlFor="active">Actif</Label>
+                <Label htmlFor="isActive">Actif</Label>
                 <Switch
-                  id="active"
-                  checked={formData.active}
-                  onCheckedChange={(v) => handleSelect("active", v)}
+                  id="isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(v) => handleSelect("isActive", v)}
                   className={cn(
                     "data-[state=checked]:bg-(--chart-4) data-[state=unchecked]:bg-(--chart-5)",
                   )}

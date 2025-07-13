@@ -16,13 +16,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface DataTableProps<TData extends { active: boolean }, TValue> {
+interface DataTableProps<TData extends { isActive: boolean }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   checked: boolean; // Ajout de la propriété checked
 }
 
-export function DataTable<TData extends { active: boolean }, TValue>({
+export function DataTable<TData extends { isActive: boolean }, TValue>({
   columns,
   checked,
   data = [], // Ajout d'une valeur par défaut pour éviter les erreurs
@@ -59,7 +59,7 @@ export function DataTable<TData extends { active: boolean }, TValue>({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map(
               (row) =>
-                row.original.active === checked && (
+                row.original.isActive === checked && (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
