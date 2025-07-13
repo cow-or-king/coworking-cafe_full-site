@@ -63,7 +63,7 @@ export default function StaffCardFooter({
   );
 
   return (
-    <CardFooter className="flex-col items-start gap-3 text-sm">
+    <CardFooter className="flex-row items-start gap-5 text-sm">
       {/* Premier Shift */}
       <div className="w-full">
         <div className="mb-1 font-semibold text-blue-600">Premier Shift</div>
