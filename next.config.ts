@@ -10,9 +10,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   // Configuration pour les pages qui ne peuvent pas être pré-rendues
-  experimental: {
-    serverComponentsExternalPackages: ["react-pdf"],
-  },
+  serverExternalPackages: ["react-pdf"],
 };
 
 export default nextConfig;
