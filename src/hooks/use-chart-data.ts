@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import type { TurnoverData } from "@/store/reporting/api";
+import { useMemo, useState } from "react";
 
 console.log("🚀🚀🚀 FICHIER use-chart-data.ts CHARGÉ !!! 🚀🚀🚀");
 

@@ -19,9 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useShiftDataFixed } from "@/hooks/use-shift-data-fixed";
 import { convertTimeToISO } from "@/lib/shift-utils";
 import { useCreateShiftMutation } from "@/store/shift/api";
-import { useShiftDataFixed } from "@/hooks/use-shift-data-fixed";
 import { RootState } from "@/store/types";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -106,10 +106,10 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
       toast.success("Pointage ajouté avec succès");
       resetForm();
       setOpen(false);
-      
+
       // Rafraîchir le cache des shifts
       await refetch();
-      
+
       // Appeler le callback optionnel si fourni
       if (onShiftAdded) {
         onShiftAdded();

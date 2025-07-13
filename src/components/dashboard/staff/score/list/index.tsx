@@ -1,7 +1,7 @@
 import { AddShiftModal } from "@/components/dashboard/staff/score/list/add-shift-modal";
 import { createColumns } from "@/components/dashboard/staff/score/list/columns";
-import { ShiftData, UpdateShiftProps } from "@/lib/shift-utils";
 import { useShiftDataFixed } from "@/hooks/use-shift-data-fixed";
+import { ShiftData, UpdateShiftProps } from "@/lib/shift-utils";
 import { useUpdateShiftMutation } from "@/store/shift/api";
 import { StaffApi } from "@/store/staff";
 import { useTypedDispatch } from "@/store/types";
@@ -45,7 +45,13 @@ export default function ScoreList() {
   const dispatch = useTypedDispatch();
 
   // Utiliser le cache Singleton pour récupérer les shifts
-  const { data: shiftsData, isLoading, error, refetch, shifts } = useShiftDataFixed();
+  const {
+    data: shiftsData,
+    isLoading,
+    error,
+    refetch,
+    shifts,
+  } = useShiftDataFixed();
   const [updateShift] = useUpdateShiftMutation();
 
   useEffect(() => {
@@ -70,7 +76,9 @@ export default function ScoreList() {
     const allMonths = shiftDates
       .filter((date: Date) => date.getFullYear() === selectedYear)
       .map((date: Date) => date.getMonth());
-    const uniqueMonths = Array.from(new Set(allMonths)).sort((a: number, b: number) => a - b);
+    const uniqueMonths = Array.from(new Set(allMonths)).sort(
+      (a: number, b: number) => a - b,
+    );
     console.log("Mois calculés:", uniqueMonths);
     return uniqueMonths;
   }, [shiftDates, selectedYear]);
@@ -96,7 +104,7 @@ export default function ScoreList() {
     try {
       await updateShift(update).unwrap();
       toast.success("Shift mis à jour avec succès");
-      
+
       // Rafraîchir le cache après la mise à jour
       await refetch();
     } catch (error) {

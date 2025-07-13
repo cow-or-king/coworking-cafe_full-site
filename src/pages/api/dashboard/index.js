@@ -56,7 +56,16 @@ export default async function handler(req, res) {
               startDate.setMonth(startDate.getMonth() - 1);
               startDate.setDate(1);
               endDate.setMonth(endDate.getMonth() - 1);
-              endDate.setDate(Math.min(today.getDate() - 1, new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0).getDate()));
+              endDate.setDate(
+                Math.min(
+                  today.getDate() - 1,
+                  new Date(
+                    endDate.getFullYear(),
+                    endDate.getMonth() + 1,
+                    0,
+                  ).getDate(),
+                ),
+              );
               break;
             case "customPreviousYear":
               startDate.setFullYear(startDate.getFullYear() - 1);
@@ -98,21 +107,30 @@ export default async function handler(req, res) {
 
           return {
             startDateString: `${startDate.getFullYear()}/${(startDate.getMonth() + 1).toString().padStart(2, "0")}/${startDate.getDate().toString().padStart(2, "0")}`,
-            endDateString: `${endDate.getFullYear()}/${(endDate.getMonth() + 1).toString().padStart(2, "0")}/${endDate.getDate().toString().padStart(2, "0")}`
+            endDateString: `${endDate.getFullYear()}/${(endDate.getMonth() + 1).toString().padStart(2, "0")}/${endDate.getDate().toString().padStart(2, "0")}`,
           };
         };
 
         // Liste de toutes les périodes nécessaires
         const ranges = [
-          'yesterday', 'week', 'month', 'year',
-          'customPreviousDay', 'customPreviousWeek', 'customPreviousMonth', 'customPreviousYear',
-          'previousDay', 'previousWeek', 'previousMonth', 'previousYear'
+          "yesterday",
+          "week",
+          "month",
+          "year",
+          "customPreviousDay",
+          "customPreviousWeek",
+          "customPreviousMonth",
+          "customPreviousYear",
+          "previousDay",
+          "previousWeek",
+          "previousMonth",
+          "previousYear",
         ];
 
         // Créer toutes les requêtes en parallèle
         const aggregationPromises = ranges.map(async (range) => {
           const { startDateString, endDateString } = calculateDates(range);
-          
+
           const result = await Turnover.aggregate([
             {
               $match: {
@@ -164,7 +182,7 @@ export default async function handler(req, res) {
 
           return {
             range,
-            data: result[0] || { _id: range, TTC: 0, HT: 0 }
+            data: result[0] || { _id: range, TTC: 0, HT: 0 },
           };
         });
 
@@ -177,12 +195,15 @@ export default async function handler(req, res) {
           dashboardData[range] = data;
         });
 
-        console.log("✅ API DASHBOARD - Toutes les données récupérées:", Object.keys(dashboardData));
-        
-        res.status(200).json({ 
-          success: true, 
+        console.log(
+          "✅ API DASHBOARD - Toutes les données récupérées:",
+          Object.keys(dashboardData),
+        );
+
+        res.status(200).json({
+          success: true,
           data: dashboardData,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       } catch (error) {
         console.error("❌ API DASHBOARD - Erreur:", error);
@@ -191,7 +212,7 @@ export default async function handler(req, res) {
       break;
 
     default:
-      res.setHeader('Allow', ['GET']);
+      res.setHeader("Allow", ["GET"]);
       res.status(405).end(`Method ${method} Not Allowed`);
       break;
   }

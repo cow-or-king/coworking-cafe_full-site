@@ -23,13 +23,16 @@ export const useReportingData = (
   );
 
   // ARCHITECTURE OPTIMISÉE - utilise les données unifiées du dashboard
-  const { mainData, compareData, isLoading, error } = useRangeData(range, compareRange);
+  const { mainData, compareData, isLoading, error } = useRangeData(
+    range,
+    compareRange,
+  );
 
   console.log(`🔥 HOOK RESULT: useRangeData(${range}) returned:`, {
     mainData,
-  compareData,
-  isLoading,
-  error
+    compareData,
+    isLoading,
+    error,
   });
 
   // Debug temporaire
