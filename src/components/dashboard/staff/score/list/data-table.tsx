@@ -19,25 +19,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+// Type pour les données de shift avec toutes les propriétés nécessaires
+interface ShiftData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  startTime: string;
+  endTime?: string;
+  active: boolean;
+  startTimeFirst?: string;
+  endTimeFirst?: string;
+  startTimeSecond?: string;
+  endTimeSecond?: string;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
-    endTimeFirst: string;
-    startTimeFirst: string;
-    id: string; // Ajout de la propriété id
-    startTime: string;
-    endTime?: string; // Ajout de la propriété endTime
-    active: boolean;
-    firstName: string; // Ajout de la propriété firstName
-    lastName: string; // Ajout de la propriété lastName
-  },
-  TValue,
->({
+export function DataTable<TData extends ShiftData, TValue>({
   columns,
-
   data = [], // Ajout d'une valeur par défaut pour éviter les erreurs
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({

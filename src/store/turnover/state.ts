@@ -5,7 +5,6 @@ export interface ChartDataItem {
 }
 
 export interface TurnoverState {
-  items(items: any): unknown;
   loading: boolean;
   data: ChartDataItem[] | undefined;
 }

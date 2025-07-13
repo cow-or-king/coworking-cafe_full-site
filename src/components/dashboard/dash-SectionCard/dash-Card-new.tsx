@@ -76,6 +76,8 @@ export function DashCard({
         compareTTC={checked ? 0 : mainData.trend?.percentage || 0}
         compareHT={checked ? mainData.trend?.percentage || 0 : 0}
         value={mainData.value}
+        compareValueTTC={compareData.value || 0}
+        compareValueHT={compareData.value || 0}
       />
       <DashCardFooter
         text_trendin={text_trendin}

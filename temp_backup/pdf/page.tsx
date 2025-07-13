@@ -1,5 +1,8 @@
 "use client";
 
+// Désactiver le pré-rendu pour cette page PDF
+export const dynamic = 'force-dynamic';
+
 import { StoreProvider } from "@/app/StoreProvider";
 import PdfCashControl from "@/lib/pdf/pdf-CashControl";
 import { usePDF } from "@react-pdf/renderer";
@@ -11,7 +14,13 @@ import "react-pdf/dist/Page/TextLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function Page() {
-  const [document] = usePDF({ document: <PdfCashControl data={[]} /> });
+  const [document] = usePDF({ 
+    document: <PdfCashControl 
+      data={[]} 
+      selectedMonth={null} 
+      selectedYear={null} 
+    /> 
+  });
 
   // Generate all the document pages.
   const [pages, setPages] = useState<ReactElement[]>([]);
