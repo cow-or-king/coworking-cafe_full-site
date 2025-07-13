@@ -5,14 +5,17 @@ import { DashSectionCards } from "@/components/dashboard/dash-SectionCard";
 import ScoreCard from "@/components/dashboard/staff/score/scoreCard";
 import SwitchWithText from "@/components/dashboard/switchWithText";
 import { Button } from "@/components/ui/button";
-import { diagnoseDashboardCache, invalidateDashboardCache } from "@/hooks/use-dashboard-data-fixed";
+import {
+  diagnoseDashboardCache,
+  invalidateDashboardCache,
+} from "@/hooks/use-dashboard-data-fixed";
 import { useAutoPreloader } from "@/hooks/use-global-preloader";
-import { RefreshCw, Loader2, Zap } from "lucide-react";
+import { Loader2, RefreshCw, Zap } from "lucide-react";
 import { useState } from "react";
 
 export default function DashboardPage() {
   const [checked, setChecked] = useState(false);
-  
+
   // Préchargement automatique de toutes les APIs
   const {
     isPreloading,
@@ -22,18 +25,18 @@ export default function DashboardPage() {
     totalApis,
     preloadStatus,
     errors,
-    startPreload
+    startPreload,
   } = useAutoPreloader();
 
   const handleRefresh = () => {
     console.log("🔄 MANUAL REFRESH: User clicked refresh button");
-    
+
     // Diagnostique avant refresh
     diagnoseDashboardCache();
-    
+
     // Invalider le cache et forcer un refresh
     invalidateDashboardCache();
-    
+
     // Attendre un peu puis recharger
     setTimeout(() => {
       window.location.reload();
@@ -45,7 +48,7 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
         <ScoreCard hidden={""} />
         <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex justify-between items-center px-8">
+          <div className="flex items-center justify-between px-8">
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -53,10 +56,10 @@ export default function DashboardPage() {
                 onClick={handleRefresh}
                 className="text-xs"
               >
-                <RefreshCw className="w-3 h-3 mr-1" />
+                <RefreshCw className="mr-1 h-3 w-3" />
                 Refresh Debug
               </Button>
-              
+
               <Button
                 variant={isComplete ? "default" : "outline"}
                 size="sm"
@@ -65,16 +68,16 @@ export default function DashboardPage() {
                 className="text-xs"
               >
                 {isPreloading ? (
-                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />
                 ) : isComplete ? (
-                  <Zap className="w-3 h-3 mr-1" />
+                  <Zap className="mr-1 h-3 w-3" />
                 ) : (
-                  <Zap className="w-3 h-3 mr-1" />
+                  <Zap className="mr-1 h-3 w-3" />
                 )}
-                {isPreloading 
-                  ? `Préchargement... ${progress}%` 
-                  : isComplete 
-                    ? "APIs Préchargées ✓" 
+                {isPreloading
+                  ? `Préchargement... ${progress}%`
+                  : isComplete
+                    ? "APIs Préchargées ✓"
                     : "Précharger APIs"}
               </Button>
             </div>
@@ -82,12 +85,20 @@ export default function DashboardPage() {
             {/* Indicateur de progression */}
             {(isPreloading || isComplete) && (
               <div className="flex items-center gap-2 text-xs text-gray-600">
-                <span>{completedApis}/{totalApis} APIs</span>
-                {isComplete && <span className="text-green-600">✓ Complet</span>}
-                {errors.length > 0 && <span className="text-red-600">({errors.length} erreurs)</span>}
+                <span>
+                  {completedApis}/{totalApis} APIs
+                </span>
+                {isComplete && (
+                  <span className="text-green-600">✓ Complet</span>
+                )}
+                {errors.length > 0 && (
+                  <span className="text-red-600">
+                    ({errors.length} erreurs)
+                  </span>
+                )}
               </div>
             )}
-            
+
             <SwitchWithText
               checked={checked}
               setChecked={setChecked}

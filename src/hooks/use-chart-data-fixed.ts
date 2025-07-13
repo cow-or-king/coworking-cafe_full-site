@@ -88,9 +88,7 @@ class ChartCacheManager {
         const currentTime = Date.now();
 
         if (currentTime - parsedPreloadCache.timestamp < this.CACHE_TIMEOUT) {
-          console.log(
-            `🚀 CHART PRELOAD CACHE HIT: Using preloaded data`,
-          );
+          console.log(`🚀 CHART PRELOAD CACHE HIT: Using preloaded data`);
           // Copier les données préchargées vers le cache normal
           this.setCachedData(parsedPreloadCache.data);
           return parsedPreloadCache.data;

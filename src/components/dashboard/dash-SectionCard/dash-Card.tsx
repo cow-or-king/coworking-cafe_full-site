@@ -56,17 +56,29 @@ export function DashCard({
     // Affichage anticipé : si on a les données principales mais pas de comparaison,
     // on peut déjà commencer à afficher une version partielle
     if (mainData && !compareData && !compareLoading) {
-      console.log(`⚡ DASHCARD [${range}] PARTIAL READY: Main data available, compare data pending`);
+      console.log(
+        `⚡ DASHCARD [${range}] PARTIAL READY: Main data available, compare data pending`,
+      );
     }
 
     // Détection proactive : si on n'a aucune donnée après 50ms, déclencher un debug
     if (!mainData && !compareData && !mainLoading && !compareLoading) {
       const quickCheck = setTimeout(() => {
-        console.log(`🚨 DASHCARD [${range}] NO DATA: Proactive detection triggered`);
+        console.log(
+          `🚨 DASHCARD [${range}] NO DATA: Proactive detection triggered`,
+        );
       }, 50);
       return () => clearTimeout(quickCheck);
     }
-  }, [mainData, compareData, mainLoading, compareLoading, mainError, compareError, range]);
+  }, [
+    mainData,
+    compareData,
+    mainLoading,
+    compareLoading,
+    mainError,
+    compareError,
+    range,
+  ]);
 
   // Affichage optimisé : montrer le contenu dès que possible
   if (mainLoading && !mainData) {
@@ -88,13 +100,11 @@ export function DashCard({
       <Card className="@container/card">
         <div className="p-4 text-center text-gray-500">
           <div className="text-sm">Données principales non disponibles</div>
-          <div className="text-xs mt-1 text-gray-400">
+          <div className="mt-1 text-xs text-gray-400">
             Range: {range} ({mainData ? "✓" : "✗"})
           </div>
           {mainError && (
-            <div className="text-xs mt-2 text-red-500">
-              {mainError}
-            </div>
+            <div className="mt-2 text-xs text-red-500">{mainError}</div>
           )}
         </div>
       </Card>
@@ -104,7 +114,7 @@ export function DashCard({
   // Affichage avec données principales disponibles (même si compareData manque)
   // Cela permet un affichage plus rapide
   const safeCompareData = compareData || {
-    totals: { HT: 0, TTC: 0, formattedHT: "0 €", formattedTTC: "0 €" }
+    totals: { HT: 0, TTC: 0, formattedHT: "0 €", formattedTTC: "0 €" },
   };
 
   return (

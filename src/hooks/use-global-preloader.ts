@@ -99,14 +99,14 @@ class GlobalPreloader {
       try {
         console.log(`📡 PRELOADER: Loading ${api.name}...`);
         const response = await fetch(api.url);
-        
+
         if (response.ok) {
           const data = await response.json();
           console.log(`✅ PRELOADER: ${api.name} loaded successfully`);
-          
+
           // Mettre en cache les données selon le type d'API
           this.cacheApiData(api.key, data);
-          
+
           this.state.preloadStatus[api.key as keyof PreloadStatus] = true;
           this.state.completedApis++;
           this.notifyListeners();
@@ -127,9 +127,14 @@ class GlobalPreloader {
     this.state.isPreloading = false;
     this.notifyListeners();
 
-    console.log(`🎉 PRELOADER: Global preload completed! ${this.state.completedApis}/${this.state.totalApis} APIs loaded`);
+    console.log(
+      `🎉 PRELOADER: Global preload completed! ${this.state.completedApis}/${this.state.totalApis} APIs loaded`,
+    );
     if (this.state.errors.length > 0) {
-      console.warn("⚠️ PRELOADER: Some APIs failed to load:", this.state.errors);
+      console.warn(
+        "⚠️ PRELOADER: Some APIs failed to load:",
+        this.state.errors,
+      );
     }
   }
 
@@ -141,33 +146,42 @@ class GlobalPreloader {
         case "dashboard":
           // Stocker dans le cache dashboard existant
           if (typeof window !== "undefined") {
-            localStorage.setItem("dashboard-data-cache", JSON.stringify({
-              data: data.data || data,
-              timestamp: Date.now(),
-              date: new Date().toISOString().split("T")[0],
-            }));
+            localStorage.setItem(
+              "dashboard-data-cache",
+              JSON.stringify({
+                data: data.data || data,
+                timestamp: Date.now(),
+                date: new Date().toISOString().split("T")[0],
+              }),
+            );
           }
           break;
 
         case "charts":
           // Stocker dans le cache charts
           if (typeof window !== "undefined") {
-            localStorage.setItem("chart-data-cache", JSON.stringify({
-              data: data.data || data,
-              timestamp: Date.now(),
-              date: new Date().toISOString().split("T")[0],
-            }));
+            localStorage.setItem(
+              "chart-data-cache",
+              JSON.stringify({
+                data: data.data || data,
+                timestamp: Date.now(),
+                date: new Date().toISOString().split("T")[0],
+              }),
+            );
           }
           break;
 
         case "staff":
           // Stocker dans le cache staff
           if (typeof window !== "undefined") {
-            localStorage.setItem("staff-data-cache", JSON.stringify({
-              data: data.data || data,
-              timestamp: Date.now(),
-              date: new Date().toISOString().split("T")[0],
-            }));
+            localStorage.setItem(
+              "staff-data-cache",
+              JSON.stringify({
+                data: data.data || data,
+                timestamp: Date.now(),
+                date: new Date().toISOString().split("T")[0],
+              }),
+            );
           }
           break;
 
@@ -175,11 +189,14 @@ class GlobalPreloader {
         case "cashEntry":
           // Stocker dans des caches génériques
           if (typeof window !== "undefined") {
-            localStorage.setItem(`${type}-data-cache`, JSON.stringify({
-              data: data.data || data,
-              timestamp: Date.now(),
-              date: new Date().toISOString().split("T")[0],
-            }));
+            localStorage.setItem(
+              `${type}-data-cache`,
+              JSON.stringify({
+                data: data.data || data,
+                timestamp: Date.now(),
+                date: new Date().toISOString().split("T")[0],
+              }),
+            );
           }
           break;
       }
@@ -190,7 +207,10 @@ class GlobalPreloader {
 
   // Vérifier si le préchargement est terminé
   isPreloadComplete(): boolean {
-    return !this.state.isPreloading && this.state.completedApis === this.state.totalApis;
+    return (
+      !this.state.isPreloading &&
+      this.state.completedApis === this.state.totalApis
+    );
   }
 
   // Obtenir le pourcentage de progression
@@ -204,7 +224,9 @@ const globalPreloader = GlobalPreloader.getInstance();
 
 // Hook pour utiliser le préchargement global
 export function useGlobalPreloader() {
-  const [state, setState] = useState<GlobalPreloaderState>(() => globalPreloader.getState());
+  const [state, setState] = useState<GlobalPreloaderState>(() =>
+    globalPreloader.getState(),
+  );
 
   useEffect(() => {
     // S'abonner aux changements
