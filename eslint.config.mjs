@@ -17,7 +17,7 @@ const eslintConfig = [
     rules: {
       "react/react-in-jsx-scope": "off",
       "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/no-explicit-any": "warn", 
+      "@typescript-eslint/no-explicit-any": "warn",
       "react/no-unescaped-entities": "warn",
       "jsx-a11y/alt-text": "warn",
       "jsx-a11y/aria-props": "warn",

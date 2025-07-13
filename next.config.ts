@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'standalone',
+  output: "standalone",
   eslint: {
     ignoreDuringBuilds: false,
   },
@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   },
   // Configuration pour les pages qui ne peuvent pas être pré-rendues
   experimental: {
-    serverComponentsExternalPackages: ['react-pdf'],
+    serverComponentsExternalPackages: ["react-pdf"],
   },
 };
 
