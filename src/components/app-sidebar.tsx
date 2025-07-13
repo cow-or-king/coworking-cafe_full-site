@@ -1,6 +1,6 @@
 "use client";
 
-import { HandCoins, Home, Users } from "lucide-react";
+import { HandCoins, Home, Settings2, Users } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 import logo from "../../public/logo.svg";
@@ -56,6 +56,22 @@ const data = {
           title: "Pointage du personnel",
           url: "/score",
         },
+      ],
+    },
+    {
+      title: "Réglages",
+      url: "/settings",
+      icon: Settings2,
+      isActive: false,
+      items: [
+        {
+          title: "Optimisation",
+          url: "/settings/optimization",
+        },
+        // {
+        //   title: "Configuration",
+        //   url: "/settings/general",
+        // },
       ],
     },
     // {
