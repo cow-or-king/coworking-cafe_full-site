@@ -1,4 +1,4 @@
-import CreateStaff from "@/components/dashboard/staff/list/create/createStaff";
+import CreateStaff from "@/components/dashboard/staff/list/create/create-staff";
 
 const CreatePage = () => {
   return (

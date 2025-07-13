@@ -127,7 +127,7 @@ class CashEntryCacheManager {
 
     try {
       console.log("🔄 Récupération des données cash entries...");
-      const response = await fetch("/api/cash-entry/get");
+      const response = await fetch("/api/cash-entry");
 
       if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);

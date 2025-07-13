@@ -200,15 +200,11 @@ export function Sidebar({
 }
 
 // Composant de déclenchement
-interface SidebarTriggerProps extends React.ComponentProps<typeof Button> {
-  // Additional props can be added here if needed
-}
-
 export function SidebarTrigger({
   className,
   onClick,
   ...props
-}: SidebarTriggerProps) {
+}: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -230,11 +226,10 @@ export function SidebarTrigger({
 }
 
 // Composant Input pour sidebar
-interface SidebarInputProps extends React.ComponentProps<typeof Input> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarInput({ className, ...props }: SidebarInputProps) {
+export function SidebarInput({
+  className,
+  ...props
+}: React.ComponentProps<typeof Input>) {
   return (
     <Input
       data-sidebar="input"
@@ -248,11 +243,10 @@ export function SidebarInput({ className, ...props }: SidebarInputProps) {
 }
 
 // Header de sidebar
-interface SidebarHeaderProps extends React.ComponentProps<"div"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarHeader({ className, ...props }: SidebarHeaderProps) {
+export function SidebarHeader({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-sidebar="header"
@@ -263,11 +257,10 @@ export function SidebarHeader({ className, ...props }: SidebarHeaderProps) {
 }
 
 // Footer de sidebar
-interface SidebarFooterProps extends React.ComponentProps<"div"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarFooter({ className, ...props }: SidebarFooterProps) {
+export function SidebarFooter({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-sidebar="footer"
@@ -278,13 +271,10 @@ export function SidebarFooter({ className, ...props }: SidebarFooterProps) {
 }
 
 // Séparateur de sidebar
-interface SidebarSeparatorProps
-  extends React.ComponentProps<typeof Separator> {}
-
 export function SidebarSeparator({
   className,
   ...props
-}: SidebarSeparatorProps) {
+}: React.ComponentProps<typeof Separator>) {
   return (
     <Separator
       data-sidebar="separator"
@@ -295,11 +285,10 @@ export function SidebarSeparator({
 }
 
 // Contenu principal
-interface SidebarContentProps extends React.ComponentProps<"div"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarContent({ className, ...props }: SidebarContentProps) {
+export function SidebarContent({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-sidebar="content"
@@ -313,11 +302,10 @@ export function SidebarContent({ className, ...props }: SidebarContentProps) {
 }
 
 // Menu et items
-interface SidebarMenuProps extends React.ComponentProps<"ul"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarMenu({ className, ...props }: SidebarMenuProps) {
+export function SidebarMenu({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) {
   return (
     <ul
       data-sidebar="menu"
@@ -327,11 +315,10 @@ export function SidebarMenu({ className, ...props }: SidebarMenuProps) {
   );
 }
 
-interface SidebarMenuItemProps extends React.ComponentProps<"li"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarMenuItem({ className, ...props }: SidebarMenuItemProps) {
+export function SidebarMenuItem({
+  className,
+  ...props
+}: React.ComponentProps<"li">) {
   return (
     <li
       data-sidebar="menu-item"
@@ -392,11 +379,10 @@ export function SidebarMenuButton({
 }
 
 // Label pour menu
-interface SidebarMenuSubProps extends React.ComponentProps<"ul"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarMenuSub({ className, ...props }: SidebarMenuSubProps) {
+export function SidebarMenuSub({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) {
   return (
     <ul
       data-sidebar="menu-sub"
@@ -410,11 +396,7 @@ export function SidebarMenuSub({ className, ...props }: SidebarMenuSubProps) {
   );
 }
 
-interface SidebarMenuSubItemProps extends React.ComponentProps<"li"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarMenuSubItem({ ...props }: SidebarMenuSubItemProps) {
+export function SidebarMenuSubItem({ ...props }: React.ComponentProps<"li">) {
   return <li {...props} />;
 }
 
@@ -509,14 +491,10 @@ export function SidebarMenuAction({
 }
 
 // Badge pour menu
-interface SidebarMenuBadgeProps extends React.ComponentProps<"div"> {
-  // Additional props can be added here if needed
-}
-
 export function SidebarMenuBadge({
   className,
   ...props
-}: SidebarMenuBadgeProps) {
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-sidebar="menu-badge"
@@ -576,11 +554,10 @@ export function SidebarMenuSkeleton({
 }
 
 // Inset pour sidebar
-interface SidebarInsetProps extends React.ComponentProps<"main"> {
-  // Additional props can be added here if needed
-}
-
-export function SidebarInset({ className, ...props }: SidebarInsetProps) {
+export function SidebarInset({
+  className,
+  ...props
+}: React.ComponentProps<"main">) {
   return (
     <main
       className={cn(

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { StaffFormData } from "../components/dashboard/staff/list/create/StaffFormSections";
+import { StaffFormData } from "../components/dashboard/staff/list/create/staff-form-sections";
 
 // Types pour la validation
 export type ValidationRule<T> = (value: T) => string | null;

@@ -47,7 +47,7 @@ export const createStaff = createAsyncThunk(
 
 export const fetchData = createTypedAsyncThunk(
   "staff/fetchData",
-  async function (_: void) {
+  async function () {
     // If already loaded, do nothing.
 
     const res = await fetch("/api/staff");

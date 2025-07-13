@@ -355,7 +355,17 @@ export default function StaffCard({
             alignItems: "center",
             justifyContent: "center",
           }}
+          role="button"
+          tabIndex={0}
+          aria-labelledby="keypad-title"
+          aria-label="Fermer la modal"
           onClick={() => setPasswordPrompt(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setPasswordPrompt(false);
+            }
+          }}
         >
           <div
             className="keypad-modal"
@@ -367,11 +377,13 @@ export default function StaffCard({
               maxWidth: "320px",
               width: "90%",
             }}
-            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-labelledby="keypad-title"
           >
             {/* Header */}
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
               <h3
+                id="keypad-title"
                 style={{
                   margin: "0 0 8px 0",
                   fontSize: "18px",

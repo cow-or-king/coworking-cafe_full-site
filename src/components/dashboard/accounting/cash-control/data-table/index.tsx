@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import React from "react";
-import { FormCashControl } from "../form/formCashControl";
+import { FormCashControl } from "../form/form-cash-control";
 
 interface DataTableProps<TData, TValue> {
   columns: any; // You can specify a more precise type if you have one, e.g. ColumnDef<TData, TValue>[]

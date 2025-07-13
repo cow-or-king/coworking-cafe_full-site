@@ -127,8 +127,8 @@ export function useShiftManagement(staffId: string, form: any) {
         await fetchShiftData();
         return { success: true };
       } else {
-        const error = await response.json();
-        return { success: false, error: error.message };
+        const errorData = await response.json();
+        return { success: false, error: errorData.message };
       }
     } catch (error) {
       return { success: false, error: "Erreur de connexion" };
@@ -152,8 +152,8 @@ export function useShiftManagement(staffId: string, form: any) {
         await fetchShiftData();
         return { success: true };
       } else {
-        const error = await response.json();
-        return { success: false, error: error.message };
+        const errorData = await response.json();
+        return { success: false, error: errorData.message };
       }
     } catch (error) {
       return { success: false, error: "Erreur de connexion" };

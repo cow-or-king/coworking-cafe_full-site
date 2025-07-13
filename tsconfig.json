@@ -29,7 +29,7 @@
     ".next/types/**/*.ts",
     "src/lib/mongodb/dbConnect.js",
     "src/lib/mongodb/models/Turnover.js",
-    "src/components/dashboard/dash-SectionCard",
+    "src/components/dashboard/section-card",
     "src/pages/api/reporting/index.js"
   ],
   "exclude": ["node_modules"]

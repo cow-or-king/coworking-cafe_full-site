@@ -2,13 +2,7 @@
 import { DataTable } from "@/components/dashboard/accounting/cash-control/data-table";
 import { useCashEntryDataFixed } from "@/hooks/use-cash-entry-data-fixed";
 import { useChartData } from "@/hooks/use-chart-data-fixed";
-import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
-
-// Import dynamique pour éviter les erreurs SSR
-const PdfCashControl = dynamic(() => import("@/lib/pdf/pdf-CashControl"), {
-  ssr: false,
-});
 
 // Extend CashEntry type to include prestaB2B
 type CashEntry = {
@@ -20,6 +14,13 @@ type CashEntry = {
   virement?: number | string;
   cbClassique?: number | string;
   cbSansContact?: number | string;
+  [key: string]: unknown;
+};
+
+// Types pour les données de turnover
+type TurnoverItem = {
+  date: string;
+  TVA?: number;
   [key: string]: unknown;
 };
 
@@ -96,13 +97,15 @@ export default function CashControl() {
 
   const years = useMemo(() => {
     if (!data) return [];
-    const allYears = data.map((item: any) => new Date(item.date).getFullYear());
+    const allYears = data.map((item: TurnoverItem) =>
+      new Date(item.date).getFullYear(),
+    );
     return Array.from(new Set(allYears)).sort((a: number, b: number) => b - a);
   }, [data]);
 
   const filteredData = useMemo(() => {
     if (!data) return [];
-    return data.filter((item: any) => {
+    return data.filter((item: TurnoverItem) => {
       const d = new Date(item.date);
       const yearMatch = selectedYear ? d.getFullYear() === selectedYear : true;
       const monthMatch =
@@ -113,10 +116,11 @@ export default function CashControl() {
 
   const mergedData = useMemo(() => {
     if (!filteredData || !dataCash) return [];
-    return filteredData.map((turnoverItem: any) => {
+    return filteredData.map((turnoverItem: TurnoverItem) => {
       const dateKey = formatDateYYYYMMDD(turnoverItem.date);
       const cashEntry = dataCash.find(
-        (entry: any) => formatDateYYYYMMDD(entry._id) === dateKey,
+        (entry: unknown) =>
+          formatDateYYYYMMDD((entry as CashEntry)._id) === dateKey,
       );
       // On laisse prestaB2B tel que reçu de cashEntry
       return {
@@ -124,56 +128,10 @@ export default function CashControl() {
         ...cashEntry,
         _id: cashEntry?._id || "",
         date: dateKey,
-        TVA: (turnoverItem as any).TVA ?? 0,
+        TVA: (turnoverItem as TurnoverItem).TVA ?? 0,
       };
     });
   }, [filteredData, dataCash]);
-
-  // Handler pour ouvrir le formulaire depuis la colonne action
-  const openForm = useCallback((row: CashEntryRow) => {
-    setEditingRow(row);
-    const dateStr = row.date || new Date().toISOString().slice(0, 10);
-    setForm({
-      _id: row._id || "",
-      date: dateStr,
-      prestaB2B:
-        Array.isArray(row.prestaB2B) && row.prestaB2B.length > 0
-          ? row.prestaB2B.map((p: any) => ({
-              label: p.label ?? "",
-              value:
-                p.value !== undefined && p.value !== null
-                  ? String(p.value)
-                  : "",
-            }))
-          : [{ label: "", value: "" }],
-      depenses:
-        Array.isArray(row.depenses) && row.depenses.length > 0
-          ? row.depenses.map((d: any) => ({
-              label: d.label ?? "",
-              value:
-                d.value !== undefined && d.value !== null
-                  ? String(d.value)
-                  : "",
-            }))
-          : [{ label: "", value: "" }],
-      virement:
-        row.virement !== undefined && row.virement !== null
-          ? String(row.virement)
-          : "",
-      especes:
-        row.especes !== undefined && row.especes !== null
-          ? String(row.especes)
-          : "",
-      cbClassique:
-        row.cbClassique !== undefined && row.cbClassique !== null
-          ? String(row.cbClassique)
-          : "",
-      cbSansContact:
-        row.cbSansContact !== undefined && row.cbSansContact !== null
-          ? String(row.cbSansContact)
-          : "",
-    });
-  }, []);
 
   // Définir un type pour les lignes de cash entry
   type CashEntryRow = {
@@ -326,54 +284,6 @@ export default function CashControl() {
     },
     [form, refetchCashEntries],
   );
-
-  // Calcul des totaux pour chaque colonne numérique
-  const totals = useMemo(() => {
-    return mergedData.reduce(
-      (acc: any, row: any) => {
-        acc.TTC += Number(row.TTC) || 0;
-        acc.HT += Number(row.HT) || 0;
-        acc.TVA += Number(row.TVA) || 0;
-        acc.virement += Number(row.virement) || 0;
-        acc.cbClassique += Number(row.cbClassique) || 0;
-        acc.cbSansContact += Number(row.cbSansContact) || 0;
-        acc.especes += Number(row.especes) || 0;
-        // Total prestaB2B et depenses (somme des montants)
-        const prestaB2B =
-          (row as { prestaB2B?: { label: string; value: number }[] })
-            .prestaB2B ?? [];
-        if (Array.isArray(prestaB2B)) {
-          acc.prestaB2B += prestaB2B.reduce(
-            (s: number, p: { label: string; value: number }) =>
-              s + (Number(p.value) || 0),
-            0,
-          );
-        }
-        const depenses =
-          (row as { depenses?: { label: string; value: number }[] }).depenses ??
-          [];
-        if (Array.isArray(depenses)) {
-          acc.depenses += depenses.reduce(
-            (s: number, d: { label: string; value: number }) =>
-              s + (Number(d.value) || 0),
-            0,
-          );
-        }
-        return acc;
-      },
-      {
-        TTC: 0,
-        HT: 0,
-        TVA: 0,
-        depenses: 0,
-        prestaB2B: 0,
-        virement: 0,
-        cbClassique: 0,
-        cbSansContact: 0,
-        especes: 0,
-      },
-    );
-  }, [mergedData]);
 
   // État pour la génération PDF (simplifié)
   const [pdfGenerated, setPdfGenerated] = useState(false);

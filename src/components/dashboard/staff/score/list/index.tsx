@@ -23,15 +23,6 @@ const monthsList = [
   "Novembre",
   "Décembre",
 ];
-// Utilitaire pour formater une date en YYYY/MM/DD
-function formatDateYYYYMMDD(dateStr: string) {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "";
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}/${month}/${day}`;
-}
 
 export default function ScoreList() {
   const currentYear = new Date().getFullYear();
@@ -45,13 +36,7 @@ export default function ScoreList() {
   const dispatch = useTypedDispatch();
 
   // Utiliser le cache Singleton pour récupérer les shifts
-  const {
-    data: shiftsData,
-    isLoading,
-    error,
-    refetch,
-    shifts,
-  } = useShiftDataFixed();
+  const { isLoading, error, refetch, shifts } = useShiftDataFixed();
   const [updateShift] = useUpdateShiftMutation();
 
   useEffect(() => {

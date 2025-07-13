@@ -2,7 +2,7 @@ import { createTypedAsyncThunk } from "../../types";
 
 export const fetchData = createTypedAsyncThunk(
   "turnover/fetchData",
-  async function (_: void) {
+  async function () {
     // If already loaded, do nothing.
 
     const res = await fetch("/api/turnover");

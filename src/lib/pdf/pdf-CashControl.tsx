@@ -1,7 +1,7 @@
 "use client";
 
 import { StoreProvider, withStoreProvider } from "@/app/StoreProvider";
-import RowTabTurnover from "@/components/dashboard/pdf/rowTabTurnover";
+import RowTabTurnover from "@/components/dashboard/pdf/row-tab-turnover";
 import {
   Document,
   Image,

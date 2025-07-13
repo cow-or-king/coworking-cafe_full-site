@@ -1,9 +1,9 @@
 "use client";
 
 import { Chart } from "@/components/dashboard/chart";
-import { DashSectionCards } from "@/components/dashboard/dash-SectionCard";
-import ScoreCard from "@/components/dashboard/staff/score/scoreCard";
-import SwitchWithText from "@/components/dashboard/switchWithText";
+import { DashSectionCards } from "@/components/dashboard/section-card";
+import ScoreCard from "@/components/dashboard/staff/score/score-card";
+import SwitchWithText from "@/components/dashboard/switch-with-text";
 import {
   diagnoseDashboardCache,
   invalidateDashboardCache,
@@ -18,16 +18,7 @@ export default function DashboardPage() {
   const [checked, setChecked] = useState(false);
 
   // Préchargement automatique de toutes les APIs
-  const {
-    isPreloading,
-    isComplete,
-    progress,
-    completedApis,
-    totalApis,
-    preloadStatus,
-    errors,
-    startPreload,
-  } = useAutoPreloader();
+  const { startPreload } = useAutoPreloader();
 
   const handleRefresh = () => {
     console.log("🔄 MANUAL REFRESH: User clicked refresh button");

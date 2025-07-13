@@ -133,7 +133,7 @@ async function calculateBundleSize(): Promise<string> {
             totalSize += stats.size;
           }
         }
-      } catch (error) {
+      } catch {
         // Ignorer les erreurs de fichiers individuels
       }
     }
@@ -154,7 +154,7 @@ async function calculateBundleSize(): Promise<string> {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const results: AnalysisResult = {
       totalFiles: 0,

@@ -20,7 +20,7 @@ export const createCashEntry = createTypedAsyncThunk(
 export const fetchCashEntries = createTypedAsyncThunk(
   "cashentry/fetchAll",
   async () => {
-    const res = await fetch("/api/cash-entry/get");
+    const res = await fetch("/api/cash-entry");
     if (!res.ok) throw new Error("Erreur lors du chargement");
     const data = await res.json();
     return data.data as CashEntry[];
@@ -46,7 +46,7 @@ export const updateCashEntry = createTypedAsyncThunk(
 export const deleteCashEntry = createTypedAsyncThunk(
   "cashentry/delete",
   async (id: string) => {
-    const res = await fetch(`/api/cash-entry/delete/${id}`, {
+    const res = await fetch(`/api/cash-entry/${id}`, {
       method: "DELETE",
     });
     if (!res.ok) throw new Error("Erreur lors de la suppression");

@@ -42,7 +42,6 @@ export function PasswordPrompt({
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && onValidate()}
-              autoFocus
             />
           </div>
 

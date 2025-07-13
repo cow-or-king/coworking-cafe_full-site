@@ -1,0 +1,729 @@
+   ▲ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 4.0s
+   Linting and checking validity of types ...
+
+./src/app/(admin)/(dashboard)/(staff)/list/page.tsx
+56:47  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+66:19  Warning: Visible, non-interactive elements with click handlers must have at least one keyboard listener.  jsx-a11y/click-events-have-key-events
+66:19  Warning: Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element.  jsx-a11y/no-static-element-interactions
+
+./src/app/(admin)/(dashboard)/accounting/cash-control/page.tsx
+62:9  Warning: The 'data' logical expression could make the dependencies of useMemo Hook (at line 102) change on every render. To fix this, wrap the initialization of 'data' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+62:9  Warning: The 'data' logical expression could make the dependencies of useMemo Hook (at line 113) change on every render. To fix this, wrap the initialization of 'data' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+
+./src/app/(admin)/page.tsx
+21:11  Warning: 'startPreload' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+23:9  Warning: 'handleRefresh' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/optimization-demo/page.tsx
+33:19  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+36:37  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+86:23  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+86:27  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+115:49  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+115:53  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+165:56  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+213:30  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+221:68  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+222:23  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+223:27  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+223:28  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+223:50  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+236:48  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+236:52  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+278:21  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/app/settings/optimization/page.tsx
+412:56  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+414:34  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+500:68  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+500:72  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+606:42  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+606:46  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+732:25  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+735:27  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+742:20  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+784:31  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+793:39  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+818:29  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+876:31  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+892:54  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+892:58  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+968:43  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/components/dashboard/accounting/cash-control/CashEntryForm-Generic.tsx
+199:14  Warning: '_isLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+217:14  Warning: '_isLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/accounting/cash-control/cash-control-columns.tsx
+167:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/accounting/cash-control/columns.tsx
+190:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+193:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+239:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+242:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+404:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/accounting/cash-control/data-table/index-refactored.tsx
+57:23  Warning: 'handleDelete' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+64:9  Warning: 'handleEditWithModal' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+173:9  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+174:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+177:16  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+184:3  Warning: 'form' is defined but never used.  @typescript-eslint/no-unused-vars
+188:3  Warning: 'editingRow' is defined but never used.  @typescript-eslint/no-unused-vars
+189:3  Warning: 'onDelete' is defined but never used.  @typescript-eslint/no-unused-vars
+195:9  Warning: 'handleOpenForm' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/accounting/cash-control/data-table/index.tsx
+21:33  Warning: 'TValue' is defined but never used.  @typescript-eslint/no-unused-vars
+22:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+24:9  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+25:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+28:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+48:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+50:32  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+61:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+81:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+112:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+119:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+127:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+251:43  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+256:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+266:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+321:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+323:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+366:52  Warning: 'idx' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/accounting/cash-control/form/formCashControl.tsx
+25:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+28:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+53:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+67:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+79:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+81:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+93:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+113:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+127:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+139:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+142:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+170:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+180:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+189:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+198:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/dash-SectionCard/dash-CardHeader.tsx
+27:3  Warning: 'value' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/staff/StaffTable-Advanced.tsx
+35:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+231:64  Warning: 'TValue' is defined but never used.  @typescript-eslint/no-unused-vars
+232:3  Warning: 'columns' is defined but never used.  @typescript-eslint/no-unused-vars
+236:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+243:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+244:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+245:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+246:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+248:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/staff/create/StaffForm-Generic.tsx
+264:3  Warning: 'isLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+281:3  Warning: 'isLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/staff/list/columns.tsx
+14:3  Warning: 'AlertDialogDescription' is defined but never used.  @typescript-eslint/no-unused-vars
+31:8  Warning: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+78:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+118:19  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/components/dashboard/staff/list/create/StaffFormSections.tsx
+141:11  Warning: '_errors' is defined but never used.  @typescript-eslint/no-unused-vars
+322:26  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/components/dashboard/staff/list/create/createStaff-generic.tsx
+35:11  Warning: 'loading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+35:59  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/staff/list/create/createStaff.tsx
+60:43  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/staff/score/list/add-shift-modal.tsx
+116:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/staff/score/list/data-table.tsx
+63:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+244:23  Warning: A form label must be associated with a control.  jsx-a11y/label-has-associated-control
+255:23  Warning: A form label must be associated with a control.  jsx-a11y/label-has-associated-control
+268:23  Warning: A form label must be associated with a control.  jsx-a11y/label-has-associated-control
+279:23  Warning: A form label must be associated with a control.  jsx-a11y/label-has-associated-control
+
+./src/components/dashboard/staff/score/list/editable-cell.tsx
+132:5  Warning: Visible, non-interactive elements with click handlers must have at least one keyboard listener.  jsx-a11y/click-events-have-key-events
+132:5  Warning: Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element.  jsx-a11y/no-static-element-interactions
+
+./src/components/dashboard/staff/score/list/index.tsx
+27:10  Warning: 'formatDateYYYYMMDD' is defined but never used.  @typescript-eslint/no-unused-vars
+49:11  Warning: 'shiftsData' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+62:9  Warning: The 'data' logical expression could make the dependencies of useMemo Hook (at line 66) change on every render. To fix this, wrap the initialization of 'data' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+62:9  Warning: The 'data' logical expression could make the dependencies of useMemo Hook (at line 131) change on every render. To fix this, wrap the initialization of 'data' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+117:75  Warning: React Hook useMemo has a missing dependency: 'handleUpdateShift'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/dashboard/staff/score/list/shift-data-table-fixed.tsx
+58:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+131:9  Warning: 'hasAnySecondShift' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+132:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+152:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+164:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+183:40  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/staff/score/list/shift-data-table.tsx
+46:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+56:9  Warning: 'filtered' is never reassigned. Use 'const' instead.  prefer-const
+60:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+65:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+65:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+87:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+196:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/staff/staffCard/index-refactored.tsx
+80:6  Warning: React Hook React.useEffect has missing dependencies: 'shiftState' and 'timer'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+119:6  Warning: React Hook React.useCallback has a missing dependency: 'shiftState'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+128:11  Warning: 'action' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+141:11  Warning: 'action' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/staff/staffCard/index.tsx
+216:11  Warning: 'updatedShiftData' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/components/demo/Phase4MigrationDemo.tsx
+407:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/advanced-export.tsx
+5:15  Warning: '_config' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/advanced-form.tsx
+50:54  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+55:55  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+185:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+187:40  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+188:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+286:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+288:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+289:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+291:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+484:60  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+522:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+523:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+524:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+580:38  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+580:46  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+595:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+596:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+597:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+666:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+667:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+668:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+701:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+702:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+771:27  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+910:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+910:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+914:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+914:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/advanced-table.tsx
+69:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+85:45  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+91:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+126:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+166:39  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+176:3  Warning: 'filterable' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+341:13  Warning: 'useAdvancedExport' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+341:32  Warning: 'ExportButton' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+448:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+474:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+508:9  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+547:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+565:3  Warning: 'table' is defined but never used.  @typescript-eslint/no-unused-vars
+642:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+647:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+681:54  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+683:49  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+698:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+705:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+728:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+914:9  Warning: Visible, non-interactive elements with click handlers must have at least one keyboard listener.  jsx-a11y/click-events-have-key-events
+914:9  Warning: Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element.  jsx-a11y/no-static-element-interactions
+926:27  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/card-generators.tsx
+47:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+53:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+55:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+75:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+102:5  Warning: 'layout' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+182:54  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+268:22  Warning: 'size' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+363:5  Warning: 'size' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+396:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+489:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/data-table-components.tsx
+210:58  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/generic-form.tsx
+32:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+34:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+194:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+196:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+300:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+309:54  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/generic-pdf.tsx
+18:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+19:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+26:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+26:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+29:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+30:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+35:9  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+39:63  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+39:73  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+63:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+184:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+321:13  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+416:54  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+464:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+473:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+485:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+493:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+498:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+503:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+508:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+515:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+538:49  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+562:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+584:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+589:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/generic-table.tsx
+30:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+33:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+48:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+49:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+56:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+73:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+76:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+111:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+117:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+124:57  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+144:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+174:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+200:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+200:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+311:5  Warning: 'rowIndex' is defined but never used.  @typescript-eslint/no-unused-vars
+316:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+317:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+591:49  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+592:47  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+729:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+737:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+745:27  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/optimization-orchestrator.tsx
+424:28  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+427:38  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+611:26  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+703:42  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+727:27  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+727:47  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/ui/performance-optimizer.tsx
+81:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+126:6  Warning: React Hook React.useEffect was passed a dependency list that is not an array literal. This means we can't statically verify whether you've passed the correct dependencies.  react-hooks/exhaustive-deps
+126:6  Warning: React Hook React.useEffect has a missing dependency: 'componentName'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+144:40  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+213:58  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+213:68  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+217:10  Warning: React Hook useCallback received a function whose dependencies are unknown. Pass an inline function instead.  react-hooks/exhaustive-deps
+224:10  Warning: React Hook useMemo received a function whose dependencies are unknown. Pass an inline function instead.  react-hooks/exhaustive-deps
+228:58  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+230:3  Warning: 'fallback' is defined but never used.  @typescript-eslint/no-unused-vars
+256:6  Warning: React Hook React.useEffect has a missing dependency: 'importFunc'. Either include it or remove the dependency array. If 'importFunc' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+339:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+346:55  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+360:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+415:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+428:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+449:1  Warning: Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+./src/components/ui/sidebar-refactored.tsx
+501:3  Warning: 'className' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/table-cells.tsx
+19:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+20:9  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+25:8  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+26:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+27:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+28:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+32:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+248:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+255:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+262:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+273:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+289:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+298:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+312:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/type-optimizer.tsx
+412:59  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+412:63  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+501:26  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+576:61  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+576:65  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+621:21  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+660:20  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/hooks/use-advanced-form.ts
+30:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+104:32  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+151:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+157:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+170:58  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+181:32  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+198:5  Warning: React Hook useCallback has a missing dependency: 'validateField'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+203:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+215:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+285:11  Warning: 'newErrors' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+372:5  Warning: React Hook useCallback has a missing dependency: 'config'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+429:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+429:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+433:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+433:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/use-cash-control.ts
+187:45  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/use-chart-data-fixed.ts
+27:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/use-dashboard-data-fixed.ts
+444:6  Warning: React Hook useMemo has an unnecessary dependency: 'refreshTrigger'. Either exclude it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/hooks/use-dashboard-data.ts
+80:9  Warning: 'cacheAge' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/hooks/use-data-table.ts
+9:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+16:43  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+35:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+83:42  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+115:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+126:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/use-form.ts
+10:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+11:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+122:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/use-generic-form.ts
+38:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+54:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+65:40  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+78:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+80:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+85:57  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+94:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+161:5  Warning: React Hook useCallback has a missing dependency: 'config'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/hooks/use-global-preloader.ts
+139:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/use-immediate-reporting.ts
+118:7  Warning: React Hook "useImmediateReporting" is called conditionally. React Hooks must be called in the exact same order in every component render.  react-hooks/rules-of-hooks
+
+./src/hooks/use-reporting.ts
+121:6  Warning: React Hook useMemo has a missing dependency: 'isLoading'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/hooks/use-shift-management.tsx
+15:59  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+133:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+158:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+216:6  Warning: React Hook useEffect has a missing dependency: 'fetchShiftData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/hooks/use-staff-data-fixed.ts
+321:6  Warning: React Hook useEffect has missing dependencies: 'state.data' and 'state.isLoading'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/hooks/use-staff-form.ts
+66:59  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/use-validation.tsx
+14:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+114:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+191:47  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+202:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+224:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/mongodb/migrations/staff-fields-migration.ts
+19:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/pdf/pdf-CashControl-refactored.tsx
+15:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+70:4  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+84:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+89:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+95:9  Warning: 'table' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/pdf/pdf-CashControl.tsx
+91:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+201:13  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+220:43  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+294:66  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+319:66  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+344:66  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+431:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+432:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+436:52  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+516:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+517:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+521:52  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+554:52  Warning: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/lib/pdf/pdf-components.tsx
+21:9  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+22:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+32:11  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+
+./src/lib/pdf/pdf-utils.tsx
+207:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+220:27  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/reporting-utils.ts
+279:13  Warning: 'originalDate' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/pages/api/shift/index.ts
+89:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/pages/api/shift/update.ts
+25:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/store/reporting/api.ts
+36:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+63:39  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+69:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/store/staff/api/fetch.ts
+42:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+50:19  Warning: '_' is defined but never used.  @typescript-eslint/no-unused-vars
+62:47  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/store/turnover/api/fetch.ts
+5:19  Warning: '_' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/16) ...
+   Generating static pages (4/16) 
+   Generating static pages (8/16) 
+🚀🚀🚀 FICHIER use-staff-data-FIXED.ts CHARGÉ !!! 🚀🚀🚀
+🎯 STAFF SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+Mois calculés: []
+🚀🚀🚀 STAFF SINGLETON HOOK CALLED
+🎯 STAFF SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🚀 STAFF SINGLETON HOOK STATE: { dataLength: undefined, isLoading: false, error: null }
+🚀🚀🚀 FICHIER use-chart-data-FIXED.ts CHARGÉ !!! 🚀🚀🚀
+🚀🚀🚀 CHART SINGLETON HOOK CALLED
+🎯 CHART SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 CHART SINGLETON: Triggering immediate fetch on first call
+🎯 CHART SINGLETON GETDATA: Start function { hasData: false, isLoading: false, hasPromise: false }
+🔥 CHART SINGLETON: Starting new fetch
+🔥 CHART SINGLETON FETCH: Starting API call to /api/turnover
+🔗 CHART SINGLETON URL: http://localhost:3000/api/turnover
+🎯 CHART SINGLETON INITIAL STATE: { data: null, isLoading: true, error: null }
+🚀 CHART SINGLETON HOOK STATE: { isLoading: true, hasData: false, dataLength: 0, error: null }
+🚀🚀🚀 CHART SINGLETON HOOK CALLED
+🎯 CHART SINGLETON INITIAL STATE: { data: null, isLoading: true, error: null }
+🚀 CHART SINGLETON HOOK STATE: { isLoading: true, hasData: false, dataLength: 0, error: null }
+🚀🚀🚀 STAFF SINGLETON HOOK CALLED
+🎯 STAFF SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🚀 STAFF SINGLETON HOOK STATE: { dataLength: undefined, isLoading: false, error: null }
+🚀 STAFF LIST: Hook state { isLoading: false, hasData: false, count: 0, error: null }
+🚀🚀🚀 FICHIER use-dashboard-data-FIXED.ts CHARGÉ !!! 🚀🚀🚀
+🚀🚀🚀 FICHIER use-global-preloader.ts CHARGÉ !!! 🚀🚀🚀
+🚀🚀🚀 STAFF SINGLETON HOOK CALLED
+🎯 STAFF SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🚀 STAFF SINGLETON HOOK STATE: { dataLength: undefined, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=yesterday, compareRange=customPreviousDay
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(yesterday) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(yesterday) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=previousDay, compareRange=undefined
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(previousDay) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(previousDay) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=week, compareRange=customPreviousWeek
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(week) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(week) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=previousWeek, compareRange=undefined
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(previousWeek) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(previousWeek) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=month, compareRange=customPreviousMonth
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(month) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(month) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=previousMonth, compareRange=undefined
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(previousMonth) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(previousMonth) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=year, compareRange=customPreviousYear
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(year) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(year) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK CALL: useReportingData called with range=previousYear, compareRange=undefined
+🚀🚀🚀 SINGLETON HOOK CALLED
+🎯 SINGLETON INITIAL STATE: { data: null, isLoading: false, error: null }
+🎯 SINGLETON: Triggering immediate fetch on first call
+🚀 SINGLETON HOOK STATE: { isLoading: false, hasData: false, ranges: [] }
+🔥 SINGLETON RANGE RESULT: useRangeData(previousYear) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🔥 HOOK RESULT: useRangeData(previousYear) returned: { mainData: null, compareData: null, isLoading: false, error: null }
+🚀🚀🚀 CHART SINGLETON HOOK CALLED
+🎯 CHART SINGLETON INITIAL STATE: { data: null, isLoading: true, error: null }
+🎯 CHART SINGLETON INITIAL STATE: { data: null, isLoading: true, error: null }
+🚀 CHART SINGLETON HOOK STATE: { isLoading: true, hasData: false, dataLength: 0, error: null }
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: false,
+  hasPromise: false,
+  forceRefresh: false
+}
+🔥 SINGLETON: Starting new fetch
+🔥 SINGLETON FETCH: Starting API call to /api/dashboard
+🔗 SINGLETON URL: http://localhost:3000/api/dashboard
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: true,
+  hasPromise: true,
+  forceRefresh: false
+}
+🔄 SINGLETON: Fetch already in progress - joining
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: true,
+  hasPromise: true,
+  forceRefresh: false
+}
+🔄 SINGLETON: Fetch already in progress - joining
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: true,
+  hasPromise: true,
+  forceRefresh: false
+}
+🔄 SINGLETON: Fetch already in progress - joining
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: true,
+  hasPromise: true,
+  forceRefresh: false
+}
+🔄 SINGLETON: Fetch already in progress - joining
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: true,
+  hasPromise: true,
+  forceRefresh: false
+}
+🔄 SINGLETON: Fetch already in progress - joining
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: true,
+  hasPromise: true,
+  forceRefresh: false
+}
+🔄 SINGLETON: Fetch already in progress - joining
+🎯 SINGLETON GETDASHBOARDDATA: Start function {
+  hasData: false,
+  isLoading: true,
+  hasPromise: true,
+  forceRefresh: false
+}
+🔄 SINGLETON: Fetch already in progress - joining
+   Generating static pages (12/16) 
+ ✓ Generating static pages (16/16)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                  Size  First Load JS
+┌ ○ /                                      122 kB         264 kB
+├ ○ /_not-found                             983 B         103 kB
+├ ○ /accounting/cash-control              9.42 kB         167 kB
+├ ƒ /api/optimization/analyze               147 B         102 kB
+├ ○ /icon.ico                                 0 B            0 B
+├ ○ /list                                 7.77 kB         160 kB
+├ ○ /list/create                          5.32 kB         154 kB
+├ ○ /optimization-demo                    13.1 kB         131 kB
+├ ○ /score                                10.7 kB         194 kB
+├ ○ /settings/optimization                8.77 kB         126 kB
+├ ○ /site                                   147 B         102 kB
+├ ○ /site/about                             147 B         102 kB
+├ ○ /site/blog                              147 B         102 kB
+└ ○ /test-optimization                    1.86 kB         113 kB
++ First Load JS shared by all              102 kB
+  ├ chunks/40bf5d38-9fc804a249fa619a.js   53.2 kB
+  ├ chunks/639-d4ff823a708e308f.js        46.4 kB
+  └ other shared chunks (total)           2.23 kB
+
+Route (pages)                                Size  First Load JS
+┌ ƒ /api/cash-entry                           0 B        93.9 kB
+├ ƒ /api/cash-entry/delete                    0 B        93.9 kB
+├ ƒ /api/cash-entry/get                       0 B        93.9 kB
+├ ƒ /api/cash-entry/update                    0 B        93.9 kB
+├ ƒ /api/dashboard                            0 B        93.9 kB
+├ ƒ /api/reporting                            0 B        93.9 kB
+├ ƒ /api/score/list                           0 B        93.9 kB
+├ ƒ /api/shift                                0 B        93.9 kB
+├ ƒ /api/shift/list                           0 B        93.9 kB
+├ ƒ /api/shift/update                         0 B        93.9 kB
+├ ƒ /api/shift/users                          0 B        93.9 kB
+├ ƒ /api/staff                                0 B        93.9 kB
+├ ƒ /api/staff/cleanup                        0 B        93.9 kB
+├ ƒ /api/staff/migrate                        0 B        93.9 kB
+├ ƒ /api/staff/post                           0 B        93.9 kB
+├ ƒ /api/staff/put                            0 B        93.9 kB
+└ ƒ /api/turnover                             0 B        93.9 kB
++ First Load JS shared by all             93.9 kB
+  ├ chunks/framework-63ecaf0b5aa5249d.js  57.6 kB
+  ├ chunks/main-3be8cf6cc25726b6.js       34.1 kB
+  └ other shared chunks (total)            2.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

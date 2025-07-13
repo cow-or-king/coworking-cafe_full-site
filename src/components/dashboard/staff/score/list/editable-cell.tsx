@@ -107,7 +107,6 @@ export function EditableCell({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className="h-8 w-20 text-center text-sm"
-          autoFocus
         />
         <Button
           size="sm"

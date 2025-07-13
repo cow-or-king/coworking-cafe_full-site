@@ -2,6 +2,7 @@
 
 import { HandCoins, Home, Settings2, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import * as React from "react";
 import logo from "../../public/logo.svg";
 // import logo from "../../public/icon.ico";
@@ -67,6 +68,22 @@ const data = {
         {
           title: "Optimisation",
           url: "/settings/optimization",
+        },
+        {
+          title: "Test Optimisation",
+          url: "/settings/optimization-test",
+        },
+        {
+          title: "Code Splitting Demo",
+          url: "/settings/code-splitting",
+        },
+        {
+          title: "Migration Dashboard",
+          url: "/settings/migration-dashboard",
+        },
+        {
+          title: "Section Cards Test",
+          url: "/settings/section-cards",
         },
         // {
         //   title: "Configuration",
@@ -179,7 +196,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <div className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground overflow-hidden rounded-md py-2">
               <SidebarMenuButton size="lg" asChild>
-                <a href="/">
+                <Link href="/">
                   <div className="flex h-6 items-center gap-4 text-black">
                     <Image
                       src={logo}
@@ -190,7 +207,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     />
                     <span>Cow or King Café</span>
                   </div>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </div>
           </SidebarMenuItem>

@@ -879,13 +879,21 @@ function MultiSelect({
             {filteredOptions.map((option) => (
               <div
                 key={option.value}
+                role="button"
+                tabIndex={0}
                 className="hover:bg-muted flex cursor-pointer items-center space-x-2 p-2"
                 onClick={() => toggleOption(option.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleOption(option.value);
+                  }
+                }}
               >
                 <input
                   type="checkbox"
                   checked={value.includes(option.value)}
-                  onChange={() => {}}
+                  onChange={() => toggleOption(option.value)}
                   className="rounded"
                 />
                 <span className="text-sm">{option.label}</span>

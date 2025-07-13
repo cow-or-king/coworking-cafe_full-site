@@ -1,7 +1,7 @@
 "use client";
 import { columns } from "@/components/dashboard/staff/list/columns";
 import { DataTable } from "@/components/dashboard/staff/list/data-table";
-import SwitchWithText from "@/components/dashboard/switchWithText";
+import SwitchWithText from "@/components/dashboard/switch-with-text";
 import {
   AlertDialog,
   AlertDialogAction,
