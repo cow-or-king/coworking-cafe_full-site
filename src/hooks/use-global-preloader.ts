@@ -9,7 +9,6 @@ interface PreloadStatus {
   dashboard: boolean;
   charts: boolean;
   staff: boolean;
-  shifts: boolean;
   cashEntry: boolean;
 }
 
@@ -30,11 +29,10 @@ class GlobalPreloader {
       dashboard: false,
       charts: false,
       staff: false,
-      shifts: false,
       cashEntry: false,
     },
     completedApis: 0,
-    totalApis: 4, // Réduit à 4 APIs (dashboard, charts, staff, cashEntry)
+    totalApis: 4, // 4 APIs (dashboard, charts, staff, cashEntry)
     errors: [],
   };
   private listeners: Set<() => void> = new Set();
@@ -79,7 +77,6 @@ class GlobalPreloader {
       dashboard: false,
       charts: false,
       staff: false,
-      shifts: false,
       cashEntry: false,
     };
     this.notifyListeners();
@@ -91,7 +88,7 @@ class GlobalPreloader {
       { name: "staff", url: "/api/staff", key: "staff" },
       // Pas de préchargement des shifts individuels pour éviter les erreurs
       // { name: "shifts", url: `/api/shift?staffId=all&date=${new Date().toISOString().split('T')[0]}`, key: "shifts" },
-      { name: "cashEntry", url: "/api/cash-entry", key: "cashEntry" },
+      { name: "cashEntry", url: "/api/cash-entry/get", key: "cashEntry" },
     ];
 
     // Lancer tous les préchargements en parallèle pour une vitesse maximum
