@@ -1,7 +1,8 @@
 import { AddShiftModal } from "@/components/dashboard/staff/score/list/add-shift-modal";
 import { createColumns } from "@/components/dashboard/staff/score/list/columns";
 import { ShiftData, UpdateShiftProps } from "@/lib/shift-utils";
-import { useGetShiftsQuery, useUpdateShiftMutation } from "@/store/shift/api";
+import { useShiftDataFixed } from "@/hooks/use-shift-data-fixed";
+import { useUpdateShiftMutation } from "@/store/shift/api";
 import { StaffApi } from "@/store/staff";
 import { useTypedDispatch } from "@/store/types";
 import { useEffect, useMemo, useState } from "react";
@@ -43,8 +44,8 @@ export default function ScoreList() {
 
   const dispatch = useTypedDispatch();
 
-  // Utiliser RTK Query pour récupérer les shifts
-  const { data: shiftsData, isLoading, error, refetch } = useGetShiftsQuery();
+  // Utiliser le cache Singleton pour récupérer les shifts
+  const { data: shiftsData, isLoading, error, refetch, shifts } = useShiftDataFixed();
   const [updateShift] = useUpdateShiftMutation();
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function ScoreList() {
   }, [dispatch]);
 
   // Traiter les données des shifts
-  const data = shiftsData?.shifts || [];
+  const data = shifts || [];
   const shiftDates = useMemo(() => {
     const dates = data.map((shift: ShiftData) => new Date(shift.date));
     return dates.filter((date: Date) => !isNaN(date.getTime()));
@@ -61,7 +62,7 @@ export default function ScoreList() {
   const years = useMemo(() => {
     if (!shiftDates) return [];
     const allYears = shiftDates.map((date: Date) => date.getFullYear());
-    return Array.from(new Set(allYears)).sort((a, b) => b - a);
+    return Array.from(new Set(allYears)).sort((a: number, b: number) => b - a);
   }, [shiftDates]);
 
   const months = useMemo(() => {
@@ -69,7 +70,7 @@ export default function ScoreList() {
     const allMonths = shiftDates
       .filter((date: Date) => date.getFullYear() === selectedYear)
       .map((date: Date) => date.getMonth());
-    const uniqueMonths = Array.from(new Set(allMonths)).sort((a, b) => a - b);
+    const uniqueMonths = Array.from(new Set(allMonths)).sort((a: number, b: number) => a - b);
     console.log("Mois calculés:", uniqueMonths);
     return uniqueMonths;
   }, [shiftDates, selectedYear]);
@@ -84,10 +85,10 @@ export default function ScoreList() {
           date.getMonth() === selectedMonth,
       )
       .map((date: Date) => date.getDate());
-    return Array.from(new Set(allDays)).sort((a, b) => a - b);
+    return Array.from(new Set(allDays)).sort((a: number, b: number) => a - b);
   }, [shiftDates, selectedYear, selectedMonth]);
 
-  // État pour stocker les données de shifts - remplacé par RTK Query
+  // État pour stocker les données de shifts - remplacé par le cache Singleton
   // const [data, setData] = useState<ShiftData[]>([]);
 
   // Fonction pour mettre à jour un shift avec RTK Query
@@ -95,6 +96,9 @@ export default function ScoreList() {
     try {
       await updateShift(update).unwrap();
       toast.success("Shift mis à jour avec succès");
+      
+      // Rafraîchir le cache après la mise à jour
+      await refetch();
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
       toast.error("Erreur lors de la mise à jour du shift");
@@ -107,7 +111,7 @@ export default function ScoreList() {
   // Filtrer les données selon année, mois et jour seulement
   const filteredData = useMemo(() => {
     if (!data) return [];
-    return data.filter((item) => {
+    return data.filter((item: ShiftData) => {
       const d = new Date(item.date);
       const yearMatch = selectedYear ? d.getFullYear() === selectedYear : true;
       const monthMatch =
@@ -158,7 +162,7 @@ export default function ScoreList() {
                   )
                 }
               >
-                {years.map((year) => (
+                {years.map((year: number) => (
                   <option key={year} value={year}>
                     {year}
                   </option>
@@ -174,7 +178,7 @@ export default function ScoreList() {
                   )
                 }
               >
-                {months.map((month) => (
+                {months.map((month: number) => (
                   <option key={month} value={month}>
                     {monthsList[month]}
                   </option>
@@ -191,7 +195,7 @@ export default function ScoreList() {
                 }
               >
                 <option value="">Tous les jours</option>
-                {days.map((day) => (
+                {days.map((day: number) => (
                   <option key={day} value={day}>
                     {day}
                   </option>
@@ -200,7 +204,7 @@ export default function ScoreList() {
             </div>
 
             {/* Bouton d'ajout de pointage */}
-            <AddShiftModal onShiftAdded={refetch} />
+            <AddShiftModal />
           </div>
           <ShiftDataTable columns={editableColumns} data={filteredData} />
         </div>

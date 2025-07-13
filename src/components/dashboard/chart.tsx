@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useChartData } from "@/hooks/use-chart-data";
+import { useChartData } from "@/hooks/use-chart-data-fixed";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { prepareChartData } from "@/lib/reporting-utils";
 import React, { useMemo } from "react";

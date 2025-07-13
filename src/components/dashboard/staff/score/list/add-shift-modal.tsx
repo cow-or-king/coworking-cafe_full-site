@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { convertTimeToISO } from "@/lib/shift-utils";
 import { useCreateShiftMutation } from "@/store/shift/api";
+import { useShiftDataFixed } from "@/hooks/use-shift-data-fixed";
 import { RootState } from "@/store/types";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -28,7 +29,7 @@ import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
 
 interface AddShiftModalProps {
-  onShiftAdded: () => void;
+  onShiftAdded?: () => void; // Rendre optionnel car nous gérons le cache automatiquement
 }
 
 export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
@@ -45,8 +46,9 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
   // Récupérer la liste des employés depuis le store Redux
   const staffData = useSelector((state: RootState) => state.staff.data);
 
-  // Utiliser RTK Query pour créer un shift
+  // Utiliser RTK Query pour créer un shift et le cache pour le rafraîchir
   const [createShift, { isLoading }] = useCreateShiftMutation();
+  const { refetch } = useShiftDataFixed();
 
   // Filtrer pour ne garder que les employés actifs
   const activeStaff =
@@ -104,7 +106,14 @@ export function AddShiftModal({ onShiftAdded }: AddShiftModalProps) {
       toast.success("Pointage ajouté avec succès");
       resetForm();
       setOpen(false);
-      onShiftAdded(); // Callback pour rafraîchir les données
+      
+      // Rafraîchir le cache des shifts
+      await refetch();
+      
+      // Appeler le callback optionnel si fourni
+      if (onShiftAdded) {
+        onShiftAdded();
+      }
     } catch (error: any) {
       console.error("Erreur lors de la création du pointage:", error);
       toast.error(

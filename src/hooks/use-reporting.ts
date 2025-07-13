@@ -1,6 +1,6 @@
 /**
  * Hook personnalisé pour la gestion des données de reporting
- * CONTOURNEMENT RTK Query - utilise fetch direct
+ * ARCHITECTURE OPTIMISÉE - Une seule requête pour toutes les données
  */
 
 import {
@@ -12,7 +12,7 @@ import {
 } from "@/lib/reporting-utils";
 import type { ReportingRange } from "@/store/reporting/api";
 import { useMemo } from "react";
-import { useImmediateReportingData } from "./use-immediate-reporting";
+import { useRangeData } from "./use-dashboard-data-fixed";
 
 export const useReportingData = (
   range: ReportingRange,
@@ -22,34 +22,31 @@ export const useReportingData = (
     `🔥 HOOK CALL: useReportingData called with range=${range}, compareRange=${compareRange}`,
   );
 
-  // CONTOURNEMENT RTK Query - utilise fetch direct IMMÉDIAT
-  const { mainData, mainLoading, mainError, compareData, compareLoading } =
-    useImmediateReportingData(range, compareRange);
+  // ARCHITECTURE OPTIMISÉE - utilise les données unifiées du dashboard
+  const { mainData, compareData, isLoading, error } = useRangeData(range, compareRange);
 
-  console.log(`🔥 HOOK RESULT: useImmediateReportingData(${range}) returned:`, {
+  console.log(`🔥 HOOK RESULT: useRangeData(${range}) returned:`, {
     mainData,
-    mainLoading,
-    mainError,
-    compareData,
-    compareLoading,
+  compareData,
+  isLoading,
+  error
   });
 
   // Debug temporaire
   console.log(`📊 DEBUG useReportingData [${range}]:`, {
     mainData,
-    mainLoading,
-    mainError,
+    isLoading,
+    error,
     compareData,
-    compareLoading,
     compareRange,
   });
 
   const reportingData = useMemo(() => {
-    if (!mainData) return null;
+    if (!mainData || isLoading) return null;
 
     const period = calculateReportingPeriod(range);
 
-    // Avec notre contournement direct, mainData est déjà l'objet avec les totaux
+    // Avec notre architecture optimisée, mainData est déjà l'objet avec les totaux
     const totals = {
       HT: mainData.HT || 0,
       TTC: mainData.TTC || 0,
@@ -118,8 +115,8 @@ export const useReportingData = (
 
   return {
     data: reportingData,
-    isLoading: mainLoading || compareLoading,
-    error: mainError,
+    isLoading,
+    error,
   };
 };
 
