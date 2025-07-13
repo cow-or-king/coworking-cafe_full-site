@@ -58,28 +58,49 @@ class ChartCacheManager {
     return { ...this.state };
   }
 
-  // Vérifier le cache localStorage
+  // Vérifier le cache localStorage (y compris le cache préchargé)
   private getCachedData(): TurnoverData[] | null {
     try {
       // Vérifier si on est côté client (SSR/CSR compatible)
       if (typeof window === "undefined") return null;
 
+      // Essayer d'abord le cache chart normal
       const cached = localStorage.getItem(this.CACHE_KEY);
-      if (!cached) return null;
+      if (cached) {
+        const parsedCache = JSON.parse(cached);
+        const currentTime = Date.now();
 
-      const parsedCache = JSON.parse(cached);
-      const currentTime = Date.now();
-
-      if (currentTime - parsedCache.timestamp < this.CACHE_TIMEOUT) {
-        console.log(
-          `💾 CHART CACHE HIT: ${parsedCache.data?.length} records from localStorage`,
-        );
-        return parsedCache.data;
-      } else {
-        console.log(`⏰ CHART CACHE EXPIRED: Removing old data`);
-        localStorage.removeItem(this.CACHE_KEY);
-        return null;
+        if (currentTime - parsedCache.timestamp < this.CACHE_TIMEOUT) {
+          console.log(
+            `💾 CHART CACHE HIT: ${parsedCache.data?.length} records from localStorage`,
+          );
+          return parsedCache.data;
+        } else {
+          console.log(`⏰ CHART CACHE EXPIRED: Removing old data`);
+          localStorage.removeItem(this.CACHE_KEY);
+        }
       }
+
+      // Si pas de cache normal, vérifier le cache préchargé
+      const preloadedCache = localStorage.getItem("chart-data-cache");
+      if (preloadedCache) {
+        const parsedPreloadCache = JSON.parse(preloadedCache);
+        const currentTime = Date.now();
+
+        if (currentTime - parsedPreloadCache.timestamp < this.CACHE_TIMEOUT) {
+          console.log(
+            `🚀 CHART PRELOAD CACHE HIT: Using preloaded data`,
+          );
+          // Copier les données préchargées vers le cache normal
+          this.setCachedData(parsedPreloadCache.data);
+          return parsedPreloadCache.data;
+        } else {
+          console.log(`⏰ CHART PRELOAD CACHE EXPIRED: Removing old data`);
+          localStorage.removeItem("chart-data-cache");
+        }
+      }
+
+      return null;
     } catch (error) {
       console.error(`❌ CHART CACHE READ ERROR:`, error);
       return null;

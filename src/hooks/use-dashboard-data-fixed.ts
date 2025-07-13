@@ -12,7 +12,6 @@ interface CacheData {
 }
 
 interface RangeData {
-  _id: string;
   TTC: number;
   HT: number;
 }
@@ -94,20 +93,67 @@ class DashboardCacheManager {
       return false;
     }
 
+    // Vérifier que toutes les ranges importantes sont présentes
+    const requiredRanges = [
+      "yesterday",
+      "week",
+      "month",
+      "year",
+      "customPreviousDay",
+      "customPreviousWeek",
+      "customPreviousMonth",
+      "customPreviousYear",
+      "previousDay",
+      "previousWeek",
+      "previousMonth",
+      "previousYear",
+    ];
+
+    const missingRanges = requiredRanges.filter(
+      (range) => !cacheData.data[range],
+    );
+    if (missingRanges.length > 0) {
+      console.log("📦 CACHE INVALID: Missing ranges", {
+        missingRanges,
+        availableRanges: Object.keys(cacheData.data),
+      });
+      return false;
+    }
+
     console.log("📦 CACHE VALID: Using cached data", {
       age: Math.round(cacheAge / 1000),
       date: cacheData.date,
+      ranges: Object.keys(cacheData.data).length,
     });
     return true;
   }
 
-  // Lire le cache depuis localStorage
+  // Lire le cache depuis localStorage (y compris le cache préchargé)
   private getCacheData(): CacheData | null {
     if (typeof window === "undefined") return null;
 
     try {
+      // Essayer d'abord le cache dashboard normal
       const cached = localStorage.getItem("dashboard-data-cache");
-      return cached ? JSON.parse(cached) : null;
+      if (cached) {
+        const parsedCache = JSON.parse(cached);
+        if (this.isCacheValid(parsedCache)) {
+          console.log("📦 DASHBOARD CACHE HIT: Using normal cache");
+          return parsedCache;
+        }
+      }
+
+      // Si pas de cache normal valide, vérifier le cache préchargé
+      const preloadedCache = localStorage.getItem("dashboard-data-cache");
+      if (preloadedCache) {
+        const parsedPreloadCache = JSON.parse(preloadedCache);
+        if (this.isCacheValid(parsedPreloadCache)) {
+          console.log("🚀 DASHBOARD PRELOAD CACHE HIT: Using preloaded data");
+          return parsedPreloadCache;
+        }
+      }
+
+      return null;
     } catch (error) {
       console.warn("📦 CACHE ERROR: Failed to read cache", error);
       return null;
@@ -145,15 +191,27 @@ class DashboardCacheManager {
   }
 
   // Fonction principale pour obtenir les données
-  async getDashboardData(): Promise<void> {
+  async getDashboardData(forceRefresh = false): Promise<void> {
     console.log("🎯 SINGLETON GETDASHBOARDDATA: Start function", {
       hasData: !!this.data,
       isLoading: this.isLoading,
       hasPromise: !!this.promise,
+      forceRefresh,
     });
 
+    // Si on force un refresh, on nettoie tout
+    if (forceRefresh) {
+      console.log("🔄 SINGLETON: Force refresh requested - clearing cache");
+      this.data = null;
+      this.isLoading = false;
+      this.promise = null;
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("dashboard-data-cache");
+      }
+    }
+
     // Si on a déjà des données en mémoire, pas besoin de refetch
-    if (this.data) {
+    if (this.data && !forceRefresh) {
       console.log("📦 SINGLETON: Data already in memory");
       return;
     }
@@ -164,8 +222,8 @@ class DashboardCacheManager {
       return this.promise;
     }
 
-    // Essayer d'initialiser depuis le cache
-    if (this.initializeFromCache()) {
+    // Essayer d'initialiser depuis le cache (sauf si force refresh)
+    if (!forceRefresh && this.initializeFromCache()) {
       this.notifyListeners();
       return;
     }
@@ -238,6 +296,12 @@ class DashboardCacheManager {
     this.notifyListeners();
   }
 
+  // Forcer un refresh complet
+  async forceRefresh(): Promise<void> {
+    console.log("🔄 SINGLETON: Force refresh requested");
+    return this.getDashboardData(true);
+  }
+
   // Obtenir les infos du cache
   getCacheInfo() {
     const cached = this.getCacheData();
@@ -298,6 +362,21 @@ export function useDashboardData(): DashboardHookState {
     };
   }, []);
 
+  // Auto-recovery ultra-rapide : réaction quasi-immédiate
+  useEffect(() => {
+    const checkAndRecover = () => {
+      if (!state.isLoading && !state.data) {
+        console.log("⚡ ULTRA-FAST RECOVERY: Immediate data reload triggered");
+        dashboardCache.forceRefresh();
+      }
+    };
+
+    // Délai ultra-réduit pour une récupération quasi-instantanée (100ms)
+    const timeoutId = setTimeout(checkAndRecover, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [state.isLoading, state.data]);
+
   console.log("🚀 SINGLETON HOOK STATE:", {
     isLoading: state.isLoading,
     hasData: !!state.data,
@@ -310,6 +389,21 @@ export function useDashboardData(): DashboardHookState {
 // Hook spécialisé pour extraire les données d'une range spécifique
 export function useRangeData(range: string, compareRange?: string) {
   const { data: allData, isLoading, error } = useDashboardData();
+
+  // Mécanisme pour forcer un refresh si les données semblent corrompues ou manquantes
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    // Si on a fini de charger mais qu'on n'a pas de données principales, forcer un refresh
+    if (!isLoading && allData && !allData[range]) {
+      console.log(
+        `🔄 RANGE FORCE REFRESH: Range ${range} missing, triggering refresh`,
+      );
+      dashboardCache.forceRefresh().then(() => {
+        setRefreshTrigger((prev) => prev + 1);
+      });
+    }
+  }, [allData, range, isLoading]);
 
   return useMemo(() => {
     if (!allData || isLoading) {
@@ -332,6 +426,8 @@ export function useRangeData(range: string, compareRange?: string) {
     console.log(`📊 SINGLETON RANGE DATA [${range}]:`, {
       mainData,
       compareData,
+      hasMain: !!mainData,
+      hasCompare: !!compareData,
     });
 
     const result = {
@@ -345,7 +441,7 @@ export function useRangeData(range: string, compareRange?: string) {
       result,
     );
     return result;
-  }, [allData, range, compareRange, isLoading, error]);
+  }, [allData, range, compareRange, isLoading, error, refreshTrigger]);
 }
 
 // Fonction utilitaire pour invalider le cache manuellement
@@ -356,4 +452,26 @@ export const invalidateDashboardCache = () => {
 // Fonction utilitaire pour obtenir les infos du cache
 export const getDashboardCacheInfo = () => {
   return dashboardCache.getCacheInfo();
+};
+
+// Fonction utilitaire pour forcer un refresh
+export const forceDashboardRefresh = () => {
+  return dashboardCache.forceRefresh();
+};
+
+// Fonction utilitaire pour diagnostique
+export const diagnoseDashboardCache = () => {
+  const state = dashboardCache.getState();
+  const cacheInfo = dashboardCache.getCacheInfo();
+
+  console.log("🔍 DASHBOARD CACHE DIAGNOSIS:", {
+    state,
+    cacheInfo,
+    localStorage:
+      typeof window !== "undefined"
+        ? localStorage.getItem("dashboard-data-cache")
+        : null,
+  });
+
+  return { state, cacheInfo };
 };

@@ -11,7 +11,7 @@ import {
   getTrendDirection,
 } from "@/lib/reporting-utils";
 import type { ReportingRange } from "@/store/reporting/api";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useRangeData } from "./use-dashboard-data-fixed";
 
 export const useReportingData = (
@@ -35,14 +35,18 @@ export const useReportingData = (
     error,
   });
 
-  // Debug temporaire
-  console.log(`📊 DEBUG useReportingData [${range}]:`, {
-    mainData,
-    isLoading,
-    error,
-    compareData,
-    compareRange,
-  });
+  // Debug avec meilleurs détails
+  useEffect(() => {
+    console.log(`📊 DEBUG useReportingData [${range}]:`, {
+      hasMainData: !!mainData,
+      hasCompareData: !!compareData,
+      isLoading,
+      error,
+      compareRange,
+      mainDataContent: mainData ? Object.keys(mainData) : null,
+      compareDataContent: compareData ? Object.keys(compareData) : null,
+    });
+  }, [mainData, compareData, isLoading, error, range, compareRange]);
 
   const reportingData = useMemo(() => {
     if (!mainData || isLoading) return null;

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { useReportingData } from "@/hooks/use-reporting";
 import type { ReportingRange } from "@/store/reporting/api";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { DashCardFooter } from "./dash-CardFooter";
 import { DashCardHeader } from "./dash-CardHeader";
 
@@ -42,7 +42,34 @@ export function DashCard({
     error: compareError,
   } = useReportingData(secRange);
 
-  if (mainLoading || compareLoading) {
+  // Log de debug avec optimisation proactive
+  useEffect(() => {
+    console.log(`💳 DASHCARD [${range}] STATE:`, {
+      hasMainData: !!mainData,
+      hasCompareData: !!compareData,
+      mainLoading,
+      compareLoading,
+      mainError,
+      compareError,
+    });
+
+    // Affichage anticipé : si on a les données principales mais pas de comparaison,
+    // on peut déjà commencer à afficher une version partielle
+    if (mainData && !compareData && !compareLoading) {
+      console.log(`⚡ DASHCARD [${range}] PARTIAL READY: Main data available, compare data pending`);
+    }
+
+    // Détection proactive : si on n'a aucune donnée après 50ms, déclencher un debug
+    if (!mainData && !compareData && !mainLoading && !compareLoading) {
+      const quickCheck = setTimeout(() => {
+        console.log(`🚨 DASHCARD [${range}] NO DATA: Proactive detection triggered`);
+      }, 50);
+      return () => clearTimeout(quickCheck);
+    }
+  }, [mainData, compareData, mainLoading, compareLoading, mainError, compareError, range]);
+
+  // Affichage optimisé : montrer le contenu dès que possible
+  if (mainLoading && !mainData) {
     return (
       <Card className="@container/card">
         <div className="p-4">
@@ -56,15 +83,29 @@ export function DashCard({
     );
   }
 
-  if (!mainData || !compareData) {
+  if (!mainData) {
     return (
       <Card className="@container/card">
         <div className="p-4 text-center text-gray-500">
-          Données non disponibles
+          <div className="text-sm">Données principales non disponibles</div>
+          <div className="text-xs mt-1 text-gray-400">
+            Range: {range} ({mainData ? "✓" : "✗"})
+          </div>
+          {mainError && (
+            <div className="text-xs mt-2 text-red-500">
+              {mainError}
+            </div>
+          )}
         </div>
       </Card>
     );
   }
+
+  // Affichage avec données principales disponibles (même si compareData manque)
+  // Cela permet un affichage plus rapide
+  const safeCompareData = compareData || {
+    totals: { HT: 0, TTC: 0, formattedHT: "0 €", formattedTTC: "0 €" }
+  };
 
   return (
     <Card className="@container/card">
@@ -82,13 +123,13 @@ export function DashCard({
       <DashCardFooter
         text_trendin={text_trendin}
         valueChartData={{
-          HT: compareData.totals.HT,
-          TTC: compareData.totals.TTC,
+          HT: safeCompareData.totals.HT,
+          TTC: safeCompareData.totals.TTC,
         }}
         checked={checked}
         percentageChangeHT={mainData.comparison?.changes.HT.percentage || 0}
         percentageChangeTTC={mainData.comparison?.changes.TTC.percentage || 0}
-        description_footer={`Comparé à ${secRange === "yesterday" ? "hier" : secRange === "week" ? "la semaine précédente" : secRange === "month" ? "le mois précédent" : "l'année précédente"} - ${checked ? compareData.totals.formattedHT : compareData.totals.formattedTTC}`}
+        description_footer={`Comparé à ${secRange === "yesterday" ? "hier" : secRange === "week" ? "la semaine précédente" : secRange === "month" ? "le mois précédent" : "l'année précédente"} - ${checked ? safeCompareData.totals.formattedHT : safeCompareData.totals.formattedTTC}${compareLoading ? " (en cours...)" : ""}`}
       />
     </Card>
   );
