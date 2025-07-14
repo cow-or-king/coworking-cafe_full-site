@@ -39,6 +39,14 @@ export default function ScoreList() {
   const { isLoading, error, refetch, shifts } = useShiftDataFixed();
   const [updateShift] = useUpdateShiftMutation();
 
+  // Debug logs
+  console.log("ScoreList Debug:", {
+    isLoading,
+    error,
+    shiftsLength: shifts?.length,
+    shifts: shifts?.slice(0, 2), // Premiers éléments pour debug
+  });
+
   useEffect(() => {
     dispatch(StaffApi.fetchData());
   }, [dispatch]);
@@ -131,8 +139,21 @@ export default function ScoreList() {
     return (
       <div className="container mx-auto px-4">
         <div className="rounded-md border p-4">
-          <div className="text-center text-red-600">
-            Erreur lors du chargement des pointages
+          <div className="space-y-4">
+            <div className="text-center text-red-600">
+              Erreur lors du chargement des pointages
+            </div>
+            <div className="text-muted-foreground text-center text-sm">
+              {typeof error === "string" ? error : "Une erreur est survenue"}
+            </div>
+            <div className="text-center">
+              <button
+                onClick={() => refetch()}
+                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              >
+                Réessayer
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -128,11 +128,11 @@ class ShiftCacheManager {
 
       const data = await response.json();
 
-      if (!data.success || !Array.isArray(data.shifts)) {
+      if (!data.success || !Array.isArray(data.data)) {
         throw new Error("Format de réponse invalide");
       }
 
-      this.cache = { shifts: data.shifts };
+      this.cache = { shifts: data.data };
       this.lastFetch = Date.now();
       this.isLoading = false;
       this.error = null;

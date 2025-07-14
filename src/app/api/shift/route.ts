@@ -74,10 +74,27 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   await dbConnect();
 
   try {
+    const { searchParams } = new URL(request.url);
+    const staffId = searchParams.get("staffId");
+    const date = searchParams.get("date");
+
+    // Si staffId et date sont fournis, récupérer un shift spécifique
+    if (staffId && date) {
+      const shift = await Shift.findOne({ staffId, date });
+      
+      if (shift) {
+        return NextResponse.json({ success: true, shift }, { status: 200 });
+      } else {
+        // Retourner null si aucun shift n'est trouvé pour cette combinaison
+        return NextResponse.json({ success: true, shift: null }, { status: 200 });
+      }
+    }
+
+    // Sinon, retourner tous les shifts
     const shifts = await Shift.find({}).sort({ date: -1 });
     return NextResponse.json({ success: true, data: shifts }, { status: 200 });
   } catch (error: any) {
