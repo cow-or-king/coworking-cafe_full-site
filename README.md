@@ -41,9 +41,9 @@ src/
 
 ## 🔗 Accès rapide
 
-- **Application**: http://localhost:3001
-- **Dashboard Admin**: http://localhost:3001/admin
-- **Site Public**: http://localhost:3001/site
+- **Application**: http://localhost:3000
+- **Dashboard Admin**: http://localhost:3000/admin
+- **Site Public**: http://localhost:3000/site
 
 ## 📚 Documentation
 
@@ -70,7 +70,7 @@ pnpm type-check   # Vérification TypeScript
 
 - Variables d'environnement: `.env.local`
 - Configuration MongoDB requise
-- Port par défaut: 3001 (si 3000 occupé)
+- Port par défaut: 3000 (si 3001 occupé)
 
 ---
 
