@@ -42,21 +42,12 @@ export default function ScoreList() {
   // Écouter les changements de focus pour rafraîchir automatiquement
   useEffect(() => {
     const handleFocus = async () => {
-      console.log("🔄 Page refocused, refreshing shift data...");
       await refetch();
     };
 
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
   }, [refetch]);
-
-  // Debug logs
-  console.log("ScoreList Debug:", {
-    isLoading,
-    error,
-    shiftsLength: shifts?.length,
-    shifts: shifts?.slice(0, 2), // Premiers éléments pour debug
-  });
 
   useEffect(() => {
     dispatch(StaffApi.fetchData());
@@ -83,7 +74,6 @@ export default function ScoreList() {
     const uniqueMonths = Array.from(new Set(allMonths)).sort(
       (a: number, b: number) => a - b,
     );
-    console.log("Mois calculés:", uniqueMonths);
     return uniqueMonths;
   }, [shiftDates, selectedYear]);
 

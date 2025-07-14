@@ -7,6 +7,8 @@
 - [Session #3 - Protection développement/production](#session-3---protection-développementproduction)
 - [Session #4 - Debug cache et finalisation](#session-4---debug-cache-et-finalisation)
 - [Session #5 - Timezone française & Cache temps réel](#session-5---timezone-française--cache-temps-réel)
+- [Session #6 - Nettoyage des console.log](#session-6---nettoyage-des-consolelog)
+- [Session #7 - Suppression des composants legacy](#session-7---suppression-des-composants-legacy)
 
 ---
 

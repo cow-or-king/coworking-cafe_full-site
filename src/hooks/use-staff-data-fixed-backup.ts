@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+console.log("🚀🚀🚀 FICHIER use-staff-data-FIXED.ts CHARGÉ !!! 🚀🚀🚀");
+
 // Types pour les données Staff (API MongoDB moderne)
 interface StaffMemberFromAPI {
   _id: string;

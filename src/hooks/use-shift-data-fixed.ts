@@ -54,15 +54,9 @@ class ShiftCacheManager {
         if (now - cachedData.timestamp < this.CACHE_DURATION) {
           this.cache = cachedData.data;
           this.lastFetch = cachedData.timestamp;
-          console.log(
-            "✅ Cache shifts chargé depuis localStorage:",
-            cachedData.data.shifts.length,
-            "shifts",
-          );
         } else {
           // Cache expiré, le supprimer
           localStorage.removeItem(this.STORAGE_KEY);
-          console.log("🕐 Cache shifts expiré, supprimé du localStorage");
         }
       }
     } catch (error) {
@@ -82,7 +76,6 @@ class ShiftCacheManager {
         timestamp: this.lastFetch,
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(cacheData));
-      console.log("💾 Cache shifts sauvé dans localStorage");
     } catch (error) {
       console.warn("⚠️ Erreur lors de la sauvegarde du cache shifts:", error);
     }
@@ -119,7 +112,6 @@ class ShiftCacheManager {
     this.notifyListeners();
 
     try {
-      console.log("🔄 Récupération des données shifts...");
       const response = await fetch("/api/shift/list");
 
       if (!response.ok) {
@@ -140,11 +132,6 @@ class ShiftCacheManager {
       // Sauvegarder dans localStorage
       this.saveToStorage();
 
-      console.log(
-        "✅ Données shifts mises en cache:",
-        data.data.length,
-        "shifts",
-      );
       this.notifyListeners();
     } catch (error) {
       console.error("❌ Erreur lors de la récupération des shifts:", error);
@@ -160,7 +147,6 @@ class ShiftCacheManager {
     if (typeof window !== "undefined") {
       localStorage.removeItem(this.STORAGE_KEY);
     }
-    console.log("🗑️ Cache shifts invalidé");
   }
 
   refreshCache() {

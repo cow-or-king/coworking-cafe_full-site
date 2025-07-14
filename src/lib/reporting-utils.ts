@@ -206,13 +206,6 @@ export const prepareChartData = (data: TurnoverData[]) => {
       // Essayer plusieurs formats de date
       let dateObj: Date;
 
-      console.log(
-        "Traitement de la date:",
-        item.date,
-        "type:",
-        typeof item.date,
-      );
-
       // Le type TurnoverData définit date comme string
       if (typeof item.date === "string") {
         // Si c'est au format YYYY-MM-DD ou YYYY/MM/DD
@@ -260,8 +253,6 @@ export const prepareChartData = (data: TurnoverData[]) => {
         month: "2-digit",
         year: "2-digit",
       });
-
-      console.log("Date formatée:", formattedDate, "depuis:", item.date);
 
       return {
         date: formattedDate,

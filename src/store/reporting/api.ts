@@ -62,23 +62,13 @@ export const reportingApi = createApi({
     // Récupérer les données de reporting avec paramètres (version simple pour test)
     getReportingSimple: builder.query<any, ReportingRange>({
       query: (range) => {
-        console.log(`🚀 RTK Query query called for range:`, range);
         return `reporting?range=${range}`;
       },
       // Transforme la réponse pour extraire les données
       transformResponse: (response: any, meta, arg) => {
-        console.log(`🔥 RTK Query transformResponse called:`, {
-          response,
-          meta,
-          arg,
-        });
-        console.log(`🔥 RTK Query raw response:`, response);
-
         if (response && response.data) {
-          console.log(`🔥 RTK Query extracted data:`, response.data);
           return response.data;
         }
-        console.log(`🔥 RTK Query returning response as-is:`, response);
         return response;
       },
       providesTags: ["Reporting"],

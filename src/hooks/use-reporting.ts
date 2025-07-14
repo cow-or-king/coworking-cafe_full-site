@@ -18,22 +18,11 @@ export const useReportingData = (
   range: ReportingRange,
   compareRange?: ReportingRange,
 ) => {
-  console.log(
-    `🔥 HOOK CALL: useReportingData called with range=${range}, compareRange=${compareRange}`,
-  );
-
   // ARCHITECTURE OPTIMISÉE - utilise les données unifiées du dashboard
   const { mainData, compareData, isLoading, error } = useRangeData(
     range,
     compareRange,
   );
-
-  console.log(`🔥 HOOK RESULT: useRangeData(${range}) returned:`, {
-    mainData,
-    compareData,
-    isLoading,
-    error,
-  });
 
   // Debug avec meilleurs détails
   useEffect(() => {
@@ -134,15 +123,6 @@ export const useDashboardCard = (
   type: "HT" | "TTC" = "TTC",
 ) => {
   const { data, isLoading, error } = useReportingData(range, compareRange);
-
-  // Debug temporaire
-  console.log(`🐛 DEBUG useDashboardCard [${range}]:`, {
-    data,
-    isLoading,
-    error,
-    type,
-    comparison: data?.comparison,
-  });
 
   const cardData = useMemo(() => {
     if (!data) return null;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-console.log("🚀🚀🚀 FICHIER use-global-preloader.ts CHARGÉ !!! 🚀🚀🚀");
+// Global preloader hook - Production optimized
 
 // Interface pour le statut du préchargement
 interface PreloadStatus {
@@ -65,11 +65,11 @@ class GlobalPreloader {
   // Fonction principale de préchargement
   async preloadAllApis(): Promise<void> {
     if (this.state.isPreloading) {
-      console.log("🔄 PRELOADER: Already preloading...");
+      // Already preloading
       return;
     }
 
-    console.log("🚀 PRELOADER: Starting global preload...");
+    // Starting global preload
     this.state.isPreloading = true;
     this.state.completedApis = 0;
     this.state.errors = [];
@@ -94,12 +94,12 @@ class GlobalPreloader {
     // Lancer tous les préchargements en parallèle pour une vitesse maximum
     const preloadPromises = apiPreloads.map(async (api) => {
       try {
-        console.log(`📡 PRELOADER: Loading ${api.name}...`);
+        // Loading API data
         const response = await fetch(api.url);
 
         if (response.ok) {
           const data = await response.json();
-          console.log(`✅ PRELOADER: ${api.name} loaded successfully`);
+          // API loaded successfully
 
           // Mettre en cache les données selon le type d'API
           this.cacheApiData(api.key, data);
@@ -124,9 +124,7 @@ class GlobalPreloader {
     this.state.isPreloading = false;
     this.notifyListeners();
 
-    console.log(
-      `🎉 PRELOADER: Global preload completed! ${this.state.completedApis}/${this.state.totalApis} APIs loaded`,
-    );
+    // Global preload completed
     if (this.state.errors.length > 0) {
       console.warn(
         "⚠️ PRELOADER: Some APIs failed to load:",
@@ -258,7 +256,7 @@ export function useAutoPreloader() {
     // pour ne pas surcharger le chargement initial de la page
     const timer = setTimeout(() => {
       if (!isPreloading && !isComplete) {
-        console.log("🎯 AUTO-PRELOADER: Starting automatic preload...");
+        // Starting automatic preload
         startPreload();
       }
     }, 500); // Délai de 500ms pour laisser la page se charger

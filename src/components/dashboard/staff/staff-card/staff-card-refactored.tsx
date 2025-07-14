@@ -127,7 +127,6 @@ export default function StaffCardRefactored({
   const startShift = async (shiftType: "first" | "second") => {
     const action = () => {
       // Logique de démarrage du shift
-      console.log(`Démarrage ${shiftType} shift pour ${staffId}`);
       toast.success(
         `${shiftType === "first" ? "Premier" : "Deuxième"} shift démarré`,
       );
@@ -140,7 +139,6 @@ export default function StaffCardRefactored({
   const endShift = async (shiftType: "first" | "second") => {
     const action = () => {
       // Logique d'arrêt du shift
-      console.log(`Arrêt ${shiftType} shift pour ${staffId}`);
       toast.success(
         `${shiftType === "first" ? "Premier" : "Deuxième"} shift terminé`,
       );
@@ -154,18 +152,15 @@ export default function StaffCardRefactored({
   const handlePasswordValidation = () => {
     passwordAuth.validatePassword(mdp, () => {
       // Ici on exécuterait l'action en attente
-      console.log("Action autorisée après validation du mot de passe");
     });
   };
 
   // Actions de gestion du personnel
   const handleEdit = () => {
-    console.log("Modifier le personnel:", { firstname, lastname, staffId });
     toast("Fonction de modification à implémenter", { icon: "ℹ️" });
   };
 
   const handleDelete = () => {
-    console.log("Supprimer le personnel:", { firstname, lastname, staffId });
     toast.error("Fonction de suppression à implémenter");
   };
 

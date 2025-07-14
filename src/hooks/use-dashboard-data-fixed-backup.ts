@@ -75,11 +75,19 @@ class DashboardCacheManager {
 
     // Invalide si c'est un autre jour
     if (cacheData.date !== currentDate) {
+      console.log("📦 CACHE INVALID: Different day detected", {
+        cached: cacheData.date,
+        current: currentDate,
+      });
       return false;
     }
 
     // Invalide si le cache est trop vieux
     if (cacheAge > maxAge) {
+      console.log("📦 CACHE INVALID: Cache expired", {
+        age: Math.round(cacheAge / 1000),
+        maxAge: Math.round(maxAge / 1000),
+      });
       return false;
     }
 
@@ -103,9 +111,18 @@ class DashboardCacheManager {
       (range) => !cacheData.data[range],
     );
     if (missingRanges.length > 0) {
+      console.log("📦 CACHE INVALID: Missing ranges", {
+        missingRanges,
+        availableRanges: Object.keys(cacheData.data),
+      });
       return false;
     }
 
+    console.log("📦 CACHE VALID: Using cached data", {
+      age: Math.round(cacheAge / 1000),
+      date: cacheData.date,
+      ranges: Object.keys(cacheData.data).length,
+    });
     return true;
   }
 
@@ -119,6 +136,7 @@ class DashboardCacheManager {
       if (cached) {
         const parsedCache = JSON.parse(cached);
         if (this.isCacheValid(parsedCache)) {
+          console.log("📦 DASHBOARD CACHE HIT: Using normal cache");
           return parsedCache;
         }
       }
@@ -128,12 +146,14 @@ class DashboardCacheManager {
       if (preloadedCache) {
         const parsedPreloadCache = JSON.parse(preloadedCache);
         if (this.isCacheValid(parsedPreloadCache)) {
+          console.log("🚀 DASHBOARD PRELOAD CACHE HIT: Using preloaded data");
           return parsedPreloadCache;
         }
       }
 
       return null;
     } catch (error) {
+      console.warn("📦 CACHE ERROR: Failed to read cache", error);
       return null;
     }
   }
@@ -149,8 +169,9 @@ class DashboardCacheManager {
         date: new Date().toISOString().split("T")[0],
       };
       localStorage.setItem("dashboard-data-cache", JSON.stringify(cacheData));
+      console.log("📦 CACHE SET: Data cached successfully");
     } catch (error) {
-      // Silently handle cache errors
+      console.warn("📦 CACHE ERROR: Failed to set cache", error);
     }
   }
 
@@ -158,6 +179,7 @@ class DashboardCacheManager {
   private initializeFromCache() {
     const cachedData = this.getCacheData();
     if (cachedData && this.isCacheValid(cachedData)) {
+      console.log("📦 SINGLETON CACHE INIT: Using localStorage cache");
       this.data = cachedData.data;
       this.isLoading = false;
       this.error = null;
@@ -168,8 +190,16 @@ class DashboardCacheManager {
 
   // Fonction principale pour obtenir les données
   async getDashboardData(forceRefresh = false): Promise<void> {
+    console.log("🎯 SINGLETON GETDASHBOARDDATA: Start function", {
+      hasData: !!this.data,
+      isLoading: this.isLoading,
+      hasPromise: !!this.promise,
+      forceRefresh,
+    });
+
     // Si on force un refresh, on nettoie tout
     if (forceRefresh) {
+      console.log("🔄 SINGLETON: Force refresh requested - clearing cache");
       this.data = null;
       this.isLoading = false;
       this.promise = null;
@@ -180,11 +210,13 @@ class DashboardCacheManager {
 
     // Si on a déjà des données en mémoire, pas besoin de refetch
     if (this.data && !forceRefresh) {
+      console.log("📦 SINGLETON: Data already in memory");
       return;
     }
 
     // Si une requête est déjà en cours, attendre sa completion
     if (this.isLoading && this.promise) {
+      console.log("🔄 SINGLETON: Fetch already in progress - joining");
       return this.promise;
     }
 
@@ -195,6 +227,7 @@ class DashboardCacheManager {
     }
 
     // Sinon, faire le fetch
+    console.log("🔥 SINGLETON: Starting new fetch");
     this.isLoading = true;
     this.error = null;
     this.notifyListeners();
@@ -206,18 +239,26 @@ class DashboardCacheManager {
   // Fetch depuis l'API
   private async fetchFromApi(): Promise<void> {
     try {
+      console.log("🔥 SINGLETON FETCH: Starting API call to /api/dashboard");
+
       // Construction de l'URL pour SSR/CSR
       const baseUrl =
         typeof window !== "undefined" ? "" : "http://localhost:3000";
       const url = `${baseUrl}/api/dashboard`;
+      console.log("🔗 SINGLETON URL:", url);
 
       const response = await fetch(url);
+      console.log(`🌐 SINGLETON RESPONSE: ${response.status}`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result: DashboardApiResponse = await response.json();
+      console.log(
+        "📊 SINGLETON SUCCESS: Ranges loaded:",
+        Object.keys(result.data),
+      );
 
       // Mettre en cache
       this.setCacheData(result.data);
@@ -230,6 +271,7 @@ class DashboardCacheManager {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
+      console.error("❌ SINGLETON ERROR:", error);
 
       this.isLoading = false;
       this.error = errorMessage;
@@ -248,11 +290,13 @@ class DashboardCacheManager {
     this.isLoading = false;
     this.error = null;
     this.promise = null;
+    console.log("📦 SINGLETON: Cache invalidated");
     this.notifyListeners();
   }
 
   // Forcer un refresh complet
   async forceRefresh(): Promise<void> {
+    console.log("🔄 SINGLETON: Force refresh requested");
     return this.getDashboardData(true);
   }
 
@@ -275,14 +319,18 @@ const dashboardCache = DashboardCacheManager.getInstance();
 
 // Hook principal qui utilise le singleton
 export function useDashboardData(): DashboardHookState {
+  console.log("🚀🚀🚀 SINGLETON HOOK CALLED");
+
   const [state, setState] = useState<DashboardHookState>(() => {
     const initialState = dashboardCache.getState();
+    console.log("🎯 SINGLETON INITIAL STATE:", initialState);
 
     // Déclencher le fetch immédiatement si pas de données
     if (!initialState.data && !initialState.isLoading) {
+      console.log("🎯 SINGLETON: Triggering immediate fetch on first call");
       setTimeout(() => {
         dashboardCache.getDashboardData().catch((error) => {
-          // Silently handle errors
+          console.error("🎯 SINGLETON IMMEDIATE FETCH ERROR:", error);
         });
       }, 0);
     }
@@ -291,18 +339,23 @@ export function useDashboardData(): DashboardHookState {
   });
 
   useEffect(() => {
+    console.log("🎯 SINGLETON USEEFFECT: Starting");
+
     // S'abonner aux changements du cache
     const unsubscribe = dashboardCache.addListener(() => {
       const newState = dashboardCache.getState();
+      console.log("🔔 SINGLETON LISTENER: State changed", newState);
       setState(newState);
     });
 
     // Déclencher le fetch si nécessaire (backup au cas où l'immédiat n'a pas marché)
+    console.log("🎯 SINGLETON USEEFFECT: Calling getDashboardData");
     dashboardCache.getDashboardData().catch((error) => {
-      // Silently handle errors
+      console.error("🎯 SINGLETON USEEFFECT: Error in getDashboardData", error);
     });
 
     return () => {
+      console.log("🎯 SINGLETON USEEFFECT: Cleanup");
       unsubscribe();
     };
   }, []);
@@ -311,6 +364,7 @@ export function useDashboardData(): DashboardHookState {
   useEffect(() => {
     const checkAndRecover = () => {
       if (!state.isLoading && !state.data) {
+        console.log("⚡ ULTRA-FAST RECOVERY: Immediate data reload triggered");
         dashboardCache.forceRefresh();
       }
     };
@@ -320,6 +374,12 @@ export function useDashboardData(): DashboardHookState {
 
     return () => clearTimeout(timeoutId);
   }, [state.isLoading, state.data]);
+
+  console.log("🚀 SINGLETON HOOK STATE:", {
+    isLoading: state.isLoading,
+    hasData: !!state.data,
+    ranges: state.data ? Object.keys(state.data) : [],
+  });
 
   return state;
 }
@@ -334,6 +394,9 @@ export function useRangeData(range: string, compareRange?: string) {
   useEffect(() => {
     // Si on a fini de charger mais qu'on n'a pas de données principales, forcer un refresh
     if (!isLoading && allData && !allData[range]) {
+      console.log(
+        `🔄 RANGE FORCE REFRESH: Range ${range} missing, triggering refresh`,
+      );
       dashboardCache.forceRefresh().then(() => {
         setRefreshTrigger((prev) => prev + 1);
       });
@@ -348,11 +411,22 @@ export function useRangeData(range: string, compareRange?: string) {
         isLoading,
         error,
       };
+      console.log(
+        `🔥 SINGLETON RANGE RESULT: useRangeData(${range}) returned:`,
+        result,
+      );
       return result;
     }
 
     const mainData = allData[range] || null;
     const compareData = compareRange ? allData[compareRange] || null : null;
+
+    console.log(`📊 SINGLETON RANGE DATA [${range}]:`, {
+      mainData,
+      compareData,
+      hasMain: !!mainData,
+      hasCompare: !!compareData,
+    });
 
     const result = {
       mainData,
@@ -360,6 +434,10 @@ export function useRangeData(range: string, compareRange?: string) {
       isLoading: false,
       error,
     };
+    console.log(
+      `🔥 SINGLETON RANGE RESULT: useRangeData(${range}) returned:`,
+      result,
+    );
     return result;
   }, [allData, range, compareRange, isLoading, error, refreshTrigger]);
 }
@@ -383,6 +461,15 @@ export const forceDashboardRefresh = () => {
 export const diagnoseDashboardCache = () => {
   const state = dashboardCache.getState();
   const cacheInfo = dashboardCache.getCacheInfo();
+
+  console.log("🔍 DASHBOARD CACHE DIAGNOSIS:", {
+    state,
+    cacheInfo,
+    localStorage:
+      typeof window !== "undefined"
+        ? localStorage.getItem("dashboard-data-cache")
+        : null,
+  });
 
   return { state, cacheInfo };
 };

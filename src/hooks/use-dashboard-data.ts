@@ -2,8 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-console.log("🚀🚀🚀 FICHIER use-dashboard-data.ts CHARGÉ !!! 🚀🚀🚀");
-
 // Types pour le cache
 interface CacheData {
   data: Record<string, RangeData>;
@@ -36,7 +34,6 @@ const setCacheData = (data: Record<string, RangeData>) => {
       date: new Date().toISOString().split("T")[0], // YYYY-MM-DD
     };
     localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-    console.log("📦 CACHE SET: Data cached successfully");
   } catch (error) {
     console.warn("📦 CACHE ERROR: Failed to set cache", error);
   }
@@ -57,7 +54,6 @@ const CACHE_CONFIG = {
 export const invalidateDashboardCache = () => {
   if (typeof window !== "undefined") {
     localStorage.removeItem(CACHE_CONFIG.key);
-    console.log("📦 CACHE INVALIDATED: Manual cache clear");
   }
 };
 
@@ -110,10 +106,6 @@ const isCacheValid = (cacheData: CacheData): boolean => {
     return false;
   }
 
-  console.log("📦 CACHE VALID: Using cached data", {
-    age: Math.round(cacheAge / 1000),
-    date: cacheData.date,
-  });
   return true;
 };
 

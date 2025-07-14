@@ -167,7 +167,6 @@ export default function StaffCard({
         }
 
         const result = await response.json();
-        console.log("Données shift récupérées :", result);
 
         if (result.shift) {
           setCurrentShiftData(result.shift);
@@ -208,19 +207,11 @@ export default function StaffCard({
   }, [staffId, form.date]);
 
   const handleStartStop = async () => {
-    console.log("🚀 handleStartStop appelé:", {
-      isBlocked,
-      currentShiftData,
-      activeShift,
-    });
-
     if (isBlocked || !currentShiftData) {
-      console.log("❌ Arrêt: bloqué ou pas de données shift");
       return;
     }
 
     const now = getCurrentDateTimeInFrenchTimezone();
-    console.log("⏰ Timestamp actuel (heure française):", now);
 
     try {
       let updatedShiftData = { ...currentShiftData };
@@ -232,16 +223,13 @@ export default function StaffCard({
           updatedShiftData.firstShift.start = now;
           setActiveShift("first");
           setIsFirstShiftActive(true);
-          console.log("✅ Premier shift démarré");
           toast.success(`Premier shift démarré à ${formatTime(now)}`);
         } else if (currentShiftData.secondShift.start === "00:00") {
           updatedShiftData.secondShift.start = now;
           setActiveShift("second");
           setIsSecondShiftActive(true);
-          console.log("✅ Deuxième shift démarré");
           toast.success(`Deuxième shift démarré à ${formatTime(now)}`);
         } else {
-          console.log("❌ Limite de 2 shifts atteinte");
           toast.error("Limite de 2 shifts atteinte pour aujourd'hui.");
           return;
         }
@@ -250,14 +238,12 @@ export default function StaffCard({
         updatedShiftData.firstShift.end = now;
         setActiveShift(null);
         setIsFirstShiftActive(false);
-        console.log("⏹️ Premier shift arrêté");
         toast.success(`Premier shift arrêté à ${formatTime(now)}`);
       } else if (activeShift === "second") {
         // Arrêter le deuxième shift
         updatedShiftData.secondShift.end = now;
         setActiveShift(null);
         setIsSecondShiftActive(false);
-        console.log("⏹️ Deuxième shift arrêté");
         toast.success(`Deuxième shift arrêté à ${formatTime(now)}`);
       }
 
@@ -285,11 +271,6 @@ export default function StaffCard({
         body: JSON.stringify(body),
       });
 
-      console.log("📥 Réponse API:", {
-        status: response.status,
-        ok: response.ok,
-      });
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error("❌ Erreur API:", errorText);
@@ -299,7 +280,6 @@ export default function StaffCard({
       }
 
       const result = await response.json();
-      console.log("✅ Résultat API:", result);
 
       if (result.shift) {
         setCurrentShiftData(result.shift);
@@ -307,7 +287,6 @@ export default function StaffCard({
 
       // Invalider le cache des shifts pour mettre à jour la ScoreList
       invalidateShiftCache();
-      console.log("🔄 Cache des shifts invalidé");
     } catch (error) {
       console.error("💥 Erreur lors de la requête à l'API:", error);
       toast.error("Erreur lors de l'opération.");
@@ -315,16 +294,9 @@ export default function StaffCard({
   };
 
   const handlePasswordSubmit = () => {
-    console.log("🔐 Validation du mot de passe:", {
-      enteredPassword,
-      mdp,
-      isEqual: Number(enteredPassword) === mdp,
-    });
-
     if (Number(enteredPassword) === mdp) {
       setPasswordPrompt(false);
       setEnteredPassword("");
-      console.log("✅ Mot de passe correct, appel de handleStartStop");
       handleStartStop();
     } else {
       toast.error("Mot de passe incorrect.");

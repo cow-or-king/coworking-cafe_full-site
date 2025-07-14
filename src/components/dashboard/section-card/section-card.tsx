@@ -42,34 +42,9 @@ export function DashCard({
     error: compareError,
   } = useReportingData(secRange);
 
-  // Log de debug avec optimisation proactive
+  // Optimisation du rendu
   useEffect(() => {
-    console.log(`💳 DASHCARD [${range}] STATE:`, {
-      hasMainData: !!mainData,
-      hasCompareData: !!compareData,
-      mainLoading,
-      compareLoading,
-      mainError,
-      compareError,
-    });
-
-    // Affichage anticipé : si on a les données principales mais pas de comparaison,
-    // on peut déjà commencer à afficher une version partielle
-    if (mainData && !compareData && !compareLoading) {
-      console.log(
-        `⚡ DASHCARD [${range}] PARTIAL READY: Main data available, compare data pending`,
-      );
-    }
-
-    // Détection proactive : si on n'a aucune donnée après 50ms, déclencher un debug
-    if (!mainData && !compareData && !mainLoading && !compareLoading) {
-      const quickCheck = setTimeout(() => {
-        console.log(
-          `🚨 DASHCARD [${range}] NO DATA: Proactive detection triggered`,
-        );
-      }, 50);
-      return () => clearTimeout(quickCheck);
-    }
+    // Track state changes for optimization
   }, [
     mainData,
     compareData,

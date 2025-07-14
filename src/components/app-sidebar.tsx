@@ -1,6 +1,6 @@
 "use client";
 
-import { HandCoins, Home, Settings2, Users } from "lucide-react";
+import { HandCoins, Home, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
@@ -17,7 +17,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { shouldShowDevFeatures } from "@/lib/env-utils";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 
@@ -60,43 +59,7 @@ const data = {
         },
       ],
     },
-    // Section Settings - uniquement en développement
-    ...(shouldShowDevFeatures()
-      ? [
-          {
-            title: "Réglages",
-            url: "/settings",
-            icon: Settings2,
-            isActive: false,
-            items: [
-              {
-                title: "Optimisation",
-                url: "/settings/optimization",
-              },
-              {
-                title: "Test Optimisation",
-                url: "/settings/optimization-test",
-              },
-              {
-                title: "Code Splitting Demo",
-                url: "/settings/code-splitting",
-              },
-              {
-                title: "Migration Dashboard",
-                url: "/settings/migration-dashboard",
-              },
-              {
-                title: "Section Cards Test",
-                url: "/settings/section-cards",
-              },
-              // {
-              //   title: "Configuration",
-              //   url: "/settings/general",
-              // },
-            ],
-          },
-        ]
-      : []),
+    // Section Settings supprimée - inutile
     // {
     //   title: "Models",
     //   url: "#",
