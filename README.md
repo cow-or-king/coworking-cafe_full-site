@@ -74,4 +74,4 @@ pnpm type-check   # Vérification TypeScript
 
 ---
 
-*Dernière mise à jour: Juillet 2025*
+_Dernière mise à jour: Juillet 2025_

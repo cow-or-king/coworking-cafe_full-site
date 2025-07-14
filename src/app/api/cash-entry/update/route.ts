@@ -18,8 +18,8 @@ export async function PUT(request: NextRequest) {
     } = await request.json();
 
     // Conversion des arrays d'objets pour les champs prestaB2B et depenses
-    let processedPrestaB2B = [];
-    let processedDepenses = [];
+    let processedPrestaB2B: Array<{ label: string; value: number }> = [];
+    let processedDepenses: Array<{ label: string; value: number }> = [];
 
     if (Array.isArray(prestaB2B)) {
       processedPrestaB2B = prestaB2B.map((item) => {

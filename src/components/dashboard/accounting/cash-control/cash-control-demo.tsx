@@ -16,7 +16,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
-import CashControlTable from "./CashControlTable-Generic";
+import CashControlTable from "./cash-control-table-generic";
 import {
   CashEntryFormData,
   CashEntryFormGeneric,

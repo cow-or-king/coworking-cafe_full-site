@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
 import * as React from "react";
 import toast from "react-hot-toast";
-import StaffCardFooter from "./staffCardFooter";
-import StaffCardHeader from "./staffCardHeader";
+import StaffCardFooter from "../staff-card/staff-card-footer";
+import StaffCardHeader from "../staff-card/staff-card-header";
 
 type StaffCardProps = {
   firstname: string;

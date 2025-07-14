@@ -85,12 +85,15 @@ export async function GET(request: NextRequest) {
     // Si staffId et date sont fournis, récupérer un shift spécifique
     if (staffId && date) {
       const shift = await Shift.findOne({ staffId, date });
-      
+
       if (shift) {
         return NextResponse.json({ success: true, shift }, { status: 200 });
       } else {
         // Retourner null si aucun shift n'est trouvé pour cette combinaison
-        return NextResponse.json({ success: true, shift: null }, { status: 200 });
+        return NextResponse.json(
+          { success: true, shift: null },
+          { status: 200 },
+        );
       }
     }
 

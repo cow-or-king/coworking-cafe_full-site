@@ -2,8 +2,10 @@ import React from "react";
 
 // Placeholder pour l'export avancé
 export default class AdvancedExporter {
-  constructor() {
-    // Constructor implementation
+  private config: any;
+
+  constructor(config?: any) {
+    this.config = config || {};
   }
 
   // Méthode d'export générique

@@ -135,15 +135,14 @@ export async function GET(request: NextRequest) {
 
     // Aggregate the turnover data.
     const reporting = await Turnover.aggregate([
-      [
-        {
-          $match: {
-            _id: {
-              $gte: startDateString,
-              $lt: endDateString,
-            },
+      {
+        $match: {
+          _id: {
+            $gte: startDateString,
+            $lt: endDateString,
           },
         },
+      },
         {
           $project: {
             date: "$_id",
@@ -188,7 +187,6 @@ export async function GET(request: NextRequest) {
             _id: -1,
           },
         },
-      ],
     ]);
     return NextResponse.json(
       { success: true, data: reporting[0] },

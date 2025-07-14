@@ -12,7 +12,7 @@ import {
   PaymentFields,
   PrestaB2BEntry,
   PrestaB2BInput,
-} from "./FormComponents";
+} from "./form-components";
 
 // Type pour le formulaire
 export type CashEntryForm = {

@@ -6,7 +6,7 @@ import {
   ContractSection,
   FormActions,
   PersonalInfoSection,
-} from "@/components/dashboard/staff/create/StaffFormComponents";
+} from "@/components/dashboard/staff/create/staff-form-components";
 import { useStaffForm } from "@/hooks/use-staff-form";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
