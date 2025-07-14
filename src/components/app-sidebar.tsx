@@ -17,6 +17,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { shouldShowDevFeatures } from "@/lib/env-utils";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 
@@ -59,7 +60,8 @@ const data = {
         },
       ],
     },
-    {
+    // Section Settings - uniquement en développement
+    ...(shouldShowDevFeatures() ? [{
       title: "Réglages",
       url: "/settings",
       icon: Settings2,
@@ -90,7 +92,7 @@ const data = {
         //   url: "/settings/general",
         // },
       ],
-    },
+    }] : []),
     // {
     //   title: "Models",
     //   url: "#",

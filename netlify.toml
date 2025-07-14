@@ -8,6 +8,7 @@
   PNPM_VERSION = "8"
   NEXT_TELEMETRY_DISABLED = "1"
   ESLint_NO_DEV_ERRORS = "true"
+  # NEXT_PUBLIC_SHOW_DEV_FEATURES n'est pas définie en production
 
 [[redirects]]
   from = "/pdf"
