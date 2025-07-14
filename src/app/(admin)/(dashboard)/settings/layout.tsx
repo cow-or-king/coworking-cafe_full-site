@@ -8,7 +8,7 @@ export default function SettingsLayout({
 }) {
   // Vérifier si les fonctionnalités de développement sont autorisées
   if (!shouldShowDevFeatures()) {
-    redirect('/');
+    redirect("/");
   }
 
   return <>{children}</>;

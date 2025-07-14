@@ -3,8 +3,10 @@
  */
 
 export const isDevEnvironment = () => {
-  return process.env.NODE_ENV === 'development' || 
-         process.env.NEXT_PUBLIC_SHOW_DEV_FEATURES === 'true';
+  return (
+    process.env.NODE_ENV === "development" ||
+    process.env.NEXT_PUBLIC_SHOW_DEV_FEATURES === "true"
+  );
 };
 
 export const shouldShowDevFeatures = () => {
@@ -13,6 +15,8 @@ export const shouldShowDevFeatures = () => {
 };
 
 export const isProduction = () => {
-  return process.env.NODE_ENV === 'production' && 
-         process.env.NEXT_PUBLIC_SHOW_DEV_FEATURES !== 'true';
+  return (
+    process.env.NODE_ENV === "production" &&
+    process.env.NEXT_PUBLIC_SHOW_DEV_FEATURES !== "true"
+  );
 };

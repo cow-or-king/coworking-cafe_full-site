@@ -61,38 +61,42 @@ const data = {
       ],
     },
     // Section Settings - uniquement en développement
-    ...(shouldShowDevFeatures() ? [{
-      title: "Réglages",
-      url: "/settings",
-      icon: Settings2,
-      isActive: false,
-      items: [
-        {
-          title: "Optimisation",
-          url: "/settings/optimization",
-        },
-        {
-          title: "Test Optimisation",
-          url: "/settings/optimization-test",
-        },
-        {
-          title: "Code Splitting Demo",
-          url: "/settings/code-splitting",
-        },
-        {
-          title: "Migration Dashboard",
-          url: "/settings/migration-dashboard",
-        },
-        {
-          title: "Section Cards Test",
-          url: "/settings/section-cards",
-        },
-        // {
-        //   title: "Configuration",
-        //   url: "/settings/general",
-        // },
-      ],
-    }] : []),
+    ...(shouldShowDevFeatures()
+      ? [
+          {
+            title: "Réglages",
+            url: "/settings",
+            icon: Settings2,
+            isActive: false,
+            items: [
+              {
+                title: "Optimisation",
+                url: "/settings/optimization",
+              },
+              {
+                title: "Test Optimisation",
+                url: "/settings/optimization-test",
+              },
+              {
+                title: "Code Splitting Demo",
+                url: "/settings/code-splitting",
+              },
+              {
+                title: "Migration Dashboard",
+                url: "/settings/migration-dashboard",
+              },
+              {
+                title: "Section Cards Test",
+                url: "/settings/section-cards",
+              },
+              // {
+              //   title: "Configuration",
+              //   url: "/settings/general",
+              // },
+            ],
+          },
+        ]
+      : []),
     // {
     //   title: "Models",
     //   url: "#",

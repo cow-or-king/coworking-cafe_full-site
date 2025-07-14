@@ -143,50 +143,50 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-        {
-          $project: {
-            date: "$_id",
-            TTC: {
-              $round: [
-                {
-                  $sum: [
-                    "$vat-20.total-ttc",
-                    "$vat-10.total-ttc",
-                    "$vat-55.total-ttc",
-                    "$vat-0.total-ttc",
-                  ],
-                },
-                2,
-              ],
-            },
+      {
+        $project: {
+          date: "$_id",
+          TTC: {
+            $round: [
+              {
+                $sum: [
+                  "$vat-20.total-ttc",
+                  "$vat-10.total-ttc",
+                  "$vat-55.total-ttc",
+                  "$vat-0.total-ttc",
+                ],
+              },
+              2,
+            ],
+          },
 
-            HT: {
-              $round: [
-                {
-                  $sum: [
-                    "$vat-20.total-ht",
-                    "$vat-10.total-ht",
-                    "$vat-55.total-ht",
-                    "$vat-0.total-ht",
-                  ],
-                },
-                2,
-              ],
-            },
+          HT: {
+            $round: [
+              {
+                $sum: [
+                  "$vat-20.total-ht",
+                  "$vat-10.total-ht",
+                  "$vat-55.total-ht",
+                  "$vat-0.total-ht",
+                ],
+              },
+              2,
+            ],
           },
         },
-        {
-          $group: {
-            _id: range,
-            TTC: { $sum: "$TTC" },
-            HT: { $sum: "$HT" },
-          },
+      },
+      {
+        $group: {
+          _id: range,
+          TTC: { $sum: "$TTC" },
+          HT: { $sum: "$HT" },
         },
-        {
-          $sort: {
-            _id: -1,
-          },
+      },
+      {
+        $sort: {
+          _id: -1,
         },
+      },
     ]);
     return NextResponse.json(
       { success: true, data: reporting[0] },
