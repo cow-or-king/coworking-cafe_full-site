@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { invalidateShiftCache } from "@/hooks/use-shift-data-fixed";
 import {
   formatTimeInFrenchTimezone,
   getCurrentDateInFrenchTimezone,
@@ -303,6 +304,10 @@ export default function StaffCard({
       if (result.shift) {
         setCurrentShiftData(result.shift);
       }
+
+      // Invalider le cache des shifts pour mettre à jour la ScoreList
+      invalidateShiftCache();
+      console.log("🔄 Cache des shifts invalidé");
     } catch (error) {
       console.error("💥 Erreur lors de la requête à l'API:", error);
       toast.error("Erreur lors de l'opération.");

@@ -39,6 +39,17 @@ export default function ScoreList() {
   const { isLoading, error, refetch, shifts } = useShiftDataFixed();
   const [updateShift] = useUpdateShiftMutation();
 
+  // Écouter les changements de focus pour rafraîchir automatiquement
+  useEffect(() => {
+    const handleFocus = async () => {
+      console.log("🔄 Page refocused, refreshing shift data...");
+      await refetch();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refetch]);
+
   // Debug logs
   console.log("ScoreList Debug:", {
     isLoading,

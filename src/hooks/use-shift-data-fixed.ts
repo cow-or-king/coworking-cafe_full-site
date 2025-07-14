@@ -142,7 +142,7 @@ class ShiftCacheManager {
 
       console.log(
         "✅ Données shifts mises en cache:",
-        data.shifts.length,
+        data.data.length,
         "shifts",
       );
       this.notifyListeners();
@@ -233,4 +233,16 @@ export function useShiftDataFixed() {
     invalidate,
     shifts: data?.shifts || [],
   };
+}
+
+// Fonction utilitaire pour invalider le cache depuis n'importe où
+export function invalidateShiftCache() {
+  const cacheManager = ShiftCacheManager.getInstance();
+  cacheManager.invalidateCache();
+}
+
+// Fonction utilitaire pour forcer un refresh depuis n'importe où
+export function refreshShiftCache() {
+  const cacheManager = ShiftCacheManager.getInstance();
+  return cacheManager.refreshCache();
 }
