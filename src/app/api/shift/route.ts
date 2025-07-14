@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     console.log("Shift créé avec succès :", savedShift);
 
     return NextResponse.json(
-      { success: true, data: savedShift },
+      { success: true, shift: savedShift },
       { status: 201 },
     );
   } catch (error: any) {
@@ -102,6 +102,58 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, data: shifts }, { status: 200 });
   } catch (error: any) {
     console.error("Erreur lors de la récupération des shifts :", error);
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  await dbConnect();
+
+  try {
+    const { _id, ...updateData } = await request.json();
+
+    console.log("PUT /api/shift - Mise à jour du shift:", {
+      _id,
+      updateData,
+    });
+
+    if (!_id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "ID du shift requis pour la mise à jour",
+        },
+        { status: 400 },
+      );
+    }
+
+    // Mettre à jour le shift existant
+    const updatedShift = await Shift.findByIdAndUpdate(_id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedShift) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Shift non trouvé",
+        },
+        { status: 404 },
+      );
+    }
+
+    console.log("✅ Shift mis à jour avec succès:", updatedShift);
+
+    return NextResponse.json(
+      { success: true, shift: updatedShift },
+      { status: 200 },
+    );
+  } catch (error: any) {
+    console.error("💥 Erreur lors de la mise à jour du shift:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },

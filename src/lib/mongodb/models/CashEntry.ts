@@ -1,9 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+interface CashEntryItem {
+  label: string;
+  value: number;
+}
+
+export interface ICashEntry extends Document {
+  _id: string;
+  prestaB2B?: CashEntryItem[];
+  depenses?: CashEntryItem[];
+  virement?: number;
+  especes?: number;
+  cbClassique?: number;
+  cbSansContact?: number;
+}
 
 /**
  * Schema used to validate cash entries in the database.
  */
-const CashEntrySchema = new mongoose.Schema({
+const CashEntrySchema = new Schema<ICashEntry>({
   _id: {
     type: String,
     match: /^\d{4}\/\d{2}\/\d{2}$/,
@@ -35,6 +50,9 @@ const CashEntrySchema = new mongoose.Schema({
   cbSansContact: { type: Number, required: false, default: 0 },
 });
 
-delete mongoose.models.CashEntry;
-export default mongoose.models.CashEntry ||
-  mongoose.model("CashEntry", CashEntrySchema);
+// Supprimer le modèle existant si il existe (pour éviter les erreurs de recompilation)
+if (mongoose.models.CashEntry) {
+  delete mongoose.models.CashEntry;
+}
+
+export default mongoose.model<ICashEntry>("CashEntry", CashEntrySchema);

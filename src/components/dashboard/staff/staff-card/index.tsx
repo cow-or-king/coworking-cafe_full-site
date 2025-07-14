@@ -1,4 +1,9 @@
 import { Card } from "@/components/ui/card";
+import {
+  formatTimeInFrenchTimezone,
+  getCurrentDateInFrenchTimezone,
+  getCurrentDateTimeInFrenchTimezone,
+} from "@/lib/timezone-utils";
 import * as React from "react";
 import toast from "react-hot-toast";
 import StaffCardFooter from "./staff-card-footer";
@@ -32,7 +37,7 @@ export default function StaffCard({
   hidden,
 }: StaffCardProps) {
   const [form, setForm] = React.useState({
-    date: new Date().toISOString().slice(0, 10),
+    date: getCurrentDateInFrenchTimezone(),
     firstname: firstname || "",
     lastname: lastname || "",
     staffId: staffId || "",
@@ -58,7 +63,7 @@ export default function StaffCard({
   // Effet pour vérifier le changement de date à minuit
   React.useEffect(() => {
     const checkDateChange = () => {
-      const currentDate = new Date().toISOString().slice(0, 10);
+      const currentDate = getCurrentDateInFrenchTimezone();
       if (currentDate !== form.date) {
         console.log(
           "Changement de date détecté:",
@@ -97,13 +102,7 @@ export default function StaffCard({
   }, [form.date]);
 
   const formatTime = (isoString: string) => {
-    if (!isoString || isoString === "00:00" || isNaN(Date.parse(isoString)))
-      return "";
-    const date = new Date(isoString);
-    return date.toLocaleTimeString("fr-FR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatTimeInFrenchTimezone(isoString);
   };
 
   const calculateElapsedTime = (startTime: string, endTime?: string) => {
@@ -208,9 +207,19 @@ export default function StaffCard({
   }, [staffId, form.date]);
 
   const handleStartStop = async () => {
-    if (isBlocked || !currentShiftData) return;
+    console.log("🚀 handleStartStop appelé:", {
+      isBlocked,
+      currentShiftData,
+      activeShift,
+    });
 
-    const now = new Date().toISOString();
+    if (isBlocked || !currentShiftData) {
+      console.log("❌ Arrêt: bloqué ou pas de données shift");
+      return;
+    }
+
+    const now = getCurrentDateTimeInFrenchTimezone();
+    console.log("⏰ Timestamp actuel (heure française):", now);
 
     try {
       let updatedShiftData = { ...currentShiftData };
@@ -222,13 +231,16 @@ export default function StaffCard({
           updatedShiftData.firstShift.start = now;
           setActiveShift("first");
           setIsFirstShiftActive(true);
+          console.log("✅ Premier shift démarré");
           toast.success(`Premier shift démarré à ${formatTime(now)}`);
         } else if (currentShiftData.secondShift.start === "00:00") {
           updatedShiftData.secondShift.start = now;
           setActiveShift("second");
           setIsSecondShiftActive(true);
+          console.log("✅ Deuxième shift démarré");
           toast.success(`Deuxième shift démarré à ${formatTime(now)}`);
         } else {
+          console.log("❌ Limite de 2 shifts atteinte");
           toast.error("Limite de 2 shifts atteinte pour aujourd'hui.");
           return;
         }
@@ -237,12 +249,14 @@ export default function StaffCard({
         updatedShiftData.firstShift.end = now;
         setActiveShift(null);
         setIsFirstShiftActive(false);
+        console.log("⏹️ Premier shift arrêté");
         toast.success(`Premier shift arrêté à ${formatTime(now)}`);
       } else if (activeShift === "second") {
         // Arrêter le deuxième shift
         updatedShiftData.secondShift.end = now;
         setActiveShift(null);
         setIsSecondShiftActive(false);
+        console.log("⏹️ Deuxième shift arrêté");
         toast.success(`Deuxième shift arrêté à ${formatTime(now)}`);
       }
 
@@ -258,32 +272,54 @@ export default function StaffCard({
             ...updatedShiftData,
           };
 
+      console.log("📡 Envoi requête API:", {
+        method,
+        url: "/api/shift",
+        body,
+      });
+
       const response = await fetch("/api/shift", {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
 
+      console.log("📥 Réponse API:", {
+        status: response.status,
+        ok: response.ok,
+      });
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Erreur API:", errorText);
         throw new Error(
           `Erreur lors de l'${method === "POST" ? "enregistrement" : "mise à jour"} du shift.`,
         );
       }
 
       const result = await response.json();
+      console.log("✅ Résultat API:", result);
+
       if (result.shift) {
         setCurrentShiftData(result.shift);
       }
     } catch (error) {
-      console.error("Erreur lors de la requête à l'API:", error);
+      console.error("💥 Erreur lors de la requête à l'API:", error);
       toast.error("Erreur lors de l'opération.");
     }
   };
 
   const handlePasswordSubmit = () => {
+    console.log("🔐 Validation du mot de passe:", {
+      enteredPassword,
+      mdp,
+      isEqual: Number(enteredPassword) === mdp,
+    });
+
     if (Number(enteredPassword) === mdp) {
       setPasswordPrompt(false);
       setEnteredPassword("");
+      console.log("✅ Mot de passe correct, appel de handleStartStop");
       handleStartStop();
     } else {
       toast.error("Mot de passe incorrect.");
@@ -379,6 +415,7 @@ export default function StaffCard({
             }}
             role="dialog"
             aria-labelledby="keypad-title"
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
@@ -429,7 +466,10 @@ export default function StaffCard({
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
                 <button
                   key={digit}
-                  onClick={() => handleKeypadPress(digit.toString())}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleKeypadPress(digit.toString());
+                  }}
                   style={{
                     padding: "16px",
                     fontSize: "20px",
@@ -455,7 +495,10 @@ export default function StaffCard({
 
               {/* Bouton Effacer */}
               <button
-                onClick={handleKeypadClear}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleKeypadClear();
+                }}
                 style={{
                   padding: "16px",
                   fontSize: "14px",
@@ -481,7 +524,10 @@ export default function StaffCard({
 
               {/* Bouton 0 */}
               <button
-                onClick={() => handleKeypadPress("0")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleKeypadPress("0");
+                }}
                 style={{
                   padding: "16px",
                   fontSize: "20px",
@@ -506,7 +552,10 @@ export default function StaffCard({
 
               {/* Bouton Supprimer */}
               <button
-                onClick={handleKeypadDelete}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleKeypadDelete();
+                }}
                 style={{
                   padding: "16px",
                   fontSize: "16px",
@@ -534,7 +583,10 @@ export default function StaffCard({
             {/* Boutons d'action */}
             <div style={{ display: "flex", gap: "12px" }}>
               <button
-                onClick={() => setPasswordPrompt(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPasswordPrompt(false);
+                }}
                 style={{
                   flex: 1,
                   padding: "12px",
@@ -560,7 +612,10 @@ export default function StaffCard({
               </button>
 
               <button
-                onClick={handlePasswordSubmit}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePasswordSubmit();
+                }}
                 disabled={enteredPassword.length === 0}
                 style={{
                   flex: 1,
