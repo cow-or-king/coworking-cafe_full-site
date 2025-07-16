@@ -16,7 +16,7 @@ export default function ScoreCard({ hidden }: { hidden: string }) {
   if (!isClient || isLoading) {
     return (
       <div className="">
-        <div className="grid grid-cols-4 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:px-6">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="bg-muted h-32 animate-pulse rounded-lg" />
           ))}
@@ -37,7 +37,7 @@ export default function ScoreCard({ hidden }: { hidden: string }) {
 
   return (
     <div className="">
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-4 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:px-6">
         {data?.map(
           (staff) =>
             staff.isActive && ( // Utiliser le nouveau champ isActive
