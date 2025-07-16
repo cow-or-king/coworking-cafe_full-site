@@ -1,6 +1,7 @@
 "use client";
 
-import { HandCoins, Home, Users } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { HandCoins, Home, Settings2, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
@@ -20,144 +21,78 @@ import {
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 
-const data = {
-  user: {
-    name: "Twe",
-    email: "dev@coworkingcafe.fr",
-    avatar: "/avatar.png",
-  },
-  navMain: [
-    {
-      title: "Finances",
-      url: "/",
-      icon: HandCoins,
-      isActive: false,
-      items: [
-        {
-          title: "Controle de caisse",
-          url: "/accounting/cash-control",
-        },
-        // {
-        //   title: "PDF Controle de caisse",
-        //   url: "/accounting/cash-control/pdf",
-        // },
-      ],
-    },
-    {
-      title: "Personnel",
-      url: "/",
-      icon: Users,
-      isActive: false,
-      items: [
-        {
-          title: "Liste du personnel",
-          url: "/list",
-        },
-        {
-          title: "Pointage du personnel",
-          url: "/score",
-        },
-      ],
-    },
-    // Section Settings supprimée - inutile
-    // {
-    //   title: "Models",
-    //   url: "#",
-    //   icon: Bot,
-    //   items: [
-    //     {
-    //       title: "Genesis",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Explorer",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Quantum",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-  ],
-  projects: [
-    // {
-    //   name: "Design Engineering",
-    //   url: "#",
-    //   icon: Frame,
-    // },
-    // {
-    //   name: "Sales & Marketing",
-    //   url: "#",
-    //   icon: PieChart,
-    // },
-    // {
-    //   name: "Travel",
-    //   url: "#",
-    //   icon: Map,
-    // },
-  ],
-  navSecondary: [
-    // {
-    //   title: "Support",
-    //   url: "#",
-    //   icon: LifeBuoy,
-    // },
-    {
-      title: "Home",
-      url: "/",
-      icon: Home,
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
+
+  // Navigation principale adaptée selon le rôle
+  const getNavMain = () => {
+    const baseItems = [
+      {
+        title: "Personnel",
+        url: "/",
+        icon: Users,
+        isActive: false,
+        items: [
+          {
+            title: "Pointage du personnel",
+            url: "/score",
+          },
+        ],
+      },
+    ];
+
+    // Éléments disponibles uniquement pour les admins
+    const adminItems = [
+      {
+        title: "Finances",
+        url: "/",
+        icon: HandCoins,
+        isActive: false,
+        items: [
+          {
+            title: "Controle de caisse",
+            url: "/accounting/cash-control",
+          },
+        ],
+      },
+      {
+        title: "Administration",
+        url: "/admin",
+        icon: Settings2,
+        isActive: false,
+        items: [
+          {
+            title: "Liste du personnel",
+            url: "/list",
+          },
+          {
+            title: "Paramètres",
+            url: "/admin/settings",
+          },
+        ],
+      },
+    ];
+
+    // Si admin, retourner tous les éléments, sinon seulement les éléments de base
+    return user?.role === "admin" ? [...adminItems, ...baseItems] : baseItems;
+  };
+
+  const data = {
+    user: {
+      name: user?.firstName + " " + user?.lastName || "Utilisateur",
+      email: "dev@coworkingcafe.fr",
+      avatar: "/avatar.png",
+    },
+    navMain: getNavMain(),
+    navSecondary: [
+      {
+        title: "Dashboard",
+        url: "/",
+        icon: Home,
+      },
+    ],
+  };
+
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
@@ -184,7 +119,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavProjects projects={data.projects} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

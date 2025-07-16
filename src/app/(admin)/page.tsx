@@ -1,9 +1,11 @@
 "use client";
 
+import { RoleGuard } from "@/components/auth/RoleGuard";
 import { Chart } from "@/components/dashboard/chart";
 import { DashSectionCards } from "@/components/dashboard/section-card";
 import ScoreCard from "@/components/dashboard/staff/score/score-card";
 import SwitchWithText from "@/components/dashboard/switch-with-text";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   diagnoseDashboardCache,
   invalidateDashboardCache,
@@ -16,6 +18,7 @@ import { useState } from "react";
 
 export default function DashboardPage() {
   const [checked, setChecked] = useState(false);
+  const { user, hasRole } = useAuth();
 
   // Préchargement automatique de toutes les APIs
   const { startPreload } = useAutoPreloader();
@@ -38,25 +41,53 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-col gap-4 md:gap-6 md:py-6">
-        <ScoreCard hidden={""} />
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex items-center justify-between px-8">
-            <div className="flex gap-2">
-              {/* Section pour les contrôles de debug si nécessaire */}
-            </div>
-
-            <SwitchWithText
-              checked={checked}
-              setChecked={setChecked}
-              firstText="HT"
-              secondText="TTC"
-            />
-          </div>
-          <DashSectionCards checked={checked} />
-          <div className="px-4 lg:px-6">
-            <Chart />
-          </div>
+        {/* Bienvenue personnalisée */}
+        <div className="px-4 lg:px-6">
+          <h1 className="mb-2 text-2xl font-bold">
+            Bienvenue, {user?.firstName} !
+          </h1>
+          <p className="text-muted-foreground">
+            {hasRole("admin")
+              ? "Tableau de bord administrateur - Accès complet aux données financières et de gestion."
+              : "Tableau de bord personnel - Gérez vos pointages et consultez vos informations."}
+          </p>
         </div>
+
+        <ScoreCard hidden={""} />
+
+        {/* Section financière - Visible uniquement pour les admins */}
+        <RoleGuard role="admin">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex items-center justify-between px-8">
+              <div className="flex gap-2">
+                {/* Section pour les contrôles de debug si nécessaire */}
+              </div>
+
+              <SwitchWithText
+                checked={checked}
+                setChecked={setChecked}
+                firstText="HT"
+                secondText="TTC"
+              />
+            </div>
+            <DashSectionCards checked={checked} />
+            <div className="px-4 lg:px-6">
+              <Chart />
+            </div>
+          </div>
+        </RoleGuard>
+
+        {/* Message pour les utilisateurs staff sans accès admin */}
+        {!hasRole("admin") && (
+          <div className="px-4 lg:px-6">
+            <div className="rounded-lg border border-dashed p-8 text-center">
+              <p className="text-muted-foreground">
+                Contactez un administrateur pour accéder aux données
+                financières.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* ===== SECTION DEBUG - Décommenter si nécessaire ===== */}
         {/* <div className="-mb-6 rounded-b-xl border-2 border-gray-300 bg-gray-200 px-8 py-4">

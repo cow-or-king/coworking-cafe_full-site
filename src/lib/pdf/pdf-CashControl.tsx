@@ -134,8 +134,8 @@ function formatTVADetails(
   const rates = ["5,5", "10", "20"];
   const lines = rates.map((rate) => {
     const value = data?.[rate];
-    if (!value || value === 0) return " "; // Espace pour préserver la ligne
-    return `${prefix} ${rate}%: ${formatCurrencyOrEmpty(value)}`;
+    if (!value || value === 0) return `${prefix} ${rate}% : 0,00 €`; // Espace pour préserver la ligne
+    return `${prefix} ${rate}% : ${formatCurrencyOrSpace(value)}`;
   });
 
   return lines.join("\n"); // Retourne toujours 3 lignes (certaines peuvent être des espaces)
