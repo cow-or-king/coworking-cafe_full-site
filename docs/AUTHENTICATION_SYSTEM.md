@@ -145,6 +145,31 @@ export default function MyComponent() {
 - 🔒 Les mots de passe sont en clair dans le code (démo uniquement)
 - 🍪 Authentification persistée via localStorage + cookies
 - 🛡️ Middleware automatique pour la protection des routes
+- 🔐 **Protection au niveau des layouts** - Routes sensibles protégées même en accès direct URL
+
+### Protection Multicouche
+
+1. **Middleware** (`/src/middleware.ts`)
+
+   - Protection au niveau serveur
+   - Redirection automatique des non-authentifiés
+
+2. **Layouts Protégés**
+
+   - `/accounting/layout.tsx` - Protection admin pour toutes les routes financières
+   - `/(staff)/layout.tsx` - Protection admin pour la gestion du personnel
+   - `/admin/layout.tsx` - Protection admin pour l'administration
+
+3. **Protection Composant**
+   - `ProtectedRoute` pour les pages individuelles
+   - `RoleGuard` pour l'affichage conditionnel
+
+### Routes Sécurisées
+
+- ✅ `/accounting/*` - **Impossible d'accéder via URL directe** (admin uniquement)
+- ✅ `/list` - **Protection layout + page** (admin uniquement)
+- ✅ `/admin/*` - **Protection multicouche** (admin uniquement)
+- ✅ `/score` - Accessible staff (protection minimale)
 
 ### Améliorations de Production
 
@@ -184,8 +209,16 @@ src/
 │   ├── login/
 │   │   └── page.tsx              # Page de connexion
 │   └── (admin)/
-│       ├── layout.tsx            # Layout protégé
+│       ├── layout.tsx            # Layout protégé global
 │       └── (dashboard)/
+│           ├── accounting/
+│           │   ├── layout.tsx    # 🔒 Protection admin financière
+│           │   └── cash-control/
+│           │       └── page.tsx  # Page contrôle de caisse
+│           ├── (staff)/
+│           │   ├── layout.tsx    # 🔒 Protection admin personnel
+│           │   └── list/
+│           │       └── page.tsx  # Liste du personnel
 │           └── admin/
 │               └── settings/
 │                   └── page.tsx  # Page admin
