@@ -2,11 +2,18 @@
 
 import StaffCard from "@/components/dashboard/staff/staff-card";
 import { useStaffDataFixed } from "@/hooks/use-staff-data-fixed";
+import * as React from "react";
 
 export default function ScoreCard({ hidden }: { hidden: string }) {
+  const [isClient, setIsClient] = React.useState(false);
   const { data, isLoading, error } = useStaffDataFixed();
 
-  if (isLoading) {
+  // S'assurer que le composant s'affiche côté client
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient || isLoading) {
     return (
       <div className="">
         <div className="grid grid-cols-4 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">

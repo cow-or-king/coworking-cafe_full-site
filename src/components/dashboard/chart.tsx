@@ -41,11 +41,17 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function Chart() {
+  const [isClient, setIsClient] = React.useState(false);
   const { data: turnoverData, isLoading, error } = useChartData();
 
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("30d");
   const [range, setRange] = React.useState("30 derniers jours");
+
+  // S'assurer que le composant s'affiche côté client
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   React.useEffect(() => {
     if (isMobile) {
@@ -53,8 +59,10 @@ export function Chart() {
     }
   }, [isMobile]);
 
+  // Déplacer useMemo avant le return conditionnel pour respecter les règles des hooks
   const filteredData = useMemo(() => {
-    if (!turnoverData || !Array.isArray(turnoverData)) return [];
+    // Ne traiter les données que côté client pour éviter les erreurs d'hydratation
+    if (!isClient || !turnoverData || !Array.isArray(turnoverData)) return [];
 
     const filtered = turnoverData.filter((data) => {
       // Améliorer la gestion des dates
@@ -100,14 +108,20 @@ export function Chart() {
     });
 
     return prepareChartData(filtered);
-  }, [turnoverData, timeRange]);
+  }, [isClient, turnoverData, timeRange]);
 
-  if (isLoading) {
+  // Afficher un état de chargement uniforme côté serveur et client
+  if (!isClient || isLoading) {
     return (
       <Card className="@container/card">
         <CardHeader>
           <CardTitle>Chiffre d&apos;affaire</CardTitle>
-          <CardDescription>Chargement des données...</CardDescription>
+          <CardDescription>
+            <span className="hidden @[540px]/card:block">
+              Tendance sur les 30 derniers jours
+            </span>
+            <span className="@[540px]/card:hidden">30 derniers jours</span>
+          </CardDescription>
         </CardHeader>
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
           <div className="flex h-[250px] w-full items-center justify-center">

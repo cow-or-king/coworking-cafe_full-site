@@ -20,8 +20,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   labelOther: {
-    fontSize: 10,
+    fontSize: 9, // Taille réduite pour plus de lisibilité
     textAlign: "center",
+    lineHeight: 1.3, // Espacement amélioré entre les lignes
+    paddingVertical: 2, // Padding vertical pour aérer
   },
 });
 

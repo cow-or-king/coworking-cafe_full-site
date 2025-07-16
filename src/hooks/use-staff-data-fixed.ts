@@ -77,7 +77,6 @@ class StaffCacheManager {
   private constructor() {
     // Charger depuis localStorage si disponible
     this.loadFromStorage();
-    console.log(`🎯 STAFF SINGLETON INITIAL STATE:`, this.getState());
   }
 
   private loadFromStorage() {
@@ -92,9 +91,6 @@ class StaffCacheManager {
         if (now - cachedData.timestamp < this.CACHE_DURATION) {
           this.cache = this.transformStaffData(cachedData.data.data);
           this.lastFetch = cachedData.timestamp;
-          console.log(
-            "📦 STAFF SINGLETON CACHE INIT: Using localStorage cache",
-          );
         } else {
           localStorage.removeItem(this.STORAGE_KEY);
         }
@@ -133,40 +129,24 @@ class StaffCacheManager {
   };
 
   async getStaffData(forceRefresh = false): Promise<StaffMember[]> {
-    console.log(`🎯 STAFF SINGLETON GETDATA: Start function`, {
-      hasCache: !!this.cache,
-      cacheLength: this.cache?.length,
-      forceRefresh,
-      lastFetch: this.lastFetch,
-    });
-
     const now = Date.now();
     const isCacheValid =
       this.cache && now - this.lastFetch < this.CACHE_DURATION;
 
     if (!forceRefresh && isCacheValid) {
-      console.log(
-        `📊 STAFF SINGLETON: Using existing data (${this.cache!.length} records)`,
-        this.cache,
-      );
       return this.cache!;
     }
 
+    // Si un cache existe et est valide, l'utiliser
     if (this.cache && !forceRefresh) {
-      console.log(
-        `📊 STAFF SINGLETON: Using existing data (${this.cache.length} records)`,
-        this.cache,
-      );
       return this.cache;
     }
 
     // Si un fetch est déjà en cours, on s'y joint
     if (this.currentFetch) {
-      console.log(`🔄 STAFF SINGLETON: Fetch already in progress - joining`);
       return this.currentFetch;
     }
 
-    console.log(`🔥 STAFF SINGLETON: Starting new fetch`);
     this.setLoading(true);
     this.setError(null);
 
@@ -185,22 +165,12 @@ class StaffCacheManager {
       const now = Date.now();
       const url = "/api/staff";
 
-      console.log(`🔥 STAFF SINGLETON FETCH: Starting API call to /api/staff`);
-      console.log(`🔗 STAFF SINGLETON URL: ${url}`);
-
       const response = await fetch(url);
-      console.log(`🌐 STAFF SINGLETON RESPONSE: ${response.status}`);
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result: StaffResponse = await response.json();
-      console.log(
-        `📊 STAFF SINGLETON SUCCESS: ${result.data?.length || 0} records loaded`,
-        result,
-      );
-
       if (result.success && result.data) {
         this.cache = this.transformStaffData(result.data);
         this.lastFetch = now;
@@ -221,7 +191,6 @@ class StaffCacheManager {
   }
 
   forceRefresh(): Promise<StaffMember[]> {
-    console.log(`🔄 STAFF SINGLETON: Force refresh requested`);
     return this.getStaffData(true);
   }
 
@@ -264,7 +233,6 @@ class StaffCacheManager {
     if (typeof window !== "undefined") {
       localStorage.removeItem(this.STORAGE_KEY);
     }
-    console.log("📦 STAFF SINGLETON: Cache invalidated");
   }
 }
 
@@ -273,20 +241,14 @@ const staffCacheManager = StaffCacheManager.getInstance();
 
 // Hook principal utilisant le Singleton
 export const useStaffDataFixed = () => {
-  console.log(`🚀🚀🚀 STAFF SINGLETON HOOK CALLED`);
-
   const [state, setState] = useState(() => {
     const initialState = staffCacheManager.getState();
-    console.log("🎯 STAFF SINGLETON INITIAL STATE:", initialState);
     return initialState;
   });
 
   useEffect(() => {
     // Si pas de données, on déclenche un fetch immédiat
     if (!state.data && !state.isLoading) {
-      console.log(
-        "🎯 STAFF SINGLETON: Triggering immediate fetch on first call",
-      );
       staffCacheManager.getStaffData().catch((error) => {
         console.error("🎯 STAFF SINGLETON IMMEDIATE FETCH ERROR:", error);
       });
@@ -295,16 +257,10 @@ export const useStaffDataFixed = () => {
     // S'abonner aux changements
     const unsubscribe = staffCacheManager.subscribe(
       (data, isLoading, error) => {
-        console.log("🔔 STAFF SINGLETON LISTENER: State changed", {
-          data: data?.length,
-          isLoading,
-          error,
-        });
         setState({ data, isLoading, error });
       },
     );
 
-    console.log("🎯 STAFF SINGLETON USEEFFECT: Starting");
     staffCacheManager.getStaffData().catch((error) => {
       console.error(
         "🎯 STAFF SINGLETON USEEFFECT: Error in getDashboardData",
@@ -313,16 +269,9 @@ export const useStaffDataFixed = () => {
     });
 
     return () => {
-      console.log("🎯 STAFF SINGLETON USEEFFECT: Cleanup");
       unsubscribe();
     };
   }, []);
-
-  console.log(`🚀 STAFF SINGLETON HOOK STATE:`, {
-    dataLength: state.data?.length,
-    isLoading: state.isLoading,
-    error: state.error,
-  });
 
   const refresh = useCallback(() => {
     return staffCacheManager.forceRefresh();

@@ -1,8 +1,26 @@
 "use client";
 import { TrendingUp } from "lucide-react";
+import * as React from "react";
 import { DashCard } from "./section-card";
 
 export function DashSectionCards({ checked }: { checked: boolean }) {
+  const [isClient, setIsClient] = React.useState(false);
+
+  // S'assurer que le composant s'affiche côté client
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    // Afficher un skeleton uniforme côté serveur
+    return (
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="bg-muted h-32 animate-pulse rounded-lg" />
+        ))}
+      </div>
+    );
+  }
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <DashCard

@@ -39,12 +39,22 @@ export async function GET() {
           endDate.setDate(endDate.getDate() - 7);
           break;
         case "customPreviousWeek":
-          if (startDate.getDay() === 0) {
-            startDate.setDate(startDate.getDate() - 13);
-            endDate.setDate(endDate.getDate() - endDate.getDay() - 8);
+          // Début : Lundi de la semaine précédente
+          const currentDayOfWeek = startDate.getDay(); // 0 = dimanche, 1 = lundi, etc.
+
+          if (currentDayOfWeek === 1) {
+            // Lundi : pas de données
+            // Retourner des dates qui ne matchent aucune donnée
+            startDate.setFullYear(1970, 0, 1); // Date très ancienne
+            endDate.setFullYear(1970, 0, 1);
           } else {
-            startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
-            endDate.setDate(endDate.getDate() - 8);
+            // Mardi au Dimanche : semaine précédente du lundi jusqu'à la veille d'aujourd'hui
+            // Début : Lundi de la semaine précédente
+            const daysToMondayLastWeek =
+              currentDayOfWeek === 0 ? 7 : currentDayOfWeek - 1 + 7; // Gérer dimanche (0) et autres jours
+            startDate.setDate(startDate.getDate() - daysToMondayLastWeek);
+            // Fin : Même jour de la semaine précédente (pour inclure jusqu'à la veille d'aujourd'hui de la semaine précédente)
+            endDate.setDate(endDate.getDate() - 7); // Aujourd'hui, mais semaine précédente
           }
           break;
         case "customPreviousMonth":

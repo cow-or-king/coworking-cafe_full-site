@@ -37,13 +37,23 @@ export default function StaffCard({
   mdp,
   hidden,
 }: StaffCardProps) {
+  const [isClient, setIsClient] = React.useState(false);
   const [form, setForm] = React.useState({
-    date: getCurrentDateInFrenchTimezone(),
+    date: "",
     firstname: firstname || "",
     lastname: lastname || "",
     staffId: staffId || "",
     hidden: hidden || "",
   });
+
+  // Initialiser côté client pour éviter l'erreur d'hydratation
+  React.useEffect(() => {
+    setIsClient(true);
+    setForm((prev) => ({
+      ...prev,
+      date: getCurrentDateInFrenchTimezone(),
+    }));
+  }, []);
 
   // États pour gérer les shifts
   const [currentShiftData, setCurrentShiftData] =
@@ -63,6 +73,9 @@ export default function StaffCard({
 
   // Effet pour vérifier le changement de date à minuit
   React.useEffect(() => {
+    // Ne s'exécuter que côté client et si la date est initialisée
+    if (!isClient || !form.date) return;
+
     const checkDateChange = () => {
       const currentDate = getCurrentDateInFrenchTimezone();
       if (currentDate !== form.date) {
@@ -93,14 +106,11 @@ export default function StaffCard({
       }
     };
 
-    // Vérifier immédiatement
-    checkDateChange();
-
-    // Vérifier toutes les minutes
+    // Vérifier toutes les minutes (pas immédiatement)
     const interval = setInterval(checkDateChange, 60000);
 
     return () => clearInterval(interval);
-  }, [form.date]);
+  }, [form.date, isClient]);
 
   const formatTime = (isoString: string) => {
     return formatTimeInFrenchTimezone(isoString);
@@ -157,6 +167,9 @@ export default function StaffCard({
 
   // Récupération des données de shift au chargement
   React.useEffect(() => {
+    // Ne s'exécuter que côté client et si la date est initialisée
+    if (!isClient || !form.date || !staffId) return;
+
     const fetchCurrentShift = async () => {
       try {
         const response = await fetch(
@@ -204,7 +217,7 @@ export default function StaffCard({
     };
 
     fetchCurrentShift();
-  }, [staffId, form.date]);
+  }, [staffId, form.date, isClient]);
 
   const handleStartStop = async () => {
     if (isBlocked || !currentShiftData) {
@@ -223,12 +236,10 @@ export default function StaffCard({
           updatedShiftData.firstShift.start = now;
           setActiveShift("first");
           setIsFirstShiftActive(true);
-          toast.success(`Premier shift démarré à ${formatTime(now)}`);
         } else if (currentShiftData.secondShift.start === "00:00") {
           updatedShiftData.secondShift.start = now;
           setActiveShift("second");
           setIsSecondShiftActive(true);
-          toast.success(`Deuxième shift démarré à ${formatTime(now)}`);
         } else {
           toast.error("Limite de 2 shifts atteinte pour aujourd'hui.");
           return;
@@ -238,13 +249,11 @@ export default function StaffCard({
         updatedShiftData.firstShift.end = now;
         setActiveShift(null);
         setIsFirstShiftActive(false);
-        toast.success(`Premier shift arrêté à ${formatTime(now)}`);
       } else if (activeShift === "second") {
         // Arrêter le deuxième shift
         updatedShiftData.secondShift.end = now;
         setActiveShift(null);
         setIsSecondShiftActive(false);
-        toast.success(`Deuxième shift arrêté à ${formatTime(now)}`);
       }
 
       // Envoyer la requête à l'API
@@ -353,7 +362,8 @@ export default function StaffCard({
 
   return (
     <>
-      {passwordPrompt && (
+      {/* Ne pas afficher les modals côté serveur */}
+      {isClient && passwordPrompt && (
         <div
           className="password-modal-overlay"
           style={{

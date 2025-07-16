@@ -88,7 +88,7 @@ class GlobalPreloader {
       { name: "staff", url: "/api/staff", key: "staff" },
       // Pas de préchargement des shifts individuels pour éviter les erreurs
       // { name: "shifts", url: `/api/shift?staffId=all&date=${new Date().toISOString().split('T')[0]}`, key: "shifts" },
-      { name: "cashEntry", url: "/api/cash-entry/get", key: "cashEntry" },
+      { name: "cashEntry", url: "/api/cash-entry", key: "cashEntry" },
     ];
 
     // Lancer tous les préchargements en parallèle pour une vitesse maximum

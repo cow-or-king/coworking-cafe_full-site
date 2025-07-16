@@ -235,14 +235,14 @@ export const prepareChartData = (data: TurnoverData[]) => {
 
       // Vérifier si la date est valide
       if (isNaN(dateObj.getTime())) {
-        console.error(
-          "Date invalide détectée:",
-          item.date,
-          "type:",
-          typeof item.date,
-          "pour item:",
-          item,
-        );
+        // console.error(
+        //   "Date invalide détectée:",
+        //   item.date,
+        //   "type:",
+        //   typeof item.date,
+        //   "pour item:",
+        //   item,
+        // );
         // Utiliser la date d'aujourd'hui comme fallback
         dateObj = new Date();
       }
