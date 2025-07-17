@@ -204,12 +204,30 @@ class StaffCacheManager {
   }
 
   subscribe(listener: StaffListener) {
+    console.log(
+      `➕ SUBSCRIBING new listener. Total listeners before: ${this.listeners.size}`,
+    );
     this.listeners.add(listener);
+    console.log(
+      `➕ SUBSCRIBER ADDED. Total listeners after: ${this.listeners.size}`,
+    );
+
     // Envoyer immédiatement l'état actuel
+    console.log("➕ Sending initial state to new subscriber:", {
+      cache: this.cache,
+      isLoading: this.isLoading,
+      error: this.error,
+    });
     listener(this.cache, this.isLoading, this.error);
 
     return () => {
+      console.log(
+        `➖ UNSUBSCRIBING listener. Total listeners before: ${this.listeners.size}`,
+      );
       this.listeners.delete(listener);
+      console.log(
+        `➖ LISTENER REMOVED. Total listeners after: ${this.listeners.size}`,
+      );
     };
   }
 
@@ -222,17 +240,37 @@ class StaffCacheManager {
   }
 
   private notifyListeners() {
+    console.log(`📢 NOTIFYING ${this.listeners.size} listeners with:`, {
+      cache: this.cache,
+      isLoading: this.isLoading,
+      error: this.error,
+    });
+    let index = 0;
     this.listeners.forEach((listener) => {
+      index++;
+      console.log(`📢 Notifying listener ${index}/${this.listeners.size}`);
       listener(this.cache, this.isLoading, this.error);
     });
   }
 
   invalidateCache() {
+    console.log("🧹 INVALIDATING CACHE - before:", {
+      cache: this.cache,
+      lastFetch: this.lastFetch,
+    });
     this.cache = null;
     this.lastFetch = 0;
     if (typeof window !== "undefined") {
       localStorage.removeItem(this.STORAGE_KEY);
     }
+    console.log("🧹 CACHE INVALIDATED - after:", {
+      cache: this.cache,
+      lastFetch: this.lastFetch,
+    });
+
+    // 🔥 IMPORTANT: Notifier tous les listeners que le cache a été invalidé
+    this.notifyListeners();
+    console.log("🧹 LISTENERS NOTIFIED after cache invalidation");
   }
 }
 
@@ -270,6 +308,44 @@ export const useStaffDataFixed = () => {
 
     return () => {
       unsubscribe();
+    };
+  }, []);
+
+  // Écouter l'événement de création de staff pour invalider le cache
+  useEffect(() => {
+    const handleStaffCreated = () => {
+      console.log(
+        "🆕 STAFF CREATED EVENT RECEIVED: Invalidating cache and refreshing data",
+      );
+      console.log(
+        "🆕 Current cache state before invalidation:",
+        staffCacheManager.getState(),
+      );
+      staffCacheManager.invalidateCache();
+      console.log(
+        "🆕 Cache state after invalidation:",
+        staffCacheManager.getState(),
+      );
+      staffCacheManager
+        .forceRefresh()
+        .then((newData) => {
+          console.log("🆕 Force refresh completed with new data:", newData);
+        })
+        .catch((error) => {
+          console.error("🆕 Force refresh failed:", error);
+        });
+    };
+
+    if (typeof window !== "undefined") {
+      console.log("🆕 ADDING EVENT LISTENER for staff-created");
+      window.addEventListener("staff-created", handleStaffCreated);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        console.log("🆕 REMOVING EVENT LISTENER for staff-created");
+        window.removeEventListener("staff-created", handleStaffCreated);
+      }
     };
   }, []);
 

@@ -117,7 +117,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 border-t pt-4">
+          {/* <div className="mt-6 border-t pt-4">
             <div className="text-muted-foreground space-y-1 text-sm">
               <p className="font-medium">Comptes de démonstration :</p>
               <p>
@@ -133,7 +133,7 @@ export default function LoginPage() {
                 </code>
               </p>
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>

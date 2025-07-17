@@ -10,14 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import type { AppDispatch } from "@/store";
-import { createStaff } from "@/store/staff/api";
-import React from "react";
-
 import { Switch } from "@/components/ui/switch";
+import { useCreateStaff } from "@/hooks/use-create-staff";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import toast from "react-hot-toast";
 
 const CONTRACT_TYPES = [
   { value: "CDI", label: "CDI" },
@@ -55,9 +53,7 @@ const initialFormData = {
 
 export default function CreateStaff() {
   const router = useRouter();
-
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading } = useSelector((state: any) => state.staff);
+  const { createStaff, isLoading, error } = useCreateStaff();
   const [formData, setFormData] = React.useState(initialFormData);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,19 +64,47 @@ export default function CreateStaff() {
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Les données sont maintenant directement compatibles
+    // Validation simple
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.mdp
+    ) {
+      toast.error("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+
+    // Préparer les données pour l'API
     const staffData = {
-      ...formData,
-      hourlyRate: Number(formData.hourlyRate),
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone,
+      numberSecu: formData.numberSecu,
+      adresse: formData.adresse,
+      zipcode: formData.zipcode,
+      city: formData.city,
+      framework: formData.framework,
+      times: formData.times,
+      hourlyRate: formData.hourlyRate ? Number(formData.hourlyRate) : 0,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      contract: formData.contract,
       mdp: Number(formData.mdp),
-      startDate: formData.startDate ? new Date(formData.startDate) : new Date(),
-      endDate: formData.endDate ? new Date(formData.endDate) : new Date(),
+      isActive: formData.isActive,
     };
 
-    dispatch(createStaff(staffData));
+    const result = await createStaff(staffData);
+
+    if (result.success) {
+      // Rediriger vers la liste après création réussie
+      router.push("/list");
+    }
   };
 
   return (
@@ -352,10 +376,17 @@ export default function CreateStaff() {
             <Button
               className={cn("bg-(--chart-5) text-white hover:bg-(--chart-4)")}
               type="submit"
-              disabled={loading}
-              onClick={() => router.push("/list")}
+              disabled={isLoading}
             >
-              {loading ? "Enregistrement..." : "Etape suivante..."}
+              {isLoading ? "Enregistrement..." : "Créer le staff"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/list")}
+              disabled={isLoading}
+            >
+              Annuler
             </Button>
           </div>
         </form>
