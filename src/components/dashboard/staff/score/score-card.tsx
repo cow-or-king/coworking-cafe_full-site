@@ -53,7 +53,7 @@ export default function ScoreCard({ hidden }: { hidden: string }) {
   return (
     <div className="">
       {/* Bouton de debug temporaire */}
-      {/* <div className="mb-2 px-4">
+      <div className="mb-2 px-4">
         <button
           onClick={() => {
             console.log("🔄 MANUAL REFRESH SCORE CARD");
@@ -63,7 +63,7 @@ export default function ScoreCard({ hidden }: { hidden: string }) {
         >
           Refresh ScoreCard
         </button>
-      </div> */}
+      </div>
 
       <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:px-6">
         {data?.map(
